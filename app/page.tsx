@@ -100,10 +100,15 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-orange/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 {/* Placeholder for a high-end food shot */}
                 <div className="text-center space-y-4">
-                  <div className="w-32 h-32 mx-auto rounded-full border border-brand-gold/30 flex items-center justify-center">
-                    <span className="text-4xl">🔥</span>
+                  <div className="w-64 h-64 mx-auto rounded-full border-4 border-brand-gold/30 flex items-center justify-center overflow-hidden relative shadow-2xl">
+                    <Image
+                      src="/menu-items/bowl-signature.jpg"
+                      alt="Signature Bowl"
+                      fill
+                      className="object-cover hover:scale-110 transition-transform duration-700"
+                    />
                   </div>
-                  <h3 className="text-2xl font-heading text-white tracking-widest">THE SIGNATURE GRILL</h3>
+                  <h3 className="text-2xl font-heading text-white tracking-widest mt-6">THE SIGNATURE GRILL</h3>
                   <p className="text-gray-500 text-sm">Char-grilled perfection in every bite.</p>
                 </div>
               </div>
