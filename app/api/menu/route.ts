@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,7 @@ export async function GET() {
             }),
         ]);
 
-        interface ModifierOption {
+        interface ClientModifierOption {
             id: number;
             name: string;
             price: number;
@@ -28,11 +28,23 @@ export async function GET() {
         interface ModifierMap {
             [key: string]: {
                 max_selection: number;
-                options: ModifierOption[];
+                options: ClientModifierOption[];
             };
         }
 
-        const modifiersData = modifiers.reduce((acc: ModifierMap, modifier) => {
+        type PrismaModifierWithOptions = {
+            id: number;
+            name: string;
+            max_selection: number;
+            options: {
+                id: number;
+                name: string;
+                price_adjustment: number;
+                modifier_id: number;
+            }[];
+        };
+
+        const modifiersData = modifiers.reduce((acc: ModifierMap, modifier: PrismaModifierWithOptions) => {
             acc[modifier.name] = {
                 max_selection: modifier.max_selection,
                 options: modifier.options.map((option) => ({
