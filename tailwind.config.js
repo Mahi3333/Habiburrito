@@ -12,6 +12,10 @@ module.exports = {
                 'brand-green': '#006400',
                 'background-light': '#F5F5DC',
             },
+            fontFamily: {
+                sans: ['var(--font-inter)', 'sans-serif'],
+                heading: ['var(--font-outfit)', 'sans-serif'],
+            },
         },
     },
     plugins: [],

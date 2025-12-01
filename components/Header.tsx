@@ -1,12 +1,21 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Header: React.FC = () => {
     return (
-        <header className="w-full py-4 px-8 flex justify-between items-center bg-white shadow-sm">
-            <div className="flex items-center">
-                <h1 className="text-2xl font-bold tracking-wider text-brand-green">HABIBURRITO</h1>
-            </div>
+        <header className="w-full py-4 px-8 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-100">
+            <Link href="/" className="flex items-center">
+                <div className="relative h-12 w-48">
+                    <Image
+                        src="/logo.jpg"
+                        alt="Habiburrito Logo"
+                        fill
+                        className="object-contain object-left"
+                        priority
+                    />
+                </div>
+            </Link>
 
             <nav className="flex items-center gap-6">
                 <Link href="/menu" className="text-gray-700 hover:text-brand-orange font-medium transition-colors">
