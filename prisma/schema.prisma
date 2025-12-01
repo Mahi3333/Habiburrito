@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MenuItem {
+  id         Int                @id @default(autoincrement())
+  name       String
+  item_type  String             // 'BYO', 'SIGNATURE', 'EXTRA'
+  base_price Float?             // Required for SIGNATURE/EXTRA, optional for BYO if base price is 0 or handled differently
+  modifiers  ItemModifierLink[]
+}
+
+model Modifier {
+  id            Int                @id @default(autoincrement())
+  name          String
+  max_selection Int
+  options       ModifierOption[]
+  items         ItemModifierLink[]
+}
+
+model ModifierOption {
+  id               Int      @id @default(autoincrement())
+  modifier_id      Int
+  modifier         Modifier @relation(fields: [modifier_id], references: [id])
+  name             String
+  price_adjustment Float    @default(0.00)
+}
+
+model ItemModifierLink {
+  item_id     Int
+  modifier_id Int
+  item        MenuItem @relation(fields: [item_id], references: [id])
+  modifier    Modifier @relation(fields: [modifier_id], references: [id])
+
+  @@id([item_id, modifier_id])
+}
