@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import Button from '../../components/Button';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
+import Button from '../../../components/Button';
 
 interface OrderItem {
     id: number;
