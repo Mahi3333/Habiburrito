@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         }
 
         // 3. Create Order Transaction
-        const order = await prisma.$transaction(async (tx) => {
+        const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             // Create Main Order
             const newOrder = await tx.order.create({
                 data: {
