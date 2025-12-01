@@ -62,3 +62,9 @@ model OrderItem {
   quantity     Int
   json_details String // Stores full JSON structure of the item
 }
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  password_hash String
+}
