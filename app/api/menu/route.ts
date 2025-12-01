@@ -18,7 +18,21 @@ export async function GET() {
             }),
         ]);
 
-        const modifiersData = modifiers.reduce((acc, modifier) => {
+        interface ModifierOption {
+            id: number;
+            name: string;
+            price: number;
+            modifierId: number;
+        }
+
+        interface ModifierMap {
+            [key: string]: {
+                max_selection: number;
+                options: ModifierOption[];
+            };
+        }
+
+        const modifiersData = modifiers.reduce((acc: ModifierMap, modifier) => {
             acc[modifier.name] = {
                 max_selection: modifier.max_selection,
                 options: modifier.options.map((option) => ({
@@ -29,7 +43,7 @@ export async function GET() {
                 })),
             };
             return acc;
-        }, {} as Record<string, { max_selection: number; options: any[] }>);
+        }, {} as ModifierMap);
 
         return NextResponse.json({ baseItems, modifiers: modifiersData }, { status: 200 });
     } catch (error) {
