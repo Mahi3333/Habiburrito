@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Button from '../../components/Button';
 
 interface OrderItem {
     id: number;
@@ -21,29 +20,15 @@ interface Order {
 }
 
 export default function AdminDashboard() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState('');
-
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Check auth status on mount (by trying to fetch orders)
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
     const fetchOrders = async () => {
-        setLoading(true);
         try {
             const res = await fetch('/api/admin/orders');
             if (res.ok) {
                 const data = await res.json();
                 setOrders(data.orders);
-                setIsAuthenticated(true);
-            } else if (res.status === 401) {
-                setIsAuthenticated(false);
             }
         } catch (error) {
             console.error('Failed to fetch orders', error);
@@ -52,26 +37,9 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoginError('');
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (res.ok) {
-                setIsAuthenticated(true);
-                fetchOrders(); // Load data
-            } else {
-                setLoginError('Invalid username or password');
-            }
-        } catch (error) {
-            setLoginError('An error occurred. Please try again.');
-        }
-    };
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
     const handleStatusUpdate = async (orderId: number, newStatus: string) => {
         try {
@@ -82,6 +50,7 @@ export default function AdminDashboard() {
             });
 
             if (res.ok) {
+                // Optimistic update or refetch
                 fetchOrders();
             } else {
                 alert('Failed to update status');
@@ -101,53 +70,14 @@ export default function AdminDashboard() {
         }
     };
 
-    if (!isAuthenticated && !loading) {
-        return (
-            <div className="min-h-screen bg-background-light flex flex-col">
-                <Header />
-                <main className="flex-grow flex items-center justify-center p-8">
-                    <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 w-full max-w-md">
-                        <h1 className="text-2xl font-bold text-brand-green mb-6 text-center">Admin Login</h1>
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            {loginError && (
-                                <p className="text-red-500 text-sm text-center">{loginError}</p>
-                            )}
-
-                            <Button variant="primary" className="w-full py-3">
-                                Login
-                            </Button>
-                        </form>
-                    </div>
-                </main>
-                <Footer />
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen bg-background-light flex flex-col">
             <Header />
+
+            {/* Security Warning Banner */}
+            <div className="bg-brand-orange text-white text-center py-3 px-4 font-bold text-sm md:text-base shadow-md">
+                ADMIN ACCESS: Authentication is currently disabled. DO NOT USE IN PRODUCTION until secure user login is implemented.
+            </div>
 
             <main className="flex-grow max-w-7xl mx-auto w-full p-8">
                 <div className="flex justify-between items-center mb-8">

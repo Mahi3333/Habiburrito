@@ -123,13 +123,14 @@ export default function CartPage() {
                                 <span>${finalTotal.toFixed(2)}</span>
                             </div>
 
-                            <Button
-                                variant="primary"
-                                className="w-full py-4 text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
-                                onClick={() => alert('Checkout functionality coming soon!')}
-                            >
-                                PROCEED TO CHECKOUT
-                            </Button>
+                            <Link href="/checkout">
+                                <Button
+                                    variant="primary"
+                                    className="w-full py-4 text-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all"
+                                >
+                                    PROCEED TO CHECKOUT
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 
