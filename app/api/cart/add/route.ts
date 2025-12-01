@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
             // Verify all extras were found
             for (const name of extraNames) {
-                const found = extraOptions.find((e) => e.name === name);
+                const found = extraOptions.find((e: { name: string; price_adjustment: number }) => e.name === name);
                 if (!found) {
                     return NextResponse.json(
                         { error: `Extra item not found: ${name}` },
