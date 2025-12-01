@@ -4,31 +4,43 @@
     --font-sans: var(--font-inter);
     --font-heading: var(--font-outfit);
 
-    --color-brand-orange: #FF8C00;
-    --color-brand-green: #006400;
-    --color-background-light: #F5F5DC;
+    --color-brand-black: #050505;
+    --color-brand-dark-gray: #121212;
+    --color-brand-gold: #D4AF37;
+    --color-brand-orange: #E65100;
+    --color-brand-cream: #F5F5DC;
 }
 
-/* Glassmorphism Utilities */
-.glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+@layer base {
+    body {
+        @apply bg-brand-black text-brand-cream antialiased;
+    }
 }
 
-.glass-dark {
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+/* Premium Glass Effect - Darker & More Subtle */
+.glass-panel {
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Golden Glow Text */
+.text-glow {
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Smooth Scroll & Parallax Prep */
+html {
+    scroll-behavior: smooth;
 }
 
 /* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(40px);
     }
 
     to {
@@ -38,23 +50,31 @@
 }
 
 .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
+    animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* Custom Scrollbar */
+.delay-200 {
+    animation-delay: 200ms;
+}
+
+.delay-500 {
+    animation-delay: 500ms;
+}
+
+/* Custom Scrollbar for Dark Theme */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #050505;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: #333;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #D4AF37;
 }

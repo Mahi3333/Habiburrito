@@ -4,35 +4,39 @@ import Image from 'next/image';
 
 const Header: React.FC = () => {
     return (
-        <header className="w-full py-4 px-8 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-100">
-            <Link href="/" className="flex items-center">
-                <div className="relative h-12 w-48">
-                    <Image
-                        src="/logo.jpg"
-                        alt="Habiburrito Logo"
-                        fill
-                        className="object-contain object-left"
-                        priority
-                    />
-                </div>
-            </Link>
-
-            <nav className="flex items-center gap-6">
-                <Link href="/menu" className="text-gray-700 hover:text-brand-orange font-medium transition-colors">
-                    MENU
+        <header className="fixed w-full top-0 z-50 transition-all duration-300 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-[2px]">
+            <div className="container mx-auto px-6 py-6 flex justify-between items-center">
+                <Link href="/" className="flex items-center group">
+                    <div className="relative h-16 w-48 transition-transform duration-500 group-hover:scale-105">
+                        <Image
+                            src="/logo.jpg"
+                            alt="Habiburrito Logo"
+                            fill
+                            className="object-contain object-left drop-shadow-xl"
+                            priority
+                        />
+                    </div>
                 </Link>
 
-                <Link href="/reserve" className="text-gray-700 hover:text-brand-orange font-medium transition-colors">
-                    RESERVE
-                </Link>
+                <nav className="hidden md:flex items-center gap-10">
+                    {['MENU', 'OUR STORY', 'LOCATIONS'].map((item) => (
+                        <Link
+                            key={item}
+                            href={`/${item.toLowerCase().replace(' ', '-')}`}
+                            className="text-white/90 hover:text-brand-gold font-heading tracking-[0.2em] text-sm font-bold transition-colors duration-300 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-brand-gold after:transition-all after:duration-300 hover:after:w-full"
+                        >
+                            {item}
+                        </Link>
+                    ))}
 
-                <Link
-                    href="/order"
-                    className="bg-brand-orange text-white px-6 py-2 rounded-full font-semibold hover:bg-orange-600 transition-colors"
-                >
-                    ORDER NOW
-                </Link>
-            </nav>
+                    <Link
+                        href="/order"
+                        className="bg-brand-gold text-brand-black px-8 py-3 rounded-none font-heading font-bold tracking-widest hover:bg-white transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                    >
+                        ORDER ONLINE
+                    </Link>
+                </nav>
+            </div>
         </header>
     );
 };
