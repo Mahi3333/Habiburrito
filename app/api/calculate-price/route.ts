@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
             // Check if all specified extras exist
             for (const name of extraNames) {
-                const extra = extras.find((e) => e.name === name);
+                const extra = extras.find((e: { name: string; price_adjustment: number }) => e.name === name);
                 if (!extra) {
                     return NextResponse.json(
                         { error: `Extra item not found: ${name}` },
