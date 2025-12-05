@@ -12,11 +12,18 @@ datasource db {
 }
 
 model MenuItem {
-  id         Int                @id @default(autoincrement())
-  name       String
-  item_type  String             // 'BYO', 'SIGNATURE', 'EXTRA'
-  base_price Float?             // Required for SIGNATURE/EXTRA, optional for BYO if base price is 0 or handled differently
-  modifiers  ItemModifierLink[]
+  id          Int                @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  category    String             // 'bowls', 'burritos', 'tacos', 'drinks'
+  image_url   String?
+  chef_note   String?
+  is_signature Boolean           @default(false)
+  is_available Boolean           @default(true)
+  created_at  DateTime           @default(now())
+  updated_at  DateTime           @updatedAt
+  modifiers   ItemModifierLink[]
 }
 
 model Modifier {
@@ -67,9 +74,11 @@ model OrderItem {
 
 model User {
   id            Int      @id @default(autoincrement())
-  username      String   @unique
-  email         String?  @unique
-  password_hash String
+  name          String?
+  phone         String   @unique
+  email         String?
+  username      String?
+  password_hash String?
   role          String   @default("CUSTOMER") // 'ADMIN', 'CUSTOMER'
   rewards_points Int     @default(0)
   orders        Order[]
