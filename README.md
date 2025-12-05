@@ -1,4 +1,5 @@
 # Habiburrito E-Commerce Ordering System 🌯
+> **Status:** Production Ready - Vercel Deployment Triggered
 
 ## Project Overview
 Habiburrito is a premium, modern web application designed for a "Build Your Own" halal meal restaurant. Inspired by the Chipotle ordering experience, this application allows customers to customize their bowls, burritos, and salads with fresh ingredients, while providing a seamless and secure checkout process. Built with performance and aesthetics in mind, it features a high-end dark-mode design, glassmorphism UI elements, and a robust backend for order management.
