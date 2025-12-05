@@ -8,26 +8,10 @@
     --color-brand-black: #050505;
     --color-brand-dark-gray: #121212;
     --color-brand-gold: #D4AF37;
+    --color-brand-gold-light: #F4D03F;
     --color-brand-orange: #E65100;
     --color-brand-cream: #F5F5DC;
     --color-brand-ember: #C25A29;
-    --color-brand-jade: #0BAF87;
-    --color-brand-night: #0B0B0B;
-}
-
-@layer base {
-    body {
-        @apply bg-brand-night text-brand-cream antialiased;
-        background-image:
-            radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.06), transparent 32%),
-            radial-gradient(circle at 80% 0%, rgba(11, 175, 135, 0.06), transparent 28%),
-            linear-gradient(180deg, rgba(5, 5, 5, 0.85), rgba(11, 11, 11, 0.98));
-    }
-}
-
-:root {
-    --motion-quick: 180ms;
-    --motion-base: 320ms;
     --motion-slow: 520ms;
     --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     --shadow-ember: 0 10px 50px rgba(194, 90, 41, 0.24);
@@ -36,16 +20,16 @@
 
 /* Premium Glass Effect - Darker & More Subtle */
 .glass-panel {
-    background: rgba(18, 18, 18, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    background: rgba(18, 18, 18, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* Golden Glow Text */
 .text-glow {
-    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
 }
 
 /* Smooth Scroll & Parallax Prep */
@@ -123,7 +107,7 @@ html {
 
 /* Custom Scrollbar for Dark Theme */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -131,10 +115,25 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 3px;
+    background: linear-gradient(to bottom, #333, #121212);
+    border-radius: 4px;
+    border: 1px solid #000;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #D4AF37;
+    background: linear-gradient(to bottom, #D4AF37, #B8860B);
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 20s linear infinite;
 }

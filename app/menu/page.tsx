@@ -12,26 +12,26 @@ export default function MenuPage() {
             title: "Signature Bowls",
             badge: "Chef's Mosaic",
             items: [
-                { name: "The Classic", description: "Grilled chicken, cilantro lime rice, black beans, pico de gallo, cheese, and sour cream.", price: "$12.95", image: "/menu-items/bowl-signature.jpg" },
-                { name: "Spicy Steak", description: "Marinated steak, brown rice, pinto beans, hot salsa, corn, and chipotle mayo.", price: "$14.95", image: "/menu-items/bowl-signature.jpg" },
-                { name: "Veggie Delight", description: "Fajita veggies, cilantro lime rice, black beans, guacamole, and mild salsa.", price: "$11.95", image: "/menu-items/bowl-signature.jpg" }
+                { name: "The Classic", description: "Grilled chicken, cilantro lime rice, black beans, pico de gallo, cheese, and sour cream.", price: "$12.95" },
+                { name: "Spicy Steak", description: "Marinated steak, brown rice, pinto beans, hot salsa, corn, and chipotle mayo.", price: "$14.95" },
+                { name: "Veggie Delight", description: "Fajita veggies, cilantro lime rice, black beans, guacamole, and mild salsa.", price: "$11.95" }
             ]
         },
         {
             title: "Burritos",
             badge: "Charcoal Roll",
             items: [
-                { name: "Chicken Burrito", description: "Flour tortilla, grilled chicken, rice, beans, cheese, and salsa.", price: "$12.95", image: "/menu-items/burrito-special.jpg" },
-                { name: "Steak Burrito", description: "Flour tortilla, marinated steak, rice, beans, cheese, and salsa.", price: "$14.95", image: "/menu-items/burrito-special.jpg" },
-                { name: "Bean & Cheese", description: "Flour tortilla, black or pinto beans, and melted cheese.", price: "$9.95", image: "/menu-items/burrito-special.jpg" }
+                { name: "Chicken Burrito", description: "Flour tortilla, grilled chicken, rice, beans, cheese, and salsa.", price: "$12.95" },
+                { name: "Steak Burrito", description: "Flour tortilla, marinated steak, rice, beans, cheese, and salsa.", price: "$14.95" },
+                { name: "Bean & Cheese", description: "Flour tortilla, black or pinto beans, and melted cheese.", price: "$9.95" }
             ]
         },
         {
             title: "Salads",
             badge: "Garden Ember",
             items: [
-                { name: "Chicken Salad", description: "Romaine lettuce, grilled chicken, beans, corn, salsa, and vinaigrette.", price: "$12.95", image: "/menu-items/bowl-signature.jpg" },
-                { name: "Steak Salad", description: "Romaine lettuce, marinated steak, beans, corn, salsa, and vinaigrette.", price: "$14.95", image: "/menu-items/bowl-signature.jpg" }
+                { name: "Chicken Salad", description: "Romaine lettuce, grilled chicken, beans, corn, salsa, and vinaigrette.", price: "$12.95" },
+                { name: "Steak Salad", description: "Romaine lettuce, marinated steak, beans, corn, salsa, and vinaigrette.", price: "$14.95" }
             ]
         }
     ];
@@ -63,16 +63,6 @@ export default function MenuPage() {
                                 <div className="space-y-8">
                                     {category.items.map((item, itemIdx) => (
                                         <div key={itemIdx} className="group flex gap-4 items-start">
-                                            {/* Image Thumbnail */}
-                                            <div className="relative w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden border border-white/10">
-                                                <Image
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    fill
-                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                            </div>
                                             <div className="flex-grow space-y-2">
                                                 <div className="flex justify-between items-baseline">
                                                     <h3 className="text-xl font-display text-brand-cream group-hover:text-brand-gold transition-colors">{item.name}</h3>

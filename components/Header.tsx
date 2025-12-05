@@ -22,7 +22,13 @@ const Header: React.FC = () => {
     return (
         <>
             <header
+<<<<<<< HEAD
+                className={`fixed w-full top-0 z-50 transition-all duration-500 ${isScrolled || mobileMenuOpen
+                    ? 'bg-black/80 backdrop-blur-xl border-b border-white/5 py-4 shadow-2xl'
+                    : 'bg-transparent py-8'
+=======
                 className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen ? 'bg-black/90 backdrop-blur-lg py-3 border-b border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.35)]' : 'bg-transparent py-6'
+>>>>>>> origin/main
                     }`}
             >
                 <div className="container mx-auto px-6 flex justify-between items-center">

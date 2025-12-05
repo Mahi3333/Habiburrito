@@ -47,6 +47,7 @@ model ItemModifierLink {
 model Order {
   id                       Int         @id @default(autoincrement())
   user_id                  Int?        // Optional FK to User
+  user                     User?       @relation(fields: [user_id], references: [id])
   total_amount             Float
   tax_amount               Float
   status                   String      @default("PENDING_PAYMENT")
@@ -67,5 +68,10 @@ model OrderItem {
 model User {
   id            Int      @id @default(autoincrement())
   username      String   @unique
+  email         String?  @unique
   password_hash String
+  role          String   @default("CUSTOMER") // 'ADMIN', 'CUSTOMER'
+  rewards_points Int     @default(0)
+  orders        Order[]
+  created_at    DateTime @default(now())
 }
