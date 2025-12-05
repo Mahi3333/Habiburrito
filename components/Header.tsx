@@ -19,7 +19,9 @@ const Header: React.FC = () => {
     return (
         <>
             <header
-                className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled || mobileMenuOpen ? 'bg-black/90 backdrop-blur-md py-4' : 'bg-transparent py-6'
+                className={`fixed w-full top-0 z-50 transition-all duration-500 ${isScrolled || mobileMenuOpen
+                    ? 'bg-black/80 backdrop-blur-xl border-b border-white/5 py-4 shadow-2xl'
+                    : 'bg-transparent py-8'
                     }`}
             >
                 <div className="container mx-auto px-6 flex justify-between items-center">

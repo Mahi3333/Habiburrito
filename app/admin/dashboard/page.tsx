@@ -1,229 +1,148 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import Button from '../../../components/Button';
-
-interface OrderItem {
-    id: number;
-    item_name: string;
-    quantity: number;
-    json_details: string;
-}
-
-interface Order {
-    id: number;
-    total_amount: number;
-    status: string;
-    created_at: string;
-    items: OrderItem[];
-}
 
 export default function AdminDashboard() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState('');
+    const [activeTab, setActiveTab] = useState('orders');
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    // Check auth status on mount (by trying to fetch orders)
+    // Mock data for now, in real app fetch from API
     useEffect(() => {
-        fetchOrders();
-    }, []);
-
-    const fetchOrders = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch('/api/admin/orders');
-            if (res.ok) {
-                const data = await res.json();
-                setOrders(data.orders);
-                setIsAuthenticated(true);
-            } else if (res.status === 401) {
-                setIsAuthenticated(false);
-            }
-        } catch (error) {
-            console.error('Failed to fetch orders', error);
-        } finally {
-            setLoading(false);
+        if (activeTab === 'orders') {
+            // fetchOrders();
         }
-    };
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoginError('');
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (res.ok) {
-                setIsAuthenticated(true);
-                fetchOrders(); // Load data
-            } else {
-                setLoginError('Invalid username or password');
-            }
-        } catch (error) {
-            setLoginError('An error occurred. Please try again.');
-        }
-    };
-
-    const handleStatusUpdate = async (orderId: number, newStatus: string) => {
-        try {
-            const res = await fetch('/api/admin/update-status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId, status: newStatus }),
-            });
-
-            if (res.ok) {
-                fetchOrders();
-            } else {
-                alert('Failed to update status');
-            }
-        } catch (error) {
-            console.error('Error updating status', error);
-        }
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'PAID': return 'bg-green-100 text-green-800';
-            case 'IN PROGRESS': return 'bg-blue-100 text-blue-800';
-            case 'READY FOR PICKUP': return 'bg-yellow-100 text-yellow-800';
-            case 'COMPLETED': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
-
-    if (!isAuthenticated && !loading) {
-        return (
-            <div className="min-h-screen bg-background-light flex flex-col">
-                <Header />
-                <main className="flex-grow flex items-center justify-center p-8">
-                    <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 w-full max-w-md">
-                        <h1 className="text-2xl font-bold text-brand-green mb-6 text-center">Admin Login</h1>
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent"
-                                    required
-                                />
-                            </div>
-
-                            {loginError && (
-                                <p className="text-red-500 text-sm text-center">{loginError}</p>
-                            )}
-
-                            <Button variant="primary" className="w-full py-3">
-                                Login
-                            </Button>
-                        </form>
-                    </div>
-                </main>
-                <Footer />
-            </div>
-        );
-    }
+    }, [activeTab]);
 
     return (
-        <div className="min-h-screen bg-background-light flex flex-col">
+        <div className="min-h-screen bg-gray-100 font-sans">
             <Header />
 
-            <main className="flex-grow max-w-7xl mx-auto w-full p-8">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-brand-green">Order Dashboard</h1>
-                    <button
-                        onClick={fetchOrders}
-                        className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 text-gray-700"
-                    >
-                        Refresh Data
-                    </button>
-                </div>
+            <main className="pt-24 pb-12 container mx-auto px-6">
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* Sidebar */}
+                    <aside className="w-full md:w-64 bg-white rounded-lg shadow-md p-6 h-fit">
+                        <h2 className="text-xl font-bold text-gray-800 mb-6">Admin Panel</h2>
+                        <nav className="space-y-2">
+                            <button
+                                onClick={() => setActiveTab('overview')}
+                                className={`w-full text-left px-4 py-2 rounded-md transition-colors ${activeTab === 'overview' ? 'bg-brand-gold text-black font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
+                            >
+                                Overview
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('menu')}
+                                className={`w-full text-left px-4 py-2 rounded-md transition-colors ${activeTab === 'menu' ? 'bg-brand-gold text-black font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
+                            >
+                                Menu Management
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('orders')}
+                                className={`w-full text-left px-4 py-2 rounded-md transition-colors ${activeTab === 'orders' ? 'bg-brand-gold text-black font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
+                            >
+                                Orders
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('users')}
+                                className={`w-full text-left px-4 py-2 rounded-md transition-colors ${activeTab === 'users' ? 'bg-brand-gold text-black font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
+                            >
+                                Users & Rewards
+                            </button>
+                        </nav>
+                    </aside>
 
-                {loading ? (
-                    <div className="flex justify-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-orange"></div>
+                    {/* Content Area */}
+                    <div className="flex-grow bg-white rounded-lg shadow-md p-8">
+                        {activeTab === 'overview' && (
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+                                        <h3 className="text-blue-800 font-bold text-lg">Total Orders</h3>
+                                        <p className="text-3xl font-bold text-blue-900 mt-2">1,234</p>
+                                    </div>
+                                    <div className="bg-green-50 p-6 rounded-lg border border-green-100">
+                                        <h3 className="text-green-800 font-bold text-lg">Revenue</h3>
+                                        <p className="text-3xl font-bold text-green-900 mt-2">$45,678</p>
+                                    </div>
+                                    <div className="bg-purple-50 p-6 rounded-lg border border-purple-100">
+                                        <h3 className="text-purple-800 font-bold text-lg">Active Users</h3>
+                                        <p className="text-3xl font-bold text-purple-900 mt-2">890</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'menu' && (
+                            <div>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h1 className="text-2xl font-bold text-gray-800">Menu Management</h1>
+                                    <button className="bg-brand-green text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                        + Add New Item
+                                    </button>
+                                </div>
+                                <p className="text-gray-500 mb-4">Manage your menu items, prices, and descriptions here.</p>
+
+                                <div className="space-y-4">
+                                    {/* Example Item */}
+                                    <div className="border p-4 rounded-md flex justify-between items-center hover:bg-gray-50">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-16 h-16 bg-gray-200 rounded-md"></div>
+                                            <div>
+                                                <h4 className="font-bold text-lg">Signature Bowl</h4>
+                                                <p className="text-sm text-gray-500">Grilled chicken, rice, beans...</p>
+                                                <span className="text-brand-gold font-bold">$12.95</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-x-2">
+                                            <button className="text-blue-600 hover:text-blue-800 font-medium">Edit</button>
+                                            <button className="text-red-600 hover:text-red-800 font-medium">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'users' && (
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-800 mb-6">Users & Rewards</h1>
+                                <p className="text-gray-500">Manage user accounts and loyalty points here.</p>
+                                <div className="mt-6 border rounded-md overflow-hidden">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-gray-50 border-b">
+                                            <tr>
+                                                <th className="px-6 py-3 text-gray-600 font-semibold">Username</th>
+                                                <th className="px-6 py-3 text-gray-600 font-semibold">Email</th>
+                                                <th className="px-6 py-3 text-gray-600 font-semibold">Points</th>
+                                                <th className="px-6 py-3 text-gray-600 font-semibold">Role</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y">
+                                            <tr>
+                                                <td className="px-6 py-4">john_doe</td>
+                                                <td className="px-6 py-4">john@example.com</td>
+                                                <td className="px-6 py-4 font-bold text-brand-gold">150</td>
+                                                <td className="px-6 py-4"><span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Customer</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'orders' && (
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-800 mb-6">Recent Orders</h1>
+                                <p className="text-gray-500 mb-4">Real-time order tracking.</p>
+                                <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md mb-6">
+                                    <p className="text-yellow-800"><strong>Note:</strong> Connect to the live database to see real-time orders.</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Order ID</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Date</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Items</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Total</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
-                                        <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {orders.map((order) => (
-                                        <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 font-medium text-gray-900">#{order.id}</td>
-                                            <td className="px-6 py-4 text-gray-600">
-                                                {new Date(order.created_at).toLocaleString()}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-600 max-w-xs truncate">
-                                                {order.items.map(i => `${i.quantity}x ${i.item_name}`).join(', ')}
-                                            </td>
-                                            <td className="px-6 py-4 font-medium text-gray-900">
-                                                ${order.total_amount.toFixed(2)}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
-                                                    {order.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <select
-                                                    value={order.status}
-                                                    onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
-                                                    className="block w-full px-3 py-1.5 text-sm text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-orange focus:border-transparent"
-                                                >
-                                                    <option value="PENDING_PAYMENT">Pending Payment</option>
-                                                    <option value="PAID">Paid</option>
-                                                    <option value="IN PROGRESS">In Progress</option>
-                                                    <option value="READY FOR PICKUP">Ready for Pickup</option>
-                                                    <option value="COMPLETED">Completed</option>
-                                                    <option value="CANCELLED">Cancelled</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {orders.length === 0 && (
-                                        <tr>
-                                            <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                                No orders found.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
+                </div>
             </main>
             <Footer />
         </div>
