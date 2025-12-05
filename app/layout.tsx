@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Outfit, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { VercelToolbar } from '@vercel/toolbar/next';
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
     siteName: "Habiburrito",
     images: [
       {
-        url: "/menu-items/burrito-special.jpg",
+        url: "/menu-items/burrito-special.png",
         width: 1200,
         height: 630,
         alt: "Charcoal-fired halal burrito draped in gold light",
@@ -47,8 +50,11 @@ export const metadata: Metadata = {
     title: "Habiburrito | Charcoal Halal Taqueria",
     description:
       "Premium halal burritos and bowls with immersive hospitality and ember-lit storytelling.",
-    images: ["/menu-items/bowl-signature.jpg"],
+    images: ["/menu-items/bowl-signature.png"],
   },
+};
+
+export const viewport = {
   themeColor: "#0b0b0b",
 };
 
@@ -66,6 +72,9 @@ export default function RootLayout({
       >
         <CartProvider>
           {children}
+          <Analytics />
+          <SpeedInsights />
+          {process.env.NODE_ENV === 'development' && <VercelToolbar />}
         </CartProvider>
       </body>
     </html>
