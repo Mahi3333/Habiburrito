@@ -1,54 +1,120 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import { motion } from 'framer-motion';
+
+function OrderContent() {
+    const searchParams = useSearchParams();
+    const success = searchParams.get('success');
+    const orderId = searchParams.get('orderId');
+
+    if (success) {
+        return (
+            <div className="min-h-screen bg-brand-black flex flex-col">
+                <Header />
+                <main className="flex-grow flex items-center justify-center p-6 relative overflow-hidden">
+                    {/* Success UI */}
+                    <div className="absolute inset-0 bg-[url('/background_bowls_blur.png')] opacity-20 bg-cover" />
+                    <div className="relative z-10 text-center max-w-2xl">
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <div className="w-24 h-24 bg-brand-gold rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(198,168,124,0.4)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-6">ORDER <span className="text-brand-gold">CONFIRMED</span></h1>
+                            <p className="text-xl text-gray-300 mb-8">
+                                Your legend is being crafted. We've sent a confirmation to your phone and email.
+                            </p>
+                            {orderId && (
+                                <p className="text-sm text-gray-500 font-mono mb-8">Order ID: #{orderId}</p>
+                            )}
+                            <Link href="/">
+                                <button className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest rounded-lg hover:bg-brand-gold transition-colors">
+                                    Return Home
+                                </button>
+                            </Link>
+                        </motion.div>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
+    return (
+        <div className="h-screen bg-brand-black flex flex-col overflow-hidden">
+            <Header />
+
+            <main className="flex-grow flex flex-col md:flex-row">
+                {/* Left: Signature */}
+                <Link href="/menu" className="flex-1 relative group overflow-hidden border-r border-white/10">
+                    <div className="absolute inset-0 bg-[url('/menu-items/bowl-signature.png')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500" />
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10">
+                        <motion.span
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            className="text-brand-gold tracking-[0.3em] uppercase text-xs mb-4"
+                        >
+                            Curated
+                        </motion.span>
+                        <motion.h2
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="text-5xl md:text-7xl font-display font-bold text-white mb-6"
+                        >
+                            SIGNATURE
+                        </motion.h2>
+                        <span className="px-6 py-3 border border-white/30 text-white text-xs font-bold tracking-widest uppercase group-hover:bg-white group-hover:text-black transition-all">
+                            View Menu
+                        </span>
+                    </div>
+                </Link>
+
+                {/* Right: Build Your Own */}
+                <Link href="/build" className="flex-1 relative group overflow-hidden bg-brand-charcoal">
+                    <div className="absolute inset-0 bg-[url('/background_create.png')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" />
+                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10">
+                        <motion.span
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-brand-gold tracking-[0.3em] uppercase text-xs mb-4"
+                        >
+                            Custom
+                        </motion.span>
+                        <motion.h2
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-5xl md:text-7xl font-display font-bold text-white mb-6"
+                        >
+                            CREATE
+                        </motion.h2>
+                        <span className="px-6 py-3 border border-white/30 text-white text-xs font-bold tracking-widest uppercase group-hover:bg-brand-gold group-hover:border-brand-gold group-hover:text-black transition-all">
+                            Start Building
+                        </span>
+                    </div>
+                </Link>
+            </main>
+        </div>
+    );
+}
 
 export default function OrderPage() {
     return (
-        <div className="min-h-screen bg-brand-black flex flex-col font-sans selection:bg-brand-gold selection:text-black">
-            <Header />
-
-            <main className="flex-grow flex items-center justify-center relative overflow-hidden pt-20">
-                {/* Background Texture */}
-                <div className="absolute inset-0 z-0 opacity-[0.05] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
-
-                <div className="container mx-auto px-6 relative z-10 text-center">
-                    <h1 className="text-5xl md:text-7xl font-heading font-bold text-white mb-12 animate-fade-in-up">
-                        START YOUR <span className="text-brand-gold">ORDER</span>
-                    </h1>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        {/* Option 1: Signature Menu */}
-                        <Link href="/menu" className="group relative h-96 glass-panel border border-brand-gold/20 hover:border-brand-gold transition-all duration-500 flex flex-col items-center justify-center p-8 overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-10"></div>
-                            <div className="absolute inset-0 bg-[url('/menu-items/bowl-signature.jpg')] bg-cover bg-center opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700"></div>
-
-                            <div className="relative z-20 space-y-4 transform group-hover:-translate-y-2 transition-transform duration-500">
-                                <h2 className="text-3xl font-heading font-bold text-white">SIGNATURE MENU</h2>
-                                <p className="text-gray-300 max-w-xs mx-auto">Explore our chef-curated bowls, burritos, and salads.</p>
-                                <span className="inline-block mt-4 text-brand-gold font-bold tracking-widest uppercase text-sm border-b border-brand-gold pb-1">View Menu</span>
-                            </div>
-                        </Link>
-
-                        {/* Option 2: Build Your Own */}
-                        <Link href="/build" className="group relative h-96 glass-panel border border-brand-orange/20 hover:border-brand-orange transition-all duration-500 flex flex-col items-center justify-center p-8 overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-10"></div>
-                            {/* Fallback pattern if no image */}
-                            <div className="absolute inset-0 bg-brand-dark-gray opacity-40 group-hover:opacity-60 transition-all duration-700"></div>
-
-                            <div className="relative z-20 space-y-4 transform group-hover:-translate-y-2 transition-transform duration-500">
-                                <h2 className="text-3xl font-heading font-bold text-white">BUILD YOUR OWN</h2>
-                                <p className="text-gray-300 max-w-xs mx-auto">Customize every layer. Your bowl, your way.</p>
-                                <span className="inline-block mt-4 text-brand-orange font-bold tracking-widest uppercase text-sm border-b border-brand-orange pb-1">Start Building</span>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
-            </main>
-
-            <Footer />
-        </div>
+        <Suspense fallback={<div className="min-h-screen bg-brand-black" />}>
+            <OrderContent />
+        </Suspense>
     );
 }
