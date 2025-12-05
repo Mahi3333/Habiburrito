@@ -6,11 +6,15 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { protein, extras, totalPrice } = body;
+        const { protein, extras, totalPrice } = body as {
+            protein?: { name: string };
+            extras?: { name: string }[];
+            totalPrice: number;
+        };
 
         // 1. Extract Names for Validation
         const proteinName = protein?.name;
-        const extraNames = extras?.map((e: any) => e.name) || [];
+        const extraNames = Array.isArray(extras) ? extras.map((e: { name: string }) => e.name) : [];
 
         // 2. Validate Input Presence
         if (!proteinName) {

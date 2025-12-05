@@ -4,6 +4,7 @@ import Image from 'next/image';
 
 const Footer: React.FC = () => {
     return (
+<<<<<<< HEAD
         <footer className="w-full bg-brand-black border-t border-brand-gold/20 pt-20 pb-10 px-6 relative overflow-hidden">
             {/* Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent"></div>
@@ -19,12 +20,28 @@ const Footer: React.FC = () => {
                             fill
                             className="object-contain object-left"
                         />
+=======
+        <footer className="w-full relative overflow-hidden bg-gradient-to-b from-brand-black via-brand-night to-black text-brand-cream border-t border-white/5">
+            <div className="grain-layer"></div>
+            <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-4 gap-10 relative z-10">
+                {/* Concierge */}
+                <div className="space-y-4">
+                    <p className="text-xs tracking-[0.3em] uppercase text-brand-gold">Concierge</p>
+                    <h3 className="text-2xl font-display text-white leading-tight">Habiburrito House</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                        Ember-lit hospitality, charcoal aromas, and chef-led craftsmanship for the halal gourmand.
+                    </p>
+                    <div className="flex items-center gap-3 text-sm text-brand-gold">
+                        <span className="w-2 h-2 rounded-full bg-brand-jade animate-pulse"></span>
+                        <span>WhatsApp Concierge · +1 (555) 333-0999</span>
+>>>>>>> origin/main
                     </div>
                     <p className="text-gray-400 font-light leading-relaxed">
                         Elevating fast food with premium Halal ingredients and authentic Mexican flavors. Experience the extraordinary.
                     </p>
                 </div>
 
+<<<<<<< HEAD
                 {/* Quick Links */}
                 <div className="flex flex-col gap-6">
                     <h3 className="text-xl font-heading font-bold text-brand-gold tracking-widest uppercase">Explore</h3>
@@ -54,6 +71,56 @@ const Footer: React.FC = () => {
                             <p>Mon - Thu: 11:00 AM - 11:00 PM</p>
                             <p>Fri - Sat: 11:00 AM - 12:00 AM</p>
                         </div>
+=======
+                {/* Reservations & WhatsApp */}
+                <div className="space-y-3">
+                    <p className="text-xs tracking-[0.28em] uppercase text-brand-gold">Book</p>
+                    <div className="space-y-2">
+                        <a href="/our-story#reserve" className="block parallax-hover bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm hover:border-brand-gold/50">
+                            Reserve a Chef’s Table
+                        </a>
+                        <a href="https://wa.me/15553330999" className="block parallax-hover bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm hover:border-brand-jade/60">
+                            Order via WhatsApp
+                        </a>
+                        <a href="/locations" className="block parallax-hover bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm hover:border-brand-ember/60">
+                            Find a late-night location
+                        </a>
+                    </div>
+                </div>
+
+                {/* Hours & Policies */}
+                <div className="space-y-3">
+                    <p className="text-xs tracking-[0.28em] uppercase text-brand-gold">Hours</p>
+                    <div className="text-sm text-gray-300 leading-relaxed">
+                        <p>Mon – Thu: 11:00a – 11:00p</p>
+                        <p>Fri – Sat: 11:00a – 1:00a</p>
+                        <p>Sun: 12:00p – 10:00p</p>
+                    </div>
+                    <div className="pt-4 space-y-2 text-sm text-gray-400">
+                        <a href="#" className="hover:text-brand-gold transition-colors">Gratuity & Chef Experience</a>
+                        <a href="#" className="hover:text-brand-gold transition-colors">Accessibility & Allergen Guide</a>
+                        <a href="#" className="hover:text-brand-gold transition-colors">Privacy & Terms</a>
+                    </div>
+                </div>
+
+                {/* Loyalty & Social */}
+                <div className="space-y-3">
+                    <p className="text-xs tracking-[0.28em] uppercase text-brand-gold">Circle</p>
+                    <div className="space-y-2">
+                        <a href="/our-story#loyalty" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm hover:border-brand-gold/60 transition-all">
+                            Ember Loyalty <span className="text-brand-gold text-xs">Earn 2x after 9p</span>
+                        </a>
+                        <a href="/menu" className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm hover:border-brand-jade/60 transition-all">
+                            Midnight Chef Drops <span className="text-brand-jade text-xs">Limited nightly</span>
+                        </a>
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                        {['IG', 'TT', 'YT'].map((social) => (
+                            <div key={social} className="w-10 h-10 rounded-full border border-white/15 text-white flex items-center justify-center text-xs tracking-[0.2em] hover:border-brand-gold hover:text-brand-gold transition-colors">
+                                {social}
+                            </div>
+                        ))}
+>>>>>>> origin/main
                     </div>
                 </div>
 
@@ -84,6 +151,7 @@ const Footer: React.FC = () => {
                 </div>
             </div>
 
+<<<<<<< HEAD
             {/* Bottom Bar */}
             <div className="mt-20 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600 font-light">
                 <p>&copy; {new Date().getFullYear()} Habiburrito. All rights reserved.</p>
@@ -91,6 +159,10 @@ const Footer: React.FC = () => {
                     <a href="#" className="hover:text-brand-gold transition-colors">Privacy Policy</a>
                     <a href="#" className="hover:text-brand-gold transition-colors">Terms of Service</a>
                 </div>
+=======
+            <div className="border-t border-white/5 py-6 text-center text-gray-500 text-sm relative z-10">
+                <p>&copy; {new Date().getFullYear()} Habiburrito · Charcoal Halal Taqueria · Crafted with gold-label hospitality.</p>
+>>>>>>> origin/main
             </div>
         </footer>
     );

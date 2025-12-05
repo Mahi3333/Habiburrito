@@ -16,13 +16,13 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-background-light flex flex-col">
+            <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
                 <Header />
                 <main className="flex-grow flex flex-col items-center justify-center p-8 text-center">
-                    <h2 className="text-3xl font-bold text-brand-green mb-4">Your Cart is Empty</h2>
-                    <p className="text-gray-600 mb-8 text-lg">Looks like you haven't added any delicious burritos yet!</p>
+                    <h2 className="text-3xl font-display font-semibold text-white mb-4">Your Cart is Empty</h2>
+                    <p className="text-gray-400 mb-8 text-lg">Looks like you haven’t added any delicious burritos yet.</p>
                     <Link href="/build">
-                        <Button variant="primary" className="text-lg px-8 py-3">
+                        <Button variant="primary" className="text-lg px-8 py-3 bg-brand-gold text-brand-black">
                             Start Your Order
                         </Button>
                     </Link>
@@ -33,11 +33,11 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background-light flex flex-col">
+        <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
             <Header />
 
             <main className="flex-grow max-w-5xl mx-auto w-full p-8">
-                <h1 className="text-3xl font-bold text-brand-green mb-8 border-b-2 border-brand-orange pb-4">
+                <h1 className="text-3xl font-display font-semibold text-white mb-8 border-b border-white/10 pb-4">
                     Your Order
                 </h1>
 
@@ -48,14 +48,14 @@ export default function CartPage() {
                         {items.map((item) => (
                             <div
                                 key={item.uniqueId}
-                                className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between gap-6"
+                                className="bg-white/5 p-6 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] border border-white/10 flex flex-col md:flex-row justify-between gap-6"
                             >
                                 <div className="flex-grow">
                                     <div className="flex justify-between items-start mb-2">
                                         <h3 className="text-xl font-bold text-gray-800">
                                             BYO {item.base.name}
                                         </h3>
-                                        <span className="font-bold text-brand-orange text-lg">
+                                        <span className="font-bold text-brand-gold text-lg">
                                             ${item.totalPrice.toFixed(2)}
                                         </span>
                                     </div>

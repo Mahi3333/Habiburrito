@@ -3,7 +3,6 @@
 import React from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
-import Image from 'next/image';
 
 export default function OurStoryPage() {
     return (
@@ -30,7 +29,7 @@ export default function OurStoryPage() {
                             <div className="glass-panel p-8 md:p-12 border-l-4 border-brand-gold">
                                 <h3 className="text-2xl font-heading font-bold text-white mb-6">Our Roots</h3>
                                 <p className="text-gray-400 leading-loose text-lg">
-                                    Habiburrito began with a simple mission: to bridge the gap between authentic Mexican street food and premium Halal standards. We noticed a lack of high-quality, Zabiha Halal options that didn't compromise on flavor or freshness.
+                                    Habiburrito began with a simple mission: to bridge the gap between authentic Mexican street food and premium Halal standards. We noticed a lack of high-quality, Zabiha Halal options that didn’t compromise on flavor or freshness.
                                 </p>
                                 <p className="text-gray-400 leading-loose text-lg mt-6">
                                     What started as a small family kitchen has grown into a community favorite, known for our signature marinades, open-flame grilling, and commitment to using only the freshest ingredients sourced daily.

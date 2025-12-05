@@ -3,6 +3,7 @@
 @theme {
     --font-sans: var(--font-inter);
     --font-heading: var(--font-outfit);
+    --font-serif: var(--font-serif);
 
     --color-brand-black: #050505;
     --color-brand-dark-gray: #121212;
@@ -10,13 +11,11 @@
     --color-brand-gold-light: #F4D03F;
     --color-brand-orange: #E65100;
     --color-brand-cream: #F5F5DC;
-}
-
-@layer base {
-    body {
-        @apply bg-brand-black text-brand-cream antialiased;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    }
+    --color-brand-ember: #C25A29;
+    --motion-slow: 520ms;
+    --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --shadow-ember: 0 10px 50px rgba(194, 90, 41, 0.24);
+    --shadow-gold: 0 10px 45px rgba(212, 175, 55, 0.16);
 }
 
 /* Premium Glass Effect - Darker & More Subtle */
@@ -52,7 +51,7 @@ html {
 }
 
 .animate-fade-in-up {
-    animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: fadeInUp 1s var(--motion-ease) forwards;
 }
 
 .delay-200 {
@@ -61,6 +60,49 @@ html {
 
 .delay-500 {
     animation-delay: 500ms;
+}
+
+.micro-glow {
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.grain-layer {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    opacity: 0.18;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+}
+
+.parallax-hover {
+    transition: transform var(--motion-base) var(--motion-ease), box-shadow var(--motion-base) var(--motion-ease);
+}
+
+.parallax-hover:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: var(--shadow-gold);
+}
+
+.progress-rail {
+    position: fixed;
+    left: 32px;
+    top: 140px;
+    width: 6px;
+    height: 54vh;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(212, 175, 55, 0.16));
+    border-radius: 9999px;
+    overflow: hidden;
+    z-index: 40;
+}
+
+.progress-fill {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(11, 175, 135, 0.4), rgba(212, 175, 55, 0.8));
+    transition: height var(--motion-slow) var(--motion-ease);
 }
 
 /* Custom Scrollbar for Dark Theme */
