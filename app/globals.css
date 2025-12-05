@@ -2,138 +2,65 @@
 
 @theme {
     --font-sans: var(--font-inter);
-    --font-heading: var(--font-outfit);
-    --font-serif: var(--font-serif);
+    --font-display: var(--font-outfit);
 
-    --color-brand-black: #050505;
-    --color-brand-dark-gray: #121212;
-    --color-brand-gold: #D4AF37;
-    --color-brand-gold-light: #F4D03F;
-    --color-brand-orange: #E65100;
-    --color-brand-cream: #F5F5DC;
-    --color-brand-ember: #C25A29;
-    --motion-slow: 520ms;
-    --motion-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-    --shadow-ember: 0 10px 50px rgba(194, 90, 41, 0.24);
-    --shadow-gold: 0 10px 45px rgba(212, 175, 55, 0.16);
+    --color-brand-black: #030303;
+    --color-brand-dark: #0A0A0A;
+    --color-brand-charcoal: #141414;
+    --color-brand-gold: #C6A87C;
+    --color-brand-cream: #F5F5F0;
+    --color-brand-white: #FFFFFF;
+    --color-brand-accent: #D4AF37;
 }
 
-/* Premium Glass Effect - Darker & More Subtle */
-.glass-panel {
-    background: rgba(18, 18, 18, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(212, 175, 55, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+@layer base {
+    body {
+        @apply bg-brand-black text-brand-cream antialiased;
+        font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    }
+
+    ::selection {
+        @apply bg-brand-gold text-brand-black;
+    }
 }
 
-/* Golden Glow Text */
-.text-glow {
-    text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .glass-card {
+        @apply bg-white/5 backdrop-blur-md border border-white/10;
+    }
+
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-cream via-white to-brand-cream;
+    }
+
+    .text-gradient-gold {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-gold via-[#E5C590] to-brand-gold;
+    }
 }
 
-/* Smooth Scroll & Parallax Prep */
+/* Smooth Scroll */
 html {
     scroll-behavior: smooth;
 }
 
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(40px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 1s var(--motion-ease) forwards;
-}
-
-.delay-200 {
-    animation-delay: 200ms;
-}
-
-.delay-500 {
-    animation-delay: 500ms;
-}
-
-.micro-glow {
-    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.grain-layer {
-    position: absolute;
-    inset: 0;
-    background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-    opacity: 0.18;
-    pointer-events: none;
-    mix-blend-mode: soft-light;
-}
-
-.parallax-hover {
-    transition: transform var(--motion-base) var(--motion-ease), box-shadow var(--motion-base) var(--motion-ease);
-}
-
-.parallax-hover:hover {
-    transform: translateY(-6px) scale(1.01);
-    box-shadow: var(--shadow-gold);
-}
-
-.progress-rail {
-    position: fixed;
-    left: 32px;
-    top: 140px;
-    width: 6px;
-    height: 54vh;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(212, 175, 55, 0.16));
-    border-radius: 9999px;
-    overflow: hidden;
-    z-index: 40;
-}
-
-.progress-fill {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background: linear-gradient(180deg, rgba(11, 175, 135, 0.4), rgba(212, 175, 55, 0.8));
-    transition: height var(--motion-slow) var(--motion-ease);
-}
-
-/* Custom Scrollbar for Dark Theme */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #050505;
+    background: #030303;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #333, #121212);
-    border-radius: 4px;
-    border: 1px solid #000;
+    background: #333;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #D4AF37, #B8860B);
-}
-
-@keyframes marquee {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-.animate-marquee {
-    animation: marquee 20s linear infinite;
+    background: #C6A87C;
 }
