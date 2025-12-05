@@ -18,7 +18,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where: { username },
         });
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        const isPasswordValid = await bcrypt.compare(password, user.password_hash || '');
 
         if (!isPasswordValid) {
             return NextResponse.json(
