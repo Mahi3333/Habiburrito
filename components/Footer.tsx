@@ -29,16 +29,25 @@ const Footer: React.FC = () => {
                 </div>
 
                 {/* Hours */}
-                <div className="space-y-4">
-                    <p className="text-xs tracking-[0.28em] uppercase text-brand-gold">Hours</p>
-                    <div className="text-sm text-gray-300 leading-relaxed space-y-2">
-                        <div className="flex justify-between max-w-[180px] border-b border-white/5 pb-1">
-                            <span>Sun – Thu</span>
-                            <span>11:00a – 11:00p</span>
+                <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                        <span className="h-[1px] w-8 bg-brand-gold/50"></span>
+                        <p className="text-xs tracking-[0.3em] uppercase text-brand-gold font-bold">Operating Hours</p>
+                    </div>
+                    <div className="grid gap-4">
+                        <div className="group flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:border-brand-gold/30 transition-colors">
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-white">Sun — Thu</span>
+                                <span className="text-xs text-gray-400 uppercase tracking-wider">Standard</span>
+                            </div>
+                            <span className="font-mono text-brand-gold">11:00 AM — 11:00 PM</span>
                         </div>
-                        <div className="flex justify-between max-w-[180px] text-white font-medium border-b border-white/5 pb-1">
-                            <span>Fri – Sat</span>
-                            <span>11:00a – 12:00a</span>
+                        <div className="group flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-brand-gold/10 to-transparent border border-brand-gold/20 hover:border-brand-gold/50 transition-colors">
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-brand-gold">Fri — Sat</span>
+                                <span className="text-xs text-brand-gold/70 uppercase tracking-wider">Late Night</span>
+                            </div>
+                            <span className="font-mono text-white font-bold text-lg">11:00 AM — 12:00 AM</span>
                         </div>
                     </div>
                 </div>
@@ -64,14 +73,14 @@ const Footer: React.FC = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
                         </Link>
                     </div>
-                    <p className="text-sm text-gray-500 mt-4 text-right max-w-xs ml-auto">
+                    <p className="text-sm text-gray-500 mt-4 text-left md:text-right md:max-w-xs md:ml-auto">
                         Follow our journey for exclusive offers and behind-the-scenes content.
                     </p>
                 </div>
             </div>
 
             <div className="border-t border-white/5 py-6 text-center text-gray-500 text-sm relative z-10">
-                <p>© {new Date().getFullYear()} Habiburrito · Premium Halal Kitchen · Crafted with gold-label hospitality.</p>
+                <p>© {new Date().getFullYear()} Habiburrito · Premium Halal Kitchen</p>
             </div>
         </footer>
     );
