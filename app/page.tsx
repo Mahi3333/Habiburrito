@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -9,6 +9,15 @@ import Footer from '../components/Footer';
 
 export default function Home() {
   const containerRef = useRef(null);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+
+  useEffect(() => {
+    // Show modal after a short delay on mount
+    const timer = setTimeout(() => {
+      setShowServiceModal(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -47,7 +56,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <h1 className="text-[12vw] leading-none font-display font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 mix-blend-overlay">
+              <h1 className="text-[13vw] md:text-[12vw] leading-[0.9] font-display font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 mix-blend-overlay pb-4">
                 HABIBURRITO
               </h1>
             </motion.div>
@@ -86,7 +95,7 @@ export default function Home() {
         </section>
 
         {/* MANIFESTO SECTION */}
-        <section className="py-32 bg-brand-black relative z-10 overflow-hidden">
+        <section className="py-16 bg-brand-black relative z-10 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
               src="/background_bowls_blur.png"
@@ -105,7 +114,7 @@ export default function Home() {
         </section>
 
         {/* FAN FAVORITES (Infinite Marquee) */}
-        <section className="py-24 bg-brand-dark border-t border-white/5 relative overflow-hidden">
+        <section className="py-12 bg-brand-dark border-t border-white/5 relative overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
               src="/background_burritos_blur.png"
@@ -116,9 +125,12 @@ export default function Home() {
             <div className="absolute inset-0 bg-brand-black/50" />
           </div>
 
-          <div className="container mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-end relative z-10">
+          <div className="container mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end relative z-10">
             <div>
-              <span className="text-brand-gold font-mono text-sm tracking-[0.3em] uppercase mb-2 block">Trending Now</span>
+              <div className="flex items-center gap-4 mb-4">
+                <span className="h-[1px] w-12 bg-brand-gold/50" />
+                <span className="text-brand-gold font-mono text-sm tracking-[0.3em] uppercase block">Trending Now</span>
+              </div>
               <h2 className="text-4xl md:text-6xl font-display font-bold text-white">
                 FAN <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">FAVORITES</span>
               </h2>
@@ -155,13 +167,13 @@ export default function Home() {
                     { title: "Spice Route Lamb", price: "$19", img: "/menu-items/WhatsApp Image 2025-11-10 at 8.56.29 PM (2).jpeg", tag: "Chef's Pick" },
                     { title: "The Oasis Bowl", price: "$16", img: "/menu-items/WhatsApp Image 2025-11-10 at 8.56.29 PM (5).jpeg", tag: "Vegetarian" },
                   ].map((item, i) => (
-                    <div key={`${setIndex}-${i}`} className="w-[300px] md:w-[400px] flex-shrink-0 group cursor-pointer">
+                    <div key={`${setIndex}-${i}`} className="w-[80vw] md:w-[400px] flex-shrink-0 group cursor-pointer">
                       <div className="relative aspect-[4/5] overflow-hidden bg-brand-charcoal mb-6 rounded-lg">
                         <Image
                           src={item.img}
                           alt={item.title}
                           fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
 
@@ -186,7 +198,7 @@ export default function Home() {
         </section>
 
         {/* LOCATION / VISIT */}
-        <section className="relative py-32 bg-brand-black overflow-hidden">
+        <section className="relative py-16 bg-brand-black overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -216,7 +228,7 @@ export default function Home() {
                     <span className="text-brand-gold tracking-[0.3em] uppercase text-xs font-bold">The Coordinates</span>
                   </div>
 
-                  <h2 className="text-6xl md:text-8xl font-display font-bold text-white leading-[0.9] mb-8">
+                  <h2 className="text-5xl md:text-8xl font-display font-bold text-white leading-[0.9] mb-8">
                     HIDDEN <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">IN PLAIN</span> <br />
                     SIGHT
@@ -299,6 +311,52 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Service Status Modal */}
+      <motion.div>
+        {showServiceModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60]"
+              onClick={() => setShowServiceModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[70] w-[90%] max-w-md"
+            >
+              <div className="bg-brand-black border border-brand-gold/20 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-gold to-transparent" />
+
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                  </div>
+
+                  <h3 className="text-2xl font-display font-bold text-white uppercase tracking-wider">Service Update</h3>
+
+                  <p className="text-gray-300 leading-relaxed">
+                    We are currently accepting orders for <span className="text-brand-gold font-bold">Pick-Up & Takeout Only</span>.
+                    <br />
+                    <span className="text-sm text-white/40 mt-2 block">Delivery services are temporarily unavailable.</span>
+                  </p>
+
+                  <button
+                    onClick={() => setShowServiceModal(false)}
+                    className="mt-4 px-8 py-3 bg-brand-gold text-brand-black font-bold uppercase tracking-widest text-sm hover:bg-white transition-colors w-full rounded-lg"
+                  >
+                    Got It
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </motion.div>
     </div>
   );
 }

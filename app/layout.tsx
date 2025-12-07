@@ -24,12 +24,17 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Habiburrito | Charcoal Halal Taqueria",
+  title: "Habiburrito",
   description:
     "Charcoal-fired halal burritos, bowls, and chef-crafted experiences with gold-label hospitality.",
   metadataBase: new URL("https://habiburrito.example.com"),
+  icons: {
+    icon: '/logo.jpg',
+    shortcut: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
   openGraph: {
-    title: "Habiburrito | Charcoal Halal Taqueria",
+    title: "Habiburrito",
     description:
       "Where smoky mezcal nights meet halal fire — reserve, build, and savor in cinematic warmth.",
     url: "https://habiburrito.example.com",
@@ -47,7 +52,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Habiburrito | Charcoal Halal Taqueria",
+    title: "Habiburrito",
     description:
       "Premium halal burritos and bowls with immersive hospitality and ember-lit storytelling.",
     images: ["/menu-items/bowl-signature.png"],
@@ -60,6 +65,8 @@ export const viewport = {
 
 import { CartProvider } from "../context/CartContext";
 
+import { ToastProvider } from "../context/ToastContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -68,14 +75,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning={true}
         className={`${outfit.variable} ${inter.variable} ${playfair.variable} font-sans antialiased bg-brand-night text-brand-cream`}
       >
-        <CartProvider>
-          {children}
-          <Analytics />
-          <SpeedInsights />
-          {process.env.NODE_ENV === 'development' && <VercelToolbar />}
-        </CartProvider>
+        <ToastProvider>
+          <CartProvider>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            {process.env.NODE_ENV === 'development' && <VercelToolbar />}
+          </CartProvider>
+        </ToastProvider>
       </body>
     </html>
   );

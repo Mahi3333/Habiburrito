@@ -3,7 +3,7 @@ import { prisma } from '../../lib/prisma';
 import MenuClient from './MenuClient';
 import { MenuItem as PrismaMenuItem } from '@prisma/client';
 
-export const revalidate = 60; // Cache for 60 seconds
+export const revalidate = 3600; // Cache for 1 hour
 
 export default async function MenuPage() {
     interface MenuItem {
