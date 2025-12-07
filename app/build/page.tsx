@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ModifierCard from '../../components/ModifierCard';
-import CheckoutModal from '../../components/CheckoutModal';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCart } from '../../context/CartContext';
+import { useRouter } from 'next/navigation';
 
 interface ModifierOption {
     id: number;
@@ -55,51 +56,27 @@ export default function BuildPage() {
     });
     const [warning, setWarning] = useState<string | null>(null);
     const [activeStep, setActiveStep] = useState(0);
-    const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
+
+    const { addItemToCart } = useCart();
+    const router = useRouter();
 
     const handleAddToOrderClick = () => {
-        setIsCheckoutModalOpen(true);
-    };
+        if (!selections.base) return;
 
-    const handleCheckoutSubmit = async (userDetails: { name: string; phone: string; email: string }) => {
-        setIsProcessing(true);
-        try {
-            const orderData = {
-                items: [
-                    {
-                        name: `Custom ${selections.base?.name}`,
-                        quantity: 1,
-                        price: calculateTotal(),
-                        details: selections
-                    }
-                ],
-                total: calculateTotal(),
-                user: userDetails
-            };
+        addItemToCart({
+            uniqueId: Date.now().toString() + Math.random().toString(),
+            base: selections.base,
+            rice: selections.rice,
+            protein: selections.protein,
+            toppings: selections.toppings,
+            sauces: selections.sauces,
+            addons: selections.addons,
+            extras: selections.extras,
+            totalPrice: calculateTotal(),
+            quantity: 1
+        });
 
-            const response = await fetch('/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orderData),
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.url) {
-                // Redirect to Stripe Checkout
-                window.location.href = data.url;
-            } else {
-                alert('Failed to create order. Please try again.');
-                setIsProcessing(false);
-            }
-        } catch (error) {
-            console.error('Error creating order:', error);
-            alert('An error occurred. Please try again.');
-            setIsProcessing(false);
-        }
+        router.push('/cart');
     };
 
     useEffect(() => {
@@ -562,12 +539,7 @@ export default function BuildPage() {
                 </div>
             </main>
 
-            <CheckoutModal
-                isOpen={isCheckoutModalOpen}
-                onClose={() => setIsCheckoutModalOpen(false)}
-                onSubmit={handleCheckoutSubmit}
-                isLoading={isProcessing}
-            />
+
 
             <Footer />
         </div>

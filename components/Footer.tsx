@@ -34,20 +34,16 @@ const Footer: React.FC = () => {
                         <span className="h-[1px] w-8 bg-brand-gold/50"></span>
                         <p className="text-xs tracking-[0.3em] uppercase text-brand-gold font-bold">Operating Hours</p>
                     </div>
-                    <div className="grid gap-4">
-                        <div className="group flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:border-brand-gold/30 transition-colors">
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-white">Sun — Thu</span>
-                                <span className="text-xs text-gray-400 uppercase tracking-wider">Standard</span>
-                            </div>
-                            <span className="font-mono text-brand-gold">11:00 AM — 11:00 PM</span>
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm group">
+                            <span className="text-gray-300 group-hover:text-white transition-colors">Sun — Thu</span>
+                            <span className="flex-1 mx-4 border-b border-white/10 border-dashed relative top-1"></span>
+                            <span className="font-mono text-brand-gold">11am — 11pm</span>
                         </div>
-                        <div className="group flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-brand-gold/10 to-transparent border border-brand-gold/20 hover:border-brand-gold/50 transition-colors">
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold text-brand-gold">Fri — Sat</span>
-                                <span className="text-xs text-brand-gold/70 uppercase tracking-wider">Late Night</span>
-                            </div>
-                            <span className="font-mono text-white font-bold text-lg">11:00 AM — 12:00 AM</span>
+                        <div className="flex items-center justify-between text-sm group">
+                            <span className="text-gray-300 group-hover:text-white transition-colors">Fri — Sat</span>
+                            <span className="flex-1 mx-4 border-b border-white/10 border-dashed relative top-1"></span>
+                            <span className="font-mono text-brand-gold font-bold">11am — 12am</span>
                         </div>
                     </div>
                 </div>

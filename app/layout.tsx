@@ -65,6 +65,8 @@ export const viewport = {
 
 import { CartProvider } from "../context/CartContext";
 
+import { ToastProvider } from "../context/ToastContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -73,14 +75,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning={true}
         className={`${outfit.variable} ${inter.variable} ${playfair.variable} font-sans antialiased bg-brand-night text-brand-cream`}
       >
-        <CartProvider>
-          {children}
-          <Analytics />
-          <SpeedInsights />
-          {process.env.NODE_ENV === 'development' && <VercelToolbar />}
-        </CartProvider>
+        <ToastProvider>
+          <CartProvider>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            {process.env.NODE_ENV === 'development' && <VercelToolbar />}
+          </CartProvider>
+        </ToastProvider>
       </body>
     </html>
   );

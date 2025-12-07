@@ -82,10 +82,12 @@ const Header: React.FC = () => {
                                 </button>
                             </Link>
 
-                            <div className="flex items-center gap-2 text-white/80">
-                                <ShoppingBag size={18} />
-                                <span className="font-mono text-sm">${cartTotal.toFixed(2)}</span>
-                            </div>
+                            <Link href="/cart">
+                                <div className="flex items-center gap-2 text-white/80 hover:text-brand-gold transition-colors cursor-pointer">
+                                    <ShoppingBag size={18} />
+                                    <span className="font-mono text-sm">${cartTotal.toFixed(2)}</span>
+                                </div>
+                            </Link>
                         </div>
                     </nav>
 
