@@ -6,6 +6,8 @@ import Footer from '../../components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useCart } from '../../context/CartContext';
+import { Plus } from 'lucide-react';
 
 interface MenuItem {
     id: number;
@@ -26,7 +28,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
     const [menuItems] = useState<MenuItem[]>(initialMenuItems);
     const [activeCategory, setActiveCategory] = useState('all');
     const [visibleCount, setVisibleCount] = useState(8);
-    const [showStickyButton, setShowStickyButton] = useState(false);
+    const { addItemToCart } = useCart();
 
     const categories = ['all', 'bowls', 'burritos', 'tacos'];
 
@@ -35,28 +37,32 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
         setVisibleCount(8);
     }, [activeCategory]);
 
-    // Scroll listener for sticky button
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 300) {
-                setShowStickyButton(true);
-            } else {
-                setShowStickyButton(false);
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
     const allFilteredItems = activeCategory === 'all' ? menuItems : menuItems.filter(i => i.category === activeCategory);
     const displayedItems = allFilteredItems.slice(0, visibleCount);
     const hasMore = visibleCount < allFilteredItems.length;
 
     const loadMore = () => {
         setVisibleCount(prev => prev + 4);
+    };
+
+    const handleAddToCart = (item: MenuItem) => {
+        if (!item.price || typeof item.price !== 'string') {
+            console.error('Invalid item price:', item);
+            return;
+        }
+        const price = parseFloat(item.price.replace('$', ''));
+        addItemToCart({
+            uniqueId: Date.now().toString() + Math.random().toString(),
+            base: { id: item.id, name: item.name, base_price: price },
+            rice: null,
+            protein: null,
+            toppings: [],
+            sauces: [],
+            addons: [],
+            extras: [],
+            totalPrice: price,
+            quantity: 1
+        });
     };
 
     const getBackgroundImage = () => {
@@ -94,7 +100,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 <Header />
 
                 <main className="pt-32 pb-20 container mx-auto px-6">
-                    <div className="text-center mb-20">
+                    <div className="text-center mb-10">
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -106,7 +112,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                     </div>
 
                     {/* Filters */}
-                    <div className="flex justify-start md:justify-center gap-8 mb-16 border-b border-white/10 pb-6 overflow-x-auto no-scrollbar px-4 -mx-6 md:mx-0 md:px-0">
+                    <div className="flex justify-start md:justify-center gap-8 mb-8 border-b border-white/10 pb-6 overflow-x-auto no-scrollbar px-4 -mx-6 md:mx-0 md:px-0">
                         {categories.map(cat => (
                             <button
                                 key={cat}
@@ -129,7 +135,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                                 viewport={{ once: true }}
                                 className="group"
                             >
-                                <div className="relative aspect-[16/9] mb-4 md:mb-6 overflow-hidden bg-brand-charcoal">
+                                <div className="relative aspect-[16/9] mb-4 md:mb-6 overflow-hidden bg-brand-charcoal group-hover:shadow-xl transition-all">
                                     <Image
                                         src={item.image}
                                         alt={item.name}
@@ -137,10 +143,24 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                     {item.isSignature && (
-                                        <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-brand-gold text-black text-[8px] md:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 md:px-3 md:py-1">
+                                        <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-brand-gold text-black text-[8px] md:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 md:px-3 md:py-1 z-10">
                                             Signature
                                         </div>
                                     )}
+
+                                    {/* Add to Cart Overlay */}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleAddToCart(item);
+                                            }}
+                                            className="bg-brand-gold text-brand-black px-6 py-3 rounded-full font-display font-bold uppercase tracking-widest text-xs hover:bg-white hover:scale-105 transition-all flex items-center gap-2 shadow-lg transform translate-y-4 group-hover:translate-y-0"
+                                        >
+                                            <Plus size={16} />
+                                            Add to Order
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="flex flex-col md:flex-row md:justify-between md:items-baseline mb-2 gap-1 md:gap-0">
@@ -169,7 +189,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                         )}
                     </div>
 
-                    <div className="mt-32 text-center">
+                    <div className="mt-16 text-center">
                         <Link href="/build">
                             <button className="px-10 py-5 border border-white/20 hover:border-brand-gold text-white hover:text-brand-gold font-display font-bold tracking-widest uppercase transition-all">
                                 Build Your Own
@@ -183,14 +203,14 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 {/* Sticky Build Your Own Button */}
                 <motion.div
                     initial={{ opacity: 0, y: 100 }}
-                    animate={showStickyButton ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
-                    transition={{ duration: 0.3 }}
-                    className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 z-40 w-full md:w-auto px-6 md:px-0"
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 z-40 w-1/2 md:w-auto px-0 md:px-0"
                 >
                     <Link href="/build">
-                        <button className="w-full md:w-auto bg-brand-gold text-brand-black px-8 py-4 rounded-full font-display font-bold tracking-widest uppercase shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3">
+                        <button className="w-full md:w-auto bg-brand-gold text-brand-black px-4 py-3 md:px-8 md:py-4 rounded-full font-display font-bold tracking-widest uppercase text-sm md:text-base shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 md:gap-3">
                             <span>Build Your Own</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="md:w-5 md:h-5"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                         </button>
                     </Link>
                 </motion.div>
