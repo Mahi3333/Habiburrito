@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface MenuItem {
     id: number;
@@ -38,6 +38,8 @@ interface User {
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
+    const [search, setSearch] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('all');
 
     // Data States
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -59,20 +61,6 @@ export default function AdminDashboard() {
         chef_note: ''
     });
 
-    // Fetch Data
-    useEffect(() => {
-        fetchMenuItems();
-        // Mock data for orders and users for now
-        setOrders([
-            { id: 101, customerName: 'Ali K.', items: ['Ember Steak Burrito x2'], total: 36, status: 'Preparing', createdAt: '10 mins ago' },
-            { id: 102, customerName: 'Sarah M.', items: ['Jade Bowl'], total: 17, status: 'Completed', createdAt: '25 mins ago' },
-        ]);
-        setUsers([
-            { id: 1, username: 'alik', email: 'ali@example.com', role: 'Customer', rewardsPoints: 120, lastOrder: '2023-10-25' },
-        ]);
-        setLoading(false);
-    }, []);
-
     const fetchMenuItems = async () => {
         try {
             const res = await fetch('/api/menu');
@@ -84,6 +72,23 @@ export default function AdminDashboard() {
             console.error('Failed to fetch menu items', error);
         }
     };
+
+    // Fetch Data
+    useEffect(() => {
+        const load = async () => {
+            await fetchMenuItems();
+            // Mock data for orders and users for now
+            setOrders([
+                { id: 101, customerName: 'Ali K.', items: ['Ember Steak Burrito x2'], total: 36, status: 'Preparing', createdAt: '10 mins ago' },
+                { id: 102, customerName: 'Sarah M.', items: ['Jade Bowl'], total: 17, status: 'Completed', createdAt: '25 mins ago' },
+            ]);
+            setUsers([
+                { id: 1, username: 'alik', email: 'ali@example.com', role: 'Customer', rewardsPoints: 120, lastOrder: '2023-10-25' },
+            ]);
+            setLoading(false);
+        };
+        load();
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -158,7 +163,43 @@ export default function AdminDashboard() {
         setShowForm(true);
     };
 
-    const categories = ['bowls', 'burritos', 'tacos', 'drinks'];
+    const categories = ['bowls', 'burritos', 'tacos', 'sides', 'drinks'];
+
+    const filteredMenu = menuItems.filter((item) => {
+        const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+        const term = search.trim().toLowerCase();
+        const matchesSearch = !term || item.name.toLowerCase().includes(term) || (item.description || '').toLowerCase().includes(term);
+        return matchesCategory && matchesSearch;
+    });
+
+    const handleToggleAvailability = async (item: MenuItem) => {
+        const updated = { ...item, is_available: !item.is_available };
+        try {
+            await fetch(`/api/menu/${item.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updated),
+            });
+            setMenuItems((prev) => prev.map((m) => (m.id === item.id ? { ...updated } : m)));
+        } catch (error) {
+            console.error('Failed to toggle availability', error);
+        }
+    };
+
+    const handleExport = async () => {
+        try {
+            const res = await fetch('/api/menu/export');
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'menu-export.csv';
+            link.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Export failed', error);
+        }
+    };
 
     if (loading) {
         return (
@@ -227,13 +268,60 @@ export default function AdminDashboard() {
                         {activeTab === 'menu' && (
                             <div>
                                 <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                                    <h1 className="text-2xl font-bold text-gray-800">Menu Management</h1>
-                                    <button
-                                        onClick={openAdd}
-                                        className="bg-brand-gold text-black px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors font-medium"
-                                    >
-                                        + Add New Item
-                                    </button>
+                                    <div className="flex flex-col gap-2">
+                                        <h1 className="text-2xl font-bold text-gray-800">Menu Management</h1>
+                                        <p className="text-sm text-gray-500">Search, filter, edit, or export — built for quick client changes.</p>
+                                    </div>
+                                    <div className="flex flex-wrap gap-3">
+                                        <button
+                                            onClick={handleExport}
+                                            className="border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-sm"
+                                        >
+                                            Export CSV
+                                        </button>
+                                        <button
+                                            onClick={openAdd}
+                                            className="bg-brand-gold text-black px-4 py-2 rounded-md hover:bg-yellow-600 transition-colors font-medium"
+                                        >
+                                            + Add New Item
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Quick filters */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                                        <input
+                                            type="text"
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            placeholder="Find by name or description"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                        <select
+                                            value={categoryFilter}
+                                            onChange={(e) => setCategoryFilter(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        >
+                                            <option value="all">All</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat} value={cat}>{cat}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Visible items</p>
+                                            <p className="text-xl font-bold text-gray-800">{filteredMenu.length}</p>
+                                        </div>
+                                        <Link href="/menu" className="text-sm text-brand-gold hover:underline">
+                                            Preview live
+                                        </Link>
+                                    </div>
                                 </div>
 
                                 {/* Add/Edit Form */}
@@ -349,8 +437,8 @@ export default function AdminDashboard() {
 
                                 {/* Menu Items List */}
                                 <div className="space-y-4">
-                                    {menuItems.length > 0 ? (
-                                        menuItems.map((item) => (
+                                    {filteredMenu.length > 0 ? (
+                                        filteredMenu.map((item) => (
                                             <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                                                 <div className="flex flex-col md:flex-row gap-4">
                                                     <div className="w-24 h-24 flex-shrink-0 relative bg-gray-100 rounded-lg overflow-hidden">
@@ -368,29 +456,41 @@ export default function AdminDashboard() {
                                                     <div className="flex-grow">
                                                         <div className="flex flex-wrap items-center gap-3 mb-2">
                                                             <h4 className="font-bold text-lg text-gray-800">{item.name}</h4>
+                                                            <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full capitalize">{item.category}</span>
                                                             {item.is_signature && (
                                                                 <span className="px-2 py-1 text-xs uppercase bg-brand-gold text-black rounded-full">Signature</span>
                                                             )}
                                                             {!item.is_available && (
-                                                                <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">Unavailable</span>
+                                                                <span className="px-2 py-1 text-xs bg-red-50 text-red-700 rounded-full">Unavailable</span>
                                                             )}
                                                         </div>
                                                         <p className="text-gray-600 text-sm mb-2">{item.description}</p>
-                                                        <p className="text-brand-gold font-bold text-lg">${item.price.toFixed(2)}</p>
-                                                    </div>
-                                                    <div className="flex flex-col gap-2 justify-between">
-                                                        <button
-                                                            onClick={() => openEdit(item)}
-                                                            className="text-blue-600 hover:text-blue-800 font-medium text-sm px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteItem(item.id)}
-                                                            className="text-red-600 hover:text-red-800 font-medium text-sm px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-brand-gold font-bold text-lg">${item.price.toFixed(2)}</p>
+                                                            <div className="flex items-center gap-3">
+                                                                <label className="flex items-center gap-2 text-sm text-gray-700">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={item.is_available}
+                                                                        onChange={() => handleToggleAvailability(item)}
+                                                                        className="rounded border-gray-300 text-brand-gold"
+                                                                    />
+                                                                    Available
+                                                                </label>
+                                                                <button
+                                                                    onClick={() => openEdit(item)}
+                                                                    className="text-blue-600 hover:text-blue-800 font-medium text-sm px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
+                                                                >
+                                                                    Edit
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteItem(item.id)}
+                                                                    className="text-red-600 hover:text-red-800 font-medium text-sm px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

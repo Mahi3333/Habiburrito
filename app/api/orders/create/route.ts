@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 
+type OrderItemPayload = {
+    base: { name: string };
+    quantity?: number;
+    [key: string]: unknown;
+};
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();
@@ -45,7 +51,7 @@ export async function POST(request: Request) {
                 status: 'PENDING_PAYMENT',
                 stripe_payment_intent_id: paymentIntentId,
                 items: {
-                    create: items.map((item: any) => ({
+                    create: (items as OrderItemPayload[]).map((item) => ({
                         item_name: item.base.name,
                         quantity: item.quantity || 1,
                         json_details: JSON.stringify(item), // Store full customization details

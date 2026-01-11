@@ -28,7 +28,7 @@ export default function OrderConfirmationPage() {
 
                     <h1 className="text-4xl font-display font-bold text-white mb-4">Order Confirmed!</h1>
                     <p className="text-xl text-gray-300 mb-8">
-                        Thank you for your order. We've received it and will start preparing your meal shortly.
+                        Thank you for your order. We&apos;ve received it and will start preparing your meal shortly.
                     </p>
 
                     <div className="p-6 bg-white/5 rounded-xl border border-white/10 mb-8">

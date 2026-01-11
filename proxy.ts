@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
         try {
             await jwtVerify(token, JWT_SECRET);
             return NextResponse.next();
-        } catch (error) {
+        } catch {
             if (request.nextUrl.pathname.startsWith('/api/admin')) {
                 return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
             }
