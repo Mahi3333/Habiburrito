@@ -8,6 +8,42 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export default function LocationsPage() {
+    const hoursSchedule: Record<string, { open: string; close: string; closed?: boolean }> = {
+        Sunday: { open: '11:00', close: '23:00' },
+        Monday: { open: '11:00', close: '23:00' },
+        Tuesday: { open: '11:00', close: '23:00' },
+        Wednesday: { open: '11:00', close: '23:00' },
+        Thursday: { open: '11:00', close: '23:00' },
+        Friday: { open: '11:00', close: '24:00' },
+        Saturday: { open: '11:00', close: '24:00' },
+    };
+
+    const getTodayStatus = () => {
+        const now = new Date();
+        const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+        const entry = hoursSchedule[dayName];
+        if (!entry || entry.closed) {
+            return { status: 'CLOSED', color: 'text-red-400', box: 'border-red-500/60 text-red-400', range: 'Closed today', dayName };
+        }
+        const toMinutes = (t: string) => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+        };
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        const openMin = toMinutes(entry.open);
+        const closeMin = toMinutes(entry.close);
+        const isOpen = nowMin >= openMin && nowMin < closeMin;
+        return {
+            status: isOpen ? 'OPEN' : 'CLOSED',
+            color: isOpen ? 'text-green-400' : 'text-red-400',
+            box: isOpen ? 'border-green-500/60 text-green-300' : 'border-red-500/60 text-red-400',
+            range: `${entry.open} – ${entry.close}`,
+            dayName,
+        };
+    };
+
+    const todayStatus = getTodayStatus();
+
     return (
         <div className="min-h-screen bg-brand-black text-brand-cream selection:bg-brand-gold selection:text-black flex flex-col">
             <Header />
@@ -68,7 +104,7 @@ export default function LocationsPage() {
                                         <div>
                                             <p className="text-white font-bold text-lg">124 S Main St</p>
                                             <p className="text-gray-400">Bradford, MA 01835</p>
-                                            <p className="text-xs text-brand-gold mt-1 italic">Located inside "Mediterranean Pizza & Roast Beef"</p>
+                                            <p className="text-xs text-brand-gold mt-1 italic">Located inside &quot;Mediterranean Pizza &amp; Roast Beef&quot;</p>
                                         </div>
                                     </div>
 
@@ -78,11 +114,11 @@ export default function LocationsPage() {
                                         </div>
                                         <div>
                                             <p className="text-white font-bold text-lg">Opening Hours</p>
-                                            <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-400 mt-1">
-                                                <span>Sun - Thu</span>
-                                                <span className="text-white">11:00 AM - 11:00 PM</span>
-                                                <span>Fri - Sat</span>
-                                                <span className="text-white">11:00 AM - 12:00 AM</span>
+                                            <div className="flex items-center gap-3 mt-2">
+                                                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${todayStatus.box}`}>
+                                                    {todayStatus.status}
+                                                </div>
+                                                <p className="text-sm text-gray-300">{todayStatus.dayName}: {todayStatus.range}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -118,11 +154,14 @@ export default function LocationsPage() {
 
                             {/* "Getting Here" Mini Section */}
                             <div className="grid grid-cols-2 gap-4">
+                                {/* Parking */}
                                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center hover:bg-white/10 transition-colors">
                                     <span className="text-2xl mb-2 block">🅿️</span>
                                     <p className="text-white font-bold text-sm">Free Parking</p>
                                     <p className="text-xs text-gray-400">Available on-site</p>
                                 </div>
+
+                                {/* Accessibility */}
                                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center hover:bg-white/10 transition-colors">
                                     <span className="text-2xl mb-2 block">♿</span>
                                     <p className="text-white font-bold text-sm">Accessible</p>
@@ -131,11 +170,11 @@ export default function LocationsPage() {
                             </div>
                         </motion.div>
 
-                        {/* Right Column: The Map Visual */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.8, delay: 0.4 }}
+                            {/* Right Column: The Map Visual */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.8, delay: 0.4 }}
                             className="h-full min-h-[500px] lg:min-h-[700px] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 group"
                         >
                             {/* Map Iframe with Filters */}
@@ -146,7 +185,7 @@ export default function LocationsPage() {
                                 className="absolute inset-0 grayscale invert contrast-125 opacity-80 hover:opacity-100 transition-opacity duration-500"
                                 frameBorder="0"
                                 scrolling="no"
-                                src="https://maps.google.com/maps?width=100%&height=100%&hl=en&q=124%20S%20Main%20St%2C%20Bradford%2C%20MA%2001835&ie=UTF8&t=&z=15&iwloc=B&output=embed"
+                                src="https://maps.google.com/maps?width=100%25&height=100%25&hl=en&q=124%20S%20Main%20St%2C%20Bradford%2C%20MA%2001835&ie=UTF8&t=&z=15&iwloc=B&output=embed"
                             />
 
                             {/* Overlay Gradient */}
@@ -158,14 +197,16 @@ export default function LocationsPage() {
                                     <div className="absolute -inset-8 bg-brand-gold/20 rounded-full animate-ping" />
                                     <div className="absolute -inset-4 bg-brand-gold/40 rounded-full animate-pulse" />
                                     <div className="relative w-6 h-6 bg-brand-gold rounded-full border-4 border-black shadow-[0_0_30px_rgba(255,215,0,0.8)]" />
-                                    {/* Tooltip */}
-                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black/90 text-white text-xs font-bold px-3 py-1 rounded-full border border-brand-gold/50 whitespace-nowrap">
-                                        We Are Here
-                                    </div>
                                 </div>
                             </div>
 
-                            {/* Decorative Corner Elements */}
+                            {/* Tooltip with status */}
+                            <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-black/90 text-white text-xs font-bold px-3 py-1 rounded-full border border-brand-gold/50 whitespace-nowrap flex items-center gap-2">
+                                <span>We Are Here</span>
+                                <span className={`px-2 py-1 rounded-full border ${todayStatus.box}`}>{todayStatus.status}</span>
+                            </div>
+
+                            {/* Decorative Corners */}
                             <div className="absolute top-6 right-6 w-16 h-16 border-t-2 border-r-2 border-brand-gold/30 rounded-tr-2xl" />
                             <div className="absolute bottom-6 left-6 w-16 h-16 border-b-2 border-l-2 border-brand-gold/30 rounded-bl-2xl" />
                         </motion.div>

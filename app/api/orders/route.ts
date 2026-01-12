@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 
+type CheckoutItemPayload = {
+    name: string;
+    quantity: number;
+    price: number;
+    details?: unknown;
+};
+
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock', {
     typescript: true,
@@ -46,11 +53,11 @@ export async function POST(request: Request) {
                 status: 'PENDING_PAYMENT',
                 stripe_payment_intent_id: tempId,
                 items: {
-                    create: items.map((item: any) => ({
+                    create: (items as CheckoutItemPayload[]).map((item) => ({
                         item_name: item.name,
                         quantity: item.quantity,
-                        json_details: JSON.stringify(item.details)
-                    }))
+                        json_details: JSON.stringify(item.details ?? {}),
+                    })),
                 }
             }
         });
@@ -76,7 +83,7 @@ export async function POST(request: Request) {
             try {
                 const session = await stripe.checkout.sessions.create({
                     payment_method_types: ['card'],
-                    line_items: items.map((item: any) => ({
+                    line_items: (items as CheckoutItemPayload[]).map((item) => ({
                         price_data: {
                             currency: 'usd',
                             product_data: {

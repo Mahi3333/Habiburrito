@@ -12,16 +12,21 @@ const Header: React.FC = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { cartTotal } = useCart();
+    const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            setIsScrolled(window.scrollY > 10);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Lock body scroll when menu is open
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsHydrated(true);
+    }, []);
+
     useEffect(() => {
         if (mobileMenuOpen) {
             document.body.style.overflow = 'hidden';
@@ -34,9 +39,10 @@ const Header: React.FC = () => {
     }, [mobileMenuOpen]);
 
     const navLinks = [
-        { label: 'Menu', href: '/menu', description: 'Explore our fresh bowls' },
-        { label: 'Our Story', href: '/our-story', description: 'The Habiburrito journey' },
-        { label: 'Locations', href: '/locations', description: 'Find us near you' },
+        { label: 'Menu', href: '/menu', description: 'Explore our signatures' },
+        { label: 'Build', href: '/build', description: 'Craft your own bowl' },
+        { label: 'Our Story', href: '/our-story', description: 'How we started' },
+        { label: 'Locations', href: '/locations', description: 'Find us' },
     ];
 
     const pathname = usePathname();
@@ -45,14 +51,14 @@ const Header: React.FC = () => {
     return (
         <>
             <header
-                className={`fixed w-full top-0 z-50 transition-all duration-500 ${isScrolled || !isHome || mobileMenuOpen
-                    ? 'py-4 bg-brand-black/80 backdrop-blur-md border-b border-white/5'
-                    : 'py-8 bg-transparent'
+                className={`fixed w-full top-0 z-50 transition-all duration-400 ${isScrolled || !isHome || mobileMenuOpen
+                    ? 'py-5 bg-brand-black/85 backdrop-blur-xl border-b border-white/10 shadow-[0_10px_50px_rgba(0,0,0,0.35)]'
+                    : 'py-7 bg-transparent'
                     }`}
             >
                 <div className="container mx-auto px-6 flex justify-between items-center">
                     <Link href="/" className="relative z-50">
-                        <div className="relative h-10 w-32 md:h-12 md:w-40">
+                        <div className="relative h-14 w-44 md:h-16 md:w-56">
                             <Image
                                 src="/logo.jpg"
                                 alt="Habiburrito"
@@ -64,39 +70,44 @@ const Header: React.FC = () => {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center gap-12">
+                    <nav className="hidden md:flex items-center gap-9">
                         {navLinks.map((item) => (
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className="text-sm font-display font-bold uppercase tracking-[0.2em] text-white/70 hover:text-brand-gold transition-colors"
+                                className="group relative text-base font-display font-semibold uppercase tracking-[0.18em] text-white/75 hover:text-brand-gold transition-colors"
                             >
                                 {item.label}
+                                <span className="absolute left-0 -bottom-1 h-[2px] w-full scale-x-0 group-hover:scale-x-100 origin-left bg-brand-gold transition-transform duration-300" />
                             </Link>
                         ))}
-
-                        <div className="flex items-center gap-6 pl-6 border-l border-white/10">
-                            <Link href="/order">
-                                <button className="bg-brand-gold text-brand-black px-6 py-3 rounded-sm font-display font-bold tracking-widest uppercase text-xs hover:bg-white transition-colors">
-                                    Order Online
-                                </button>
-                            </Link>
-
-                            <Link href="/cart">
-                                <div className="flex items-center gap-2 text-white/80 hover:text-brand-gold transition-colors cursor-pointer">
-                                    <ShoppingBag size={18} />
-                                    <span className="font-mono text-sm">${cartTotal.toFixed(2)}</span>
-                                </div>
-                            </Link>
-                        </div>
                     </nav>
+
+                    <div className="hidden md:flex items-center gap-5">
+                        <Link href="/order">
+                            <button className="group relative overflow-hidden px-6 py-3.5 rounded-full font-display font-bold tracking-[0.25em] uppercase text-sm bg-brand-gold text-brand-black hover:bg-white transition-colors shadow-[0_10px_30px_rgba(212,175,55,0.35)]">
+                                <span className="relative z-10">Order Online</span>
+                                <span className="absolute inset-0 bg-white/30 translate-y-full group-hover:translate-y-0 transition-transform" />
+                            </button>
+                        </Link>
+
+                        <Link href="/cart">
+                            <div className="flex items-center gap-2 text-white/85 hover:text-brand-gold transition-colors cursor-pointer px-4.5 py-2.5 rounded-full border border-white/10 bg-white/5">
+                                <ShoppingBag size={20} />
+                                <span className="font-mono text-base">
+                                    {isHydrated ? `$${cartTotal.toFixed(2)}` : '--'}
+                                </span>
+                            </div>
+                        </Link>
+                    </div>
 
                     {/* Mobile Toggle */}
                     <button
                         className="md:hidden z-50 text-white p-2"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        aria-label="Toggle menu"
                     >
-                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
                     </button>
                 </div>
             </header>
@@ -154,7 +165,9 @@ const Header: React.FC = () => {
                                             <span className="text-sm uppercase tracking-widest">Cart Total</span>
                                             <ShoppingBag size={18} />
                                         </div>
-                                        <p className="text-2xl font-mono text-brand-gold">${cartTotal.toFixed(2)}</p>
+                                        <p className="text-2xl font-mono text-brand-gold">
+                                            {isHydrated ? `$${cartTotal.toFixed(2)}` : '--'}
+                                        </p>
                                     </div>
 
                                     <Link

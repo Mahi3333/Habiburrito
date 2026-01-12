@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ModifierCard from '../../components/ModifierCard';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface ModifierOption {
     id: number;
@@ -64,7 +64,7 @@ export default function BuildPage() {
         if (!selections.base) return;
 
         addItemToCart({
-            uniqueId: Date.now().toString() + Math.random().toString(),
+            uniqueId: `${selections.base?.id || 'base'}-${Date.now()}`,
             base: selections.base,
             rice: selections.rice,
             protein: selections.protein,
@@ -95,14 +95,14 @@ export default function BuildPage() {
         fetchMenu();
     }, []);
 
-    const steps = [
+    const steps = useMemo(() => ([
         { id: 'base', title: 'The Vessel', subtitle: 'Choose your style' },
         { id: 'rice', title: 'The Base', subtitle: 'Rice & Greens' },
         { id: 'protein', title: 'The Core', subtitle: 'Select your protein' },
         { id: 'toppings', title: 'The Crunch', subtitle: 'Add fresh toppings' },
         { id: 'sauces', title: 'The Finish', subtitle: 'Drizzle with flavor' },
         { id: 'addons', title: 'Premium Adds', subtitle: 'Elevate your bowl' },
-    ];
+    ]), []);
 
     useEffect(() => {
         if (warning) {
@@ -137,7 +137,7 @@ export default function BuildPage() {
         });
 
         return () => observer.disconnect();
-    }, [menuData]); // Re-run when menu data loads and DOM elements exist
+    }, [menuData, steps]); // Re-run when menu data loads and DOM elements exist
 
     // Validation Helpers
     const isBaseSelected = !!selections.base;
@@ -261,18 +261,60 @@ export default function BuildPage() {
             <main className="flex-grow pt-32 pb-20 relative z-10">
                 <div className="container mx-auto px-6">
 
+                    {/* Hero / CTA */}
+                    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-black via-brand-charcoal/60 to-brand-black p-8 md:p-12 mb-14 vignette">
+                        <div className="absolute inset-0 opacity-50">
+                            <Image
+                                src="/menu-items/WhatsApp Image 2025-11-10 at 8.56.30 PM (6).jpeg"
+                                alt="Builder hero"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                        </div>
+                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+                            <div className="space-y-4 max-w-2xl">
+                                <span className="text-brand-gold font-mono text-xs tracking-[0.3em] uppercase">The Architect</span>
+                                <h1 className="text-4xl md:text-6xl font-display font-bold text-white leading-tight">
+                                    Build your legend, layer by layer.
+                                </h1>
+                                <p className="text-gray-200 text-lg">
+                                    Halal ingredients, charcoal-fired proteins, crisp toppings, and house-made sauces. Your way, every time.
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    <span className="pill">Halal</span>
+                                    <span className="pill">Charcoal Fired</span>
+                                    <span className="pill">Curated Toppings</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => document.getElementById('base')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                                    className="px-6 py-3 rounded-full bg-brand-gold text-brand-black font-display font-bold uppercase tracking-[0.2em] text-xs hover:bg-white transition-colors"
+                                >
+                                    Start Building
+                                </button>
+                                <Link href="/menu">
+                                    <button className="px-6 py-3 rounded-full border border-white/20 text-white font-display font-bold uppercase tracking-[0.2em] text-xs hover:border-brand-gold hover:text-brand-gold transition-colors">
+                                        View Signatures
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Header Section */}
                     <div className="text-center mb-16 animate-fade-in-up">
                         <span className="text-brand-gold font-mono text-sm tracking-[0.3em] uppercase">The Architect</span>
                         <h1 className="text-5xl md:text-7xl font-display font-bold text-white mt-4 mb-6">
                             BUILD YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">LEGEND</span>
                         </h1>
-                        <p className="text-gray-400 max-w-xl mx-auto text-lg">
+                        <p className="text-gray-400 max-w-3xl mx-auto text-lg">
                             Craft a masterpiece layer by layer. Every ingredient is prepared fresh daily in our Halal kitchen.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-16 max-w-7xl mx-auto">
 
                         {/* Left Column: Steps Navigation (Desktop) */}
                         <div className="hidden lg:block lg:col-span-2">
@@ -297,7 +339,7 @@ export default function BuildPage() {
                         </div>
 
                         {/* Middle Column: Builder Form */}
-                        <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 auto-rows-min">
+                        <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 auto-rows-min">
 
                             {/* Base (Vessel) */}
                             <section id="base" className="scroll-mt-32 col-span-1">
@@ -443,9 +485,12 @@ export default function BuildPage() {
                         {/* Right Column: Sticky Summary */}
                         <div className="lg:col-span-3">
                             <div className="sticky top-32">
-                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl card-hover">
                                     <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
-                                        <h3 className="font-display text-2xl text-white">Your Bowl</h3>
+                                        <div>
+                                            <h3 className="font-display text-2xl text-white">Your Bowl</h3>
+                                            <p className="text-xs uppercase tracking-[0.3em] text-brand-gold mt-1">Live summary</p>
+                                        </div>
                                         <span className="text-brand-gold font-mono text-2xl">${calculateTotal().toFixed(2)}</span>
                                     </div>
 

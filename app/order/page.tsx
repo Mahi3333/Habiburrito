@@ -31,7 +31,7 @@ function OrderContent() {
                             </div>
                             <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-6">ORDER <span className="text-brand-gold">CONFIRMED</span></h1>
                             <p className="text-xl text-gray-300 mb-8">
-                                Your legend is being crafted. We've sent a confirmation to your phone and email.
+                                Your legend is being crafted. We&apos;ve sent a confirmation to your phone and email.
                             </p>
                             {orderId && (
                                 <p className="text-sm text-gray-500 font-mono mb-8">Order ID: #{orderId}</p>

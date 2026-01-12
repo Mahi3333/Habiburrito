@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Image from 'next/image';
@@ -28,12 +28,20 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
     const [menuItems] = useState<MenuItem[]>(initialMenuItems);
     const [activeCategory, setActiveCategory] = useState('all');
     const [visibleCount, setVisibleCount] = useState(8);
+    const idCounter = useRef(0);
     const { addItemToCart } = useCart();
 
     const categories = ['all', 'bowls', 'burritos', 'tacos'];
+    const categoryLabels: Record<string, string> = {
+        all: 'All',
+        bowls: 'Bowls',
+        burritos: 'Burritos',
+        tacos: 'Tacos',
+    };
 
     // Reset visible count when category changes
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setVisibleCount(8);
     }, [activeCategory]);
 
@@ -51,8 +59,10 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
             return;
         }
         const price = parseFloat(item.price.replace('$', ''));
+        idCounter.current += 1;
+        const uniqueId = `${item.id}-${idCounter.current}`;
         addItemToCart({
-            uniqueId: Date.now().toString() + Math.random().toString(),
+            uniqueId,
             base: { id: item.id, name: item.name, base_price: price },
             rice: null,
             protein: null,
@@ -100,30 +110,108 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 <Header />
 
                 <main className="pt-32 pb-20 container mx-auto px-6">
-                    <div className="text-center mb-10">
-                        <motion.h1
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-5xl md:text-8xl font-display font-bold text-white mb-6"
-                        >
-                            THE MENU
-                        </motion.h1>
-                        <p className="text-brand-gold tracking-widest uppercase text-sm">Curated for the obsessed</p>
+                    {/* Hero */}
+                    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-black via-brand-charcoal/60 to-brand-black p-8 md:p-12 mb-14 md:mb-16 vignette">
+                        <div className="absolute inset-0 opacity-50">
+                            <Image
+                                src="/menu-items/WhatsApp Image 2025-11-10 at 8.56.31 PM (2).jpeg"
+                                alt="Signature burrito"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                        </div>
+                        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+                            <div className="space-y-4 max-w-2xl">
+                                <span className="text-brand-gold font-mono text-xs tracking-[0.3em] uppercase">Curated for the obsessed</span>
+                                <h1 className="text-4xl md:text-6xl font-display font-bold text-white leading-tight">
+                                    Crafted bowls, burritos, and street classics.
+                                </h1>
+                                <p className="text-gray-200 text-lg">
+                                    Halal, charcoal-fired, chef notes on every plate. Build your own or choose a signature.
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    <span className="pill">Halal</span>
+                                    <span className="pill">Charcoal Fired</span>
+                                    <span className="pill">Haverhill / Bradford</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                <Link href="/order">
+                                    <button className="px-6 py-3 rounded-full bg-brand-gold text-brand-black font-display font-bold uppercase tracking-[0.2em] text-xs hover:bg-white transition-colors">
+                                        Order Now
+                                    </button>
+                                </Link>
+                                <Link href="/build">
+                                    <button className="px-6 py-3 rounded-full border border-white/20 text-white font-display font-bold uppercase tracking-[0.2em] text-xs hover:border-brand-gold hover:text-brand-gold transition-colors">
+                                        Build Your Own
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Filters */}
-                    <div className="flex justify-start md:justify-center gap-8 mb-8 border-b border-white/10 pb-6 overflow-x-auto no-scrollbar px-4 -mx-6 md:mx-0 md:px-0">
-                        {categories.map(cat => (
-                            <button
-                                key={cat}
-                                onClick={() => setActiveCategory(cat)}
-                                className={`text-sm font-display font-bold uppercase tracking-[0.2em] transition-colors whitespace-nowrap px-4 py-2 ${activeCategory === cat ? 'text-brand-gold' : 'text-white/40 hover:text-white'
-                                    }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
+                    <div className="flex justify-start md:justify-center gap-3 mb-10 border-b border-white/10 pb-6 overflow-x-auto no-scrollbar px-4 -mx-6 md:mx-0 md:px-0">
+                        {categories.map((cat) => {
+                            const count = menuItems.filter((i) => cat === 'all' || i.category === cat).length;
+                            const active = activeCategory === cat;
+                            return (
+                                <button
+                                    key={cat}
+                                    onClick={() => setActiveCategory(cat)}
+                                    className={`pill ${active ? 'bg-brand-gold text-black border-brand-gold shadow-[0_10px_30px_rgba(212,175,55,0.35)]' : 'text-gray-200'}`}
+                                >
+                                    <span className="uppercase tracking-[0.3em] text-[11px] font-semibold">{categoryLabels[cat]}</span>
+                                    <span className="text-xs text-gray-400">{count}</span>
+                                </button>
+                            );
+                        })}
                     </div>
+
+                    {/* Signature Strip */}
+                    {displayedItems.some((item) => item.isSignature) && (
+                        <div className="mb-14 md:mb-16">
+                            <div className="flex justify-between items-center mb-4">
+                                <div className="flex items-center gap-3">
+                                    <span className="h-[1px] w-12 bg-brand-gold/50" />
+                                    <span className="text-brand-gold font-mono text-xs tracking-[0.3em] uppercase">Chef&apos;s Table</span>
+                                </div>
+                                <Link href="/build" className="text-xs uppercase tracking-[0.3em] text-gray-300 hover:text-brand-gold transition-colors">
+                                    Build Your Own
+                                </Link>
+                            </div>
+                            <div className="grid grid-flow-col auto-cols-[260px] md:auto-cols-[320px] gap-4 overflow-x-auto no-scrollbar pb-4">
+                                {displayedItems.filter((item) => item.isSignature).map((item) => (
+                                    <div key={item.id} className="card-surface card-hover p-4 relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/50 pointer-events-none" />
+                                        <div className="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4 border border-white/10">
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                            <div className="absolute top-3 left-3 bg-brand-gold text-black text-[10px] font-bold uppercase tracking-[0.3em] px-3 py-1 rounded-full">
+                                                Signature
+                                            </div>
+                                            <div className="absolute bottom-3 right-3 bg-black/70 px-3 py-1 rounded-full text-xs font-mono text-brand-gold">
+                                                {item.price}
+                                            </div>
+                                        </div>
+                                        <h3 className="text-lg font-display text-white">{item.name}</h3>
+                                        <p className="text-sm text-gray-300 line-clamp-2 mb-3">{item.description}</p>
+                                        <button
+                                            onClick={() => handleAddToCart(item)}
+                                            className="w-full bg-brand-gold text-brand-black font-display font-bold uppercase tracking-[0.3em] text-xs py-3 rounded-full hover:bg-white transition-colors"
+                                        >
+                                            Add to Order
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-8 gap-y-10 md:gap-y-16">
@@ -135,18 +223,23 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                                 viewport={{ once: true }}
                                 className="group"
                             >
-                                <div className="relative aspect-[16/9] mb-4 md:mb-6 overflow-hidden bg-brand-charcoal group-hover:shadow-xl transition-all">
+                                <div className="relative aspect-[4/5] mb-4 md:mb-6 overflow-hidden bg-brand-charcoal group-hover:shadow-xl transition-all rounded-2xl border border-white/10">
                                     <Image
                                         src={item.image}
                                         alt={item.name}
                                         fill
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
-                                    {item.isSignature && (
-                                        <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-brand-gold text-black text-[8px] md:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 md:px-3 md:py-1 z-10">
-                                            Signature
-                                        </div>
-                                    )}
+                                    <div className="absolute inset-x-0 top-0 flex justify-between p-3">
+                                        {item.isSignature && (
+                                            <span className="bg-brand-gold text-black text-[10px] font-bold uppercase tracking-[0.3em] px-3 py-1 rounded-full">
+                                                Signature
+                                            </span>
+                                        )}
+                                        <span className="bg-black/60 text-brand-gold text-[10px] px-3 py-1 rounded-full border border-white/10">
+                                            {item.category}
+                                        </span>
+                                    </div>
 
                                     {/* Add to Cart Overlay */}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
@@ -171,7 +264,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
 
                                 <div className="flex items-center gap-2 text-[10px] md:text-xs text-brand-gold/60 uppercase tracking-wider">
                                     <span className="w-1 h-1 bg-brand-gold rounded-full" />
-                                    {item.chefNote}
+                                    {item.chefNote || 'Chef curated'}
                                 </div>
                             </motion.div>
                         ))}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { prisma } from '../../lib/prisma';
 import MenuClient from './MenuClient';
-import { MenuItem as PrismaMenuItem } from '@prisma/client';
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -34,7 +33,7 @@ export default async function MenuPage() {
 
     try {
         const items = await prisma.menuItem.findMany({
-            orderBy: { created_at: 'desc' } as any
+            orderBy: { created_at: 'desc' as const }
         }) as unknown as DBMenuItem[];
 
         menuItems = items.map((item) => ({

@@ -29,6 +29,29 @@
         text-wrap: balance;
     }
 
+    .grain-layer,
+    .texture-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+        mix-blend-mode: soft-light;
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .vignette {
+        position: relative;
+    }
+    .vignette::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
+        z-index: 0;
+    }
+
     .glass-card {
         @apply bg-white/5 backdrop-blur-md border border-white/10;
     }
@@ -39,6 +62,29 @@
 
     .text-gradient-gold {
         @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-gold via-[#E5C590] to-brand-gold;
+    }
+
+    .pill {
+        @apply inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs font-semibold uppercase tracking-widest text-gray-200;
+    }
+
+    .card-surface {
+        @apply bg-white/5 border border-white/10 rounded-2xl;
+    }
+
+    .card-hover {
+        @apply transition-transform transition-colors duration-300 hover:-translate-y-1 hover:border-brand-gold/50 hover:shadow-[0_10px_40px_rgba(0,0,0,0.35)];
+    }
+
+    .timeline {
+        @apply grid gap-4 md:grid-cols-3;
+    }
+    .timeline-step {
+        @apply bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden;
+    }
+    .timeline-step::before {
+        content: attr(data-step);
+        @apply absolute top-3 right-4 text-xs font-mono tracking-[0.3em] text-brand-gold;
     }
 }
 

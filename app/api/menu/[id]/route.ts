@@ -1,10 +1,33 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 
-export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
+type ParamsPromise = { params: Promise<{ id: string }> };
+
+export async function GET(_request: NextRequest, { params }: ParamsPromise) {
+    const { id: idParam } = await params;
+    const id = Number(idParam);
+    if (Number.isNaN(id)) {
+        return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    }
     try {
-        const id = parseInt(params.id);
+        const item = await prisma.menuItem.findUnique({ where: { id } });
+        if (!item) {
+            return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        }
+        return NextResponse.json(item);
+    } catch (error) {
+        console.error('Error fetching menu item:', error);
+        return NextResponse.json({ error: 'Failed to fetch menu item' }, { status: 500 });
+    }
+}
+
+export async function PUT(request: NextRequest, { params }: ParamsPromise) {
+    const { id: idParam } = await params;
+    const id = Number(idParam);
+    if (Number.isNaN(id)) {
+        return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    }
+    try {
         const body = await request.json();
         const item = await prisma.menuItem.update({
             where: { id },
@@ -26,18 +49,14 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     }
 }
 
-export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
-    const params = await props.params;
+export async function DELETE(_request: NextRequest, { params }: ParamsPromise) {
+    const { id: idParam } = await params;
+    const id = Number(idParam);
+    if (Number.isNaN(id)) {
+        return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    }
     try {
-        const id = parseInt(params.id);
-        // Delete associated modifier links first
-        await prisma.itemModifierLink.deleteMany({
-            where: { item_id: id },
-        });
-
-        await prisma.menuItem.delete({
-            where: { id },
-        });
+        await prisma.menuItem.delete({ where: { id } });
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error deleting menu item:', error);
