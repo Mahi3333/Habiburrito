@@ -51,6 +51,25 @@ model ItemModifierLink {
   @@id([item_id, modifier_id])
 }
 
+model AppSetting {
+  id                       Int      @id @default(autoincrement())
+  online_ordering_enabled  Boolean  @default(true)
+  override_message         String?
+  updated_at               DateTime @updatedAt
+
+  @@unique([id])
+}
+
+model StoreHour {
+  id         Int     @id @default(autoincrement())
+  day        String  // e.g. Sunday, Monday
+  open_time  String  // HH:mm 24h
+  close_time String  // HH:mm 24h
+  closed     Boolean @default(false)
+
+  @@unique([day])
+}
+
 model Order {
   id                       Int         @id @default(autoincrement())
   user_id                  Int?        // Optional FK to User
