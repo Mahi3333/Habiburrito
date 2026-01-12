@@ -27,7 +27,8 @@ export default function Home() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const { ref: favoritesRef, inView: favoritesInView } = useInView({ threshold: 0.5 });
+  const favoritesRef = useRef<HTMLDivElement | null>(null);
+  const favoritesInView = useInView(favoritesRef, { amount: 0.5 });
 
   const hoursSchedule: Record<string, { open: string; close: string; closed?: boolean }> = {
     Sunday: { open: '11:00', close: '23:00' },

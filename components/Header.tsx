@@ -39,10 +39,10 @@ const Header: React.FC = () => {
     }, [mobileMenuOpen]);
 
     const navLinks = [
-        { label: 'Menu', href: '/menu' },
-        { label: 'Build', href: '/build' },
-        { label: 'Our Story', href: '/our-story' },
-        { label: 'Locations', href: '/locations' },
+        { label: 'Menu', href: '/menu', description: 'Explore our signatures' },
+        { label: 'Build', href: '/build', description: 'Craft your own bowl' },
+        { label: 'Our Story', href: '/our-story', description: 'How we started' },
+        { label: 'Locations', href: '/locations', description: 'Find us' },
     ];
 
     const pathname = usePathname();
