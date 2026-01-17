@@ -65,6 +65,8 @@ export const viewport = {
 
 import { CartProvider } from "../context/CartContext";
 
+import { StoreStatusBanner } from "../components/StoreStatusBanner";
+import StoreClosedModal from "../components/StoreClosedModal";
 import { ToastProvider } from "../context/ToastContext";
 
 export default function RootLayout({
@@ -80,6 +82,8 @@ export default function RootLayout({
       >
         <ToastProvider>
           <CartProvider>
+            <StoreStatusBanner />
+            <StoreClosedModal />
             {children}
             <Analytics />
             <SpeedInsights />

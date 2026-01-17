@@ -15,12 +15,12 @@
 
 @layer base {
     body {
-        @apply bg-brand-black text-brand-cream antialiased;
+        @apply bg-brand-cream text-brand-black antialiased;
         font-feature-settings: "ss01", "ss02", "cv01", "cv02";
     }
 
     ::selection {
-        @apply bg-brand-gold text-brand-black;
+        @apply bg-brand-black text-brand-gold;
     }
 }
 

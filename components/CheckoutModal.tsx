@@ -96,7 +96,7 @@ export default function CheckoutModal({ isOpen, onClose, onSubmit, isLoading }: 
 
                             <div className="p-6 md:p-8 overflow-y-auto">
                                 <h2 className="text-2xl md:text-3xl font-display font-bold text-white mb-2">Finalize Your Order</h2>
-                                <p className="text-gray-400 mb-8 text-sm leading-relaxed">Enter your details to receive order updates via SMS and Email.</p>
+                                <p className="text-gray-300 mb-8 text-sm leading-relaxed">Enter your details to receive order updates via SMS and Email.</p>
 
                                 <form onSubmit={handleSubmit} className="space-y-5">
                                     <div>

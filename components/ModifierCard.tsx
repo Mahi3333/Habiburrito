@@ -28,11 +28,11 @@ const ModifierCard: React.FC<ModifierCardProps> = ({ name, price, selected = fal
                         <div className="w-2.5 h-2.5 rounded-full bg-brand-jade" />
                     )}
                 </div>
-                <span className={`font-medium ${disabled ? 'text-gray-500' : (selected ? 'text-brand-gold' : 'text-brand-cream')}`}>
+                <span className={`font-medium ${disabled ? 'text-gray-400' : (selected ? 'text-brand-gold' : 'text-brand-cream')}`}>
                     {name}
                 </span>
             </div>
-            <span className={`font-semibold ${disabled ? 'text-gray-600' : (selected ? 'text-brand-gold' : 'text-gray-200')}`}>
+            <span className={`font-semibold ${disabled ? 'text-gray-500' : (selected ? 'text-brand-gold' : 'text-gray-200')}`}>
                 {price > 0 ? `+${price.toFixed(2)}` : 'Included'}
             </span>
         </div>
