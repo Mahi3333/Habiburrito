@@ -29,6 +29,15 @@ export default function LocationsPage() {
             const [h, m] = t.split(':').map(Number);
             return h * 60 + m;
         };
+
+        const to12h = (t: string) => {
+            const [h, m] = t.split(':').map(Number);
+            const period = h >= 12 && h !== 24 ? 'PM' : 'AM';
+            let hour = h % 12;
+            if (hour === 0) hour = 12;
+            return `${hour}:${m.toString().padStart(2, '0')} ${period}`;
+        };
+
         const nowMin = now.getHours() * 60 + now.getMinutes();
         const openMin = toMinutes(entry.open);
         const closeMin = toMinutes(entry.close);
@@ -37,7 +46,7 @@ export default function LocationsPage() {
             status: isOpen ? 'OPEN' : 'CLOSED',
             color: isOpen ? 'text-green-400' : 'text-red-400',
             box: isOpen ? 'border-green-500/60 text-green-300' : 'border-red-500/60 text-red-400',
-            range: `${entry.open} – ${entry.close}`,
+            range: `${to12h(entry.open)} – ${to12h(entry.close)}`,
             dayName,
         };
     };
@@ -103,8 +112,8 @@ export default function LocationsPage() {
                                         </div>
                                         <div>
                                             <p className="text-white font-bold text-lg">124 S Main St</p>
-                                            <p className="text-gray-400">Bradford, MA 01835</p>
-                                            <p className="text-xs text-brand-gold mt-1 italic">Located inside &quot;Mediterranean Pizza &amp; Roast Beef&quot;</p>
+                                            <p className="text-gray-200 font-medium">Bradford, MA 01835</p>
+                                            <p className="text-xs text-brand-gold mt-1 italic font-semibold">Located inside &quot;Mediterranean Pizza &amp; Roast Beef&quot;</p>
                                         </div>
                                     </div>
 
@@ -115,10 +124,10 @@ export default function LocationsPage() {
                                         <div>
                                             <p className="text-white font-bold text-lg">Opening Hours</p>
                                             <div className="flex items-center gap-3 mt-2">
-                                                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${todayStatus.box}`}>
+                                                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase border-2 ${todayStatus.box}`}>
                                                     {todayStatus.status}
                                                 </div>
-                                                <p className="text-sm text-gray-300">{todayStatus.dayName}: {todayStatus.range}</p>
+                                                <p className="text-sm text-white font-medium">{todayStatus.dayName}: {todayStatus.range}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -129,8 +138,8 @@ export default function LocationsPage() {
                                         </div>
                                         <div>
                                             <p className="text-white font-bold text-lg">Contact</p>
-                                            <p className="text-gray-400 text-sm">Questions or Catering?</p>
-                                            <a href="mailto:admin@habiburrito.com" className="text-brand-gold hover:text-white transition-colors block mt-1 font-mono">
+                                            <p className="text-gray-200 text-sm font-medium">Questions or Catering?</p>
+                                            <a href="mailto:admin@habiburrito.com" className="text-brand-gold hover:text-white transition-colors block mt-1 font-mono font-bold">
                                                 admin@habiburrito.com
                                             </a>
                                         </div>
@@ -158,23 +167,23 @@ export default function LocationsPage() {
                                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center hover:bg-white/10 transition-colors">
                                     <span className="text-2xl mb-2 block">🅿️</span>
                                     <p className="text-white font-bold text-sm">Free Parking</p>
-                                    <p className="text-xs text-gray-400">Available on-site</p>
+                                    <p className="text-xs text-gray-300">Available on-site</p>
                                 </div>
 
                                 {/* Accessibility */}
                                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center hover:bg-white/10 transition-colors">
                                     <span className="text-2xl mb-2 block">♿</span>
                                     <p className="text-white font-bold text-sm">Accessible</p>
-                                    <p className="text-xs text-gray-400">Wheelchair friendly</p>
+                                    <p className="text-xs text-gray-300">Wheelchair friendly</p>
                                 </div>
                             </div>
                         </motion.div>
 
-                            {/* Right Column: The Map Visual */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.8, delay: 0.4 }}
+                        {/* Right Column: The Map Visual */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
                             className="h-full min-h-[500px] lg:min-h-[700px] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 group"
                         >
                             {/* Map Iframe with Filters */}

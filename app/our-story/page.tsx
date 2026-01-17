@@ -77,7 +77,7 @@ export default function OurStoryPage() {
                                 onClick={() => setActiveSection(tab.id)}
                                 className={`px-6 py-3 rounded-full text-sm font-medium tracking-widest uppercase transition-all ${activeSection === tab.id
                                     ? 'bg-brand-gold text-black shadow-[0_10px_30px_rgba(212,175,55,0.35)]'
-                                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                    : 'bg-white text-brand-black border border-black/10 hover:border-black/30'
                                     }`}
                             >
                                 {tab.label}
@@ -93,21 +93,21 @@ export default function OurStoryPage() {
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center card-surface p-8 md:p-10 relative overflow-hidden">
                                     <div className="absolute inset-0 texture-overlay"></div>
                                     <div className="space-y-4 relative z-10">
-                                        <p className="text-xs uppercase tracking-[0.3em] text-brand-gold font-semibold">Origin</p>
-                                        <h2 className="text-3xl md:text-4xl font-display font-bold text-white leading-tight">
+                                        <p className="text-xs uppercase tracking-[0.3em] text-brand-black font-semibold">Origin</p>
+                                        <h2 className="text-3xl md:text-4xl font-display font-bold text-black leading-tight">
                                             Born from fire, guided by faith.
                                         </h2>
-                                        <p className="text-gray-300 leading-relaxed">
+                                        <p className="text-black leading-relaxed text-lg">
                                             We started as a passion project to bring honest Mexican street flavors to a Halal community that refused to compromise. Every bowl and burrito is marinated, grilled, and assembled to order—no shortcuts, no filler.
                                         </p>
-                                        <ul className="space-y-3 text-gray-200">
+                                        <ul className="space-y-3 text-black font-medium">
                                             {[
                                                 'Proteins marinated for hours, grilled over high heat.',
                                                 'Fresh salsas, cilantro lime rice, and toppings prepped daily.',
                                                 'Built in front of you—your way, every time.'
                                             ].map((item) => (
                                                 <li key={item} className="flex items-center gap-3">
-                                                    <span className="text-brand-gold bg-brand-gold/10 rounded-full p-1.5">
+                                                    <span className="text-brand-black bg-brand-gold rounded-full p-1.5">
                                                         <IconCheck />
                                                     </span>
                                                     <span>{item}</span>
@@ -135,10 +135,10 @@ export default function OurStoryPage() {
                                         { title: 'Clean, Daily Prep', desc: 'Fresh mise en place every day; if it’s not pristine, it’s not served.', icon: <IconClock /> },
                                     ].map((item) => (
                                         <div key={item.title} className="card-surface card-hover p-6 flex gap-4 items-start">
-                                            <div className="p-3 rounded-full bg-brand-gold/10 text-brand-gold">{item.icon}</div>
+                                            <div className="p-3 rounded-full bg-brand-gold text-brand-black">{item.icon}</div>
                                             <div>
-                                                <h3 className="text-lg font-display text-white mb-2">{item.title}</h3>
-                                                <p className="text-gray-300 text-sm leading-relaxed">{item.desc}</p>
+                                                <h3 className="text-lg font-display text-black mb-2">{item.title}</h3>
+                                                <p className="text-black text-sm leading-relaxed">{item.desc}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -150,8 +150,8 @@ export default function OurStoryPage() {
                         {activeSection === 'team' && (
                             <div className="space-y-10">
                                 <div className="text-center">
-                                    <h2 className="text-4xl font-display font-bold text-white mb-4">Meet Our Team</h2>
-                                    <p className="text-gray-300 max-w-2xl mx-auto">
+                                    <h2 className="text-4xl font-display font-bold text-black mb-4">Meet Our Team</h2>
+                                    <p className="text-black max-w-2xl mx-auto">
                                         Hospitality-first, flavor-obsessed, and proud to serve the community.
                                     </p>
                                 </div>
@@ -172,7 +172,7 @@ export default function OurStoryPage() {
                                         },
                                     ].map((member) => (
                                         <div key={member.name} className="card-surface card-hover p-6 flex flex-col items-center text-center gap-4">
-                                            <div className="w-32 h-32 rounded-full overflow-hidden border border-white/10">
+                                            <div className="w-32 h-32 rounded-full overflow-hidden border border-black">
                                                 <Image
                                                     src={member.img}
                                                     alt={member.name}
@@ -182,9 +182,9 @@ export default function OurStoryPage() {
                                                 />
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <h3 className="text-xl font-display text-white">{member.name}</h3>
-                                                <span className="pill">{member.role}</span>
-                                                <p className="text-gray-300 text-sm leading-relaxed">{member.detail}</p>
+                                                <h3 className="text-xl font-display text-black">{member.name}</h3>
+                                                <span className="font-display text-black">{member.role}</span>
+                                                <p className="text-black text-sm leading-relaxed">{member.detail}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -196,8 +196,8 @@ export default function OurStoryPage() {
                         {activeSection === 'ordering' && (
                             <div className="space-y-10">
                                 <div className="text-center">
-                                    <h2 className="text-4xl font-display font-bold text-white mb-4">How to Order</h2>
-                                    <p className="text-gray-300 max-w-2xl mx-auto">
+                                    <h2 className="text-4xl font-display font-bold text-black mb-4">How to Order</h2>
+                                    <p className="text-black max-w-2xl mx-auto">
                                         Skip the line, swing by, or plan ahead for catering. Simple, fast, and built your way.
                                     </p>
                                 </div>
@@ -227,14 +227,14 @@ export default function OurStoryPage() {
                                     ].map((item) => (
                                         <div key={item.step} className="timeline-step card-hover" data-step={item.step}>
                                             <div className="flex items-center gap-3">
-                                                <div className="p-3 rounded-full bg-brand-gold/10 text-brand-gold">{item.icon}</div>
-                                                <h3 className="text-xl font-display text-white">{item.title}</h3>
+                                                <div className="p-3 rounded-full bg-brand-gold text-brand-black">{item.icon}</div>
+                                                <h3 className="text-xl font-display text-black">{item.title}</h3>
                                             </div>
-                                            <p className="text-gray-300 text-sm leading-relaxed">{item.desc}</p>
+                                            <p className="text-black text-sm leading-relaxed font-medium">{item.desc}</p>
                                             <div className="flex flex-wrap gap-2">
-                                                {item.meta && <span className="pill">{item.meta}</span>}
+                                                {item.meta && <span className="text-black">{item.meta}</span>}
                                                 {item.cta && (
-                                                    <Link href={item.cta.href} className="text-brand-gold text-xs tracking-[0.3em] uppercase border-b border-brand-gold pb-1 hover:text-white hover:border-white transition-colors">
+                                                    <Link href={item.cta.href} className="text-brand-black text-xs tracking-[0.3em] uppercase border-b border-brand-gold pb-1 hover:text-black hover:border-black transition-colors">
                                                         {item.cta.label}
                                                     </Link>
                                                 )}
@@ -249,8 +249,8 @@ export default function OurStoryPage() {
                         {activeSection === 'catering' && (
                             <div className="space-y-10">
                                 <div className="text-center">
-                                    <h2 className="text-4xl font-display font-bold text-white mb-4">Catering for Any Occasion</h2>
-                                    <p className="text-gray-300 max-w-2xl mx-auto">
+                                    <h2 className="text-4xl font-display font-bold text-black mb-4">Catering for Any Occasion</h2>
+                                    <p className="text-black max-w-2xl mx-auto text-lg">
                                         Burrito bars, bowl spreads, and sides that travel well. We handle the fire; you host.
                                     </p>
                                 </div>
@@ -258,12 +258,12 @@ export default function OurStoryPage() {
                                 <div className="card-surface card-hover p-8 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative overflow-hidden">
                                     <div className="absolute inset-0 texture-overlay"></div>
                                     <div className="space-y-4 relative z-10">
-                                        <h3 className="text-2xl font-display text-white">The Taco & Bowl Bar</h3>
+                                        <h3 className="text-2xl font-display text-black">The Taco & Bowl Bar</h3>
                                         <div className="flex flex-wrap gap-3">
-                                            <span className="pill flex items-center gap-2"><IconClock /> Lead time: 24h</span>
-                                            <span className="pill">Min 10 guests</span>
+                                            <span className="flex items-center gap-2 text-black"><IconClock /> Lead time: 24h</span>
+                                            <span className="text-black">Min 10 guests</span>
                                         </div>
-                                        <ul className="space-y-3 text-gray-200">
+                                        <ul className="space-y-3 text-black">
                                             {[
                                                 'Choice of 2 proteins (chicken, steak, lamb).',
                                                 'Cilantro lime rice, beans, and warm tortillas.',
@@ -271,7 +271,7 @@ export default function OurStoryPage() {
                                                 'Setup guidance so your line moves fast.',
                                             ].map((item) => (
                                                 <li key={item} className="flex items-start gap-3">
-                                                    <span className="text-brand-gold bg-brand-gold/10 rounded-full p-1.5 mt-0.5">
+                                                    <span className="text-brand-black bg-brand-gold rounded-full p-1.5 mt-0.5">
                                                         <IconCheck />
                                                     </span>
                                                     <span className="text-sm leading-relaxed">{item}</span>
@@ -304,3 +304,5 @@ export default function OurStoryPage() {
         </div>
     );
 }
+
+

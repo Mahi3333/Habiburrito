@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
 import { useCart } from '../../context/CartContext';
+import { useStoreStatus } from '../../app/hooks/useStoreStatus';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Button from '../../components/Button';
@@ -135,6 +137,7 @@ function CheckoutForm({ name, email, phone, clientSecret, validateContactInfo }:
 
 export default function CheckoutPage() {
     const { cartTotal, items } = useCart();
+    const { isOpen, reason, message } = useStoreStatus();
     const [clientSecret, setClientSecret] = useState("");
 
     // Contact Details State (Lifted up)
@@ -240,8 +243,27 @@ export default function CheckoutPage() {
         return (
             <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
                 <Header />
-                <main className="flex-grow flex items-center justify-center p-8">
-                    <p className="text-xl text-gray-400">Your cart is empty.</p>
+                <main className="flex-grow flex items-center justify-center p-8 pt-36">
+                    <p className="text-xl text-gray-300">Your cart is empty.</p>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (!isOpen && reason !== 'LOADING') {
+        return (
+            <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
+                <Header />
+                <main className="flex-grow flex flex-col items-center justify-center p-8 text-center pt-36">
+                    <div className="mb-6 p-6 bg-red-900/10 border border-red-500/30 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                    </div>
+                    <h1 className="text-3xl font-bold font-display text-white mb-4">Checkout is Closed</h1>
+                    <p className="text-gray-300 max-w-md mb-8">{message || 'We are currently not accepting orders. Please check back later.'}</p>
+                    <a href="/menu" className="bg-brand-gold text-brand-black px-8 py-3 rounded-full font-bold uppercase tracking-wider hover:bg-white transition-colors">
+                        Back to Menu
+                    </a>
                 </main>
                 <Footer />
             </div>
@@ -251,17 +273,17 @@ export default function CheckoutPage() {
     return (
         <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
             <Header />
-            <main className="flex-grow max-w-3xl mx-auto w-full p-8 pt-32">
+            <main className="flex-grow max-w-3xl mx-auto w-full p-8 pt-36">
                 <div className="bg-white/5 p-8 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md">
                     <h1 className="text-3xl font-display font-bold text-white mb-8 tracking-wide">Secure Checkout</h1>
 
                     <div className="mb-8 p-6 bg-white/5 rounded-xl border border-white/10">
                         <div className="flex justify-between mb-3">
-                            <span className="text-gray-400">Subtotal</span>
+                            <span className="text-gray-300">Subtotal</span>
                             <span className="font-mono text-white">${cartTotal.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between mb-3">
-                            <span className="text-gray-400">Tax</span>
+                            <span className="text-gray-300">Tax</span>
                             <span className="font-mono text-white">${taxAmount.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between text-xl font-display font-bold text-brand-gold mt-6 pt-6 border-t border-white/10">
@@ -275,7 +297,7 @@ export default function CheckoutPage() {
                         <h3 className="text-xl font-display font-bold text-white mb-4">Contact Information</h3>
 
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
                             <input
                                 type="text"
                                 id="name"
@@ -289,7 +311,7 @@ export default function CheckoutPage() {
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
                             <input
                                 type="email"
                                 id="email"
@@ -303,7 +325,7 @@ export default function CheckoutPage() {
                         </div>
 
                         <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-400 mb-1">Phone Number</label>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
                             <input
                                 type="tel"
                                 id="phone"
@@ -339,3 +361,4 @@ export default function CheckoutPage() {
         </div>
     );
 }
+

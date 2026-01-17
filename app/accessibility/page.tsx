@@ -12,7 +12,7 @@ export default function AccessibilityPage() {
         <div className="container mx-auto px-6 max-w-4xl space-y-8">
           <div className="space-y-2">
             <h1 className="text-4xl font-display font-bold text-white">Accessibility</h1>
-            <p className="text-sm text-gray-400">Last updated: {new Date().getFullYear()}</p>
+            <p className="text-sm text-gray-300">Last updated: {new Date().getFullYear()}</p>
           </div>
 
           <section className="space-y-3">

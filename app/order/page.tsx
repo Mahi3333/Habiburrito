@@ -34,7 +34,7 @@ function OrderContent() {
                                 Your legend is being crafted. We&apos;ve sent a confirmation to your phone and email.
                             </p>
                             {orderId && (
-                                <p className="text-sm text-gray-500 font-mono mb-8">Order ID: #{orderId}</p>
+                                <p className="text-sm text-gray-300 font-mono mb-8">Order ID: #{orderId}</p>
                             )}
                             <Link href="/">
                                 <button className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest rounded-lg hover:bg-brand-gold transition-colors">

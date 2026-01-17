@@ -32,7 +32,7 @@ export default function OrderConfirmationPage() {
                     </p>
 
                     <div className="p-6 bg-white/5 rounded-xl border border-white/10 mb-8">
-                        <p className="text-sm text-gray-400 uppercase tracking-widest mb-2">What happens next?</p>
+                        <p className="text-sm text-gray-300 uppercase tracking-widest mb-2">What happens next?</p>
                         <p className="text-white">You will receive an email confirmation with your receipt.</p>
                     </div>
 

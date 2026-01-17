@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { useCart } from '../../context/CartContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useStoreStatus } from '../../app/hooks/useStoreStatus';
 
 interface ModifierOption {
     id: number;
@@ -59,6 +60,7 @@ export default function BuildPage() {
 
     const { addItemToCart } = useCart();
     const router = useRouter();
+    const { isOpen } = useStoreStatus();
 
     const handleAddToOrderClick = () => {
         if (!selections.base) return;
@@ -309,7 +311,7 @@ export default function BuildPage() {
                         <h1 className="text-5xl md:text-7xl font-display font-bold text-white mt-4 mb-6">
                             BUILD YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200">LEGEND</span>
                         </h1>
-                        <p className="text-gray-400 max-w-3xl mx-auto text-lg">
+                        <p className="text-gray-200 max-w-3xl mx-auto text-lg">
                             Craft a masterpiece layer by layer. Every ingredient is prepared fresh daily in our Halal kitchen.
                         </p>
                     </div>
@@ -324,7 +326,7 @@ export default function BuildPage() {
                                         key={step.id}
                                         className={`pl-6 border-l-2 transition-all duration-300 cursor-pointer ${activeStep === index
                                             ? 'border-brand-gold text-white'
-                                            : 'border-white/10 text-gray-500 hover:text-gray-300'
+                                            : 'border-white/10 text-gray-300 hover:text-gray-200'
                                             }`}
                                         onClick={() => {
                                             setActiveStep(index);
@@ -345,7 +347,7 @@ export default function BuildPage() {
                             <section id="base" className="scroll-mt-32 col-span-1">
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-display text-white mb-1">01. The Vessel</h2>
-                                    <p className="text-gray-400 text-sm">Start with a solid foundation.</p>
+                                    <p className="text-gray-300 text-sm">Start with a solid foundation.</p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3">
                                     {menuData.baseItems.map((item) => (
@@ -364,7 +366,7 @@ export default function BuildPage() {
                             <section id="rice" className={`scroll-mt-32 col-span-1 transition-opacity duration-300 ${!isBaseSelected ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-display text-white mb-1">02. The Base</h2>
-                                    <p className="text-gray-400 text-sm">Rice, greens, or chips.</p>
+                                    <p className="text-gray-300 text-sm">Rice, greens, or chips.</p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3">
                                     {menuData.modifiers['Rice & Base']?.options.map((option) => (
@@ -384,7 +386,7 @@ export default function BuildPage() {
                             <section id="protein" className={`scroll-mt-32 col-span-1 transition-opacity duration-300 ${!isRiceSelected ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-display text-white mb-1">03. The Core</h2>
-                                    <p className="text-gray-400 text-sm">Select your premium protein.</p>
+                                    <p className="text-gray-300 text-sm">Select your premium protein.</p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3">
                                     {menuData.modifiers['Protein']?.options.map((option) => (
@@ -405,7 +407,7 @@ export default function BuildPage() {
                                 <div className="mb-6 flex justify-between items-end">
                                     <div>
                                         <h2 className="text-2xl font-display text-white mb-1">04. The Crunch</h2>
-                                        <p className="text-gray-400 text-sm">Fresh vegetables and salsas.</p>
+                                        <p className="text-gray-300 text-sm">Fresh vegetables and salsas.</p>
                                     </div>
                                     <span className="text-[10px] text-brand-gold border border-brand-gold/30 px-2 py-0.5 rounded-full">
                                         Max {menuData.modifiers['Toppings']?.max_selection}
@@ -430,7 +432,7 @@ export default function BuildPage() {
                                 <div className="mb-6 flex justify-between items-end">
                                     <div>
                                         <h2 className="text-2xl font-display text-white mb-1">05. The Finish</h2>
-                                        <p className="text-gray-400 text-sm">House-made sauces.</p>
+                                        <p className="text-gray-300 text-sm">House-made sauces.</p>
                                     </div>
                                     <span className="text-[10px] text-brand-gold border border-brand-gold/30 px-2 py-0.5 rounded-full">
                                         Max {menuData.modifiers['Sauces']?.max_selection}
@@ -454,7 +456,7 @@ export default function BuildPage() {
                             <section id="addons" className={`scroll-mt-32 col-span-1 transition-opacity duration-300 ${!isProteinSelected ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
                                 <div className="mb-6">
                                     <h2 className="text-2xl font-display text-white mb-1">06. Premium Adds</h2>
-                                    <p className="text-gray-400 text-sm">Take it to the next level.</p>
+                                    <p className="text-gray-300 text-sm">Take it to the next level.</p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3">
                                     {menuData.modifiers['Add-ons']?.options.map((option) => (
@@ -496,13 +498,13 @@ export default function BuildPage() {
 
                                     <div className="space-y-4 mb-10 min-h-[200px]">
                                         {!selections.base && (
-                                            <p className="text-gray-500 text-base italic text-center py-8">Start by choosing a Vessel...</p>
+                                            <p className="text-gray-300 text-base italic text-center py-8">Start by choosing a Vessel...</p>
                                         )}
 
                                         {selections.base && (
                                             <div className="flex justify-between text-base animate-fade-in">
                                                 <span className="text-white font-medium">{selections.base.name}</span>
-                                                <span className="text-gray-400">{selections.base.base_price ? `$${selections.base.base_price}` : '-'}</span>
+                                                <span className="text-gray-300">{selections.base.base_price ? `$${selections.base.base_price}` : '-'}</span>
                                             </div>
                                         )}
 
@@ -515,7 +517,7 @@ export default function BuildPage() {
                                         {selections.rice && (
                                             <div className="flex justify-between text-base animate-fade-in">
                                                 <span className="text-white font-medium">{selections.rice.name}</span>
-                                                <span className="text-gray-400">-</span>
+                                                <span className="text-gray-300">-</span>
                                             </div>
                                         )}
 
@@ -527,7 +529,7 @@ export default function BuildPage() {
                                         {selections.protein && (
                                             <div className="flex justify-between text-base animate-fade-in">
                                                 <span className="text-white font-medium">{selections.protein.name}</span>
-                                                <span className="text-gray-400">+${selections.protein.price}</span>
+                                                <span className="text-gray-300">+${selections.protein.price}</span>
                                             </div>
                                         )}
 
@@ -540,7 +542,7 @@ export default function BuildPage() {
                                         {selections.toppings.map(t => (
                                             <div key={t.id} className="flex justify-between text-base animate-fade-in">
                                                 <span className="text-gray-300">{t.name}</span>
-                                                <span className="text-gray-500">-</span>
+                                                <span className="text-gray-400">-</span>
                                             </div>
                                         ))}
 
@@ -552,13 +554,13 @@ export default function BuildPage() {
                                         {selections.sauces.map(s => (
                                             <div key={s.id} className="flex justify-between text-base animate-fade-in">
                                                 <span className="text-gray-300">{s.name}</span>
-                                                <span className="text-gray-500">-</span>
+                                                <span className="text-gray-400">-</span>
                                             </div>
                                         ))}
                                         {[...selections.addons, ...selections.extras].map(item => (
                                             <div key={item.id} className="flex justify-between text-base animate-fade-in">
                                                 <span className="text-brand-gold">{item.name}</span>
-                                                <span className="text-gray-400">+${item.price}</span>
+                                                <span className="text-gray-300">+${item.price}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -571,10 +573,10 @@ export default function BuildPage() {
 
                                     <button
                                         className="w-full py-5 bg-brand-gold text-black font-bold text-lg uppercase tracking-widest rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-gold/20"
-                                        disabled={!selections.base || !selections.rice || !selections.protein}
+                                        disabled={!selections.base || !selections.rice || !selections.protein || !isOpen}
                                         onClick={handleAddToOrderClick}
                                     >
-                                        Add to Order
+                                        {isOpen ? 'Add to Order' : 'Store Closed'}
                                     </button>
                                 </div>
                             </div>

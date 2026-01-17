@@ -6,9 +6,11 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Button from '../../components/Button';
 import { useCart } from '../../context/CartContext';
+import { useStoreStatus } from '../../app/hooks/useStoreStatus';
 
 export default function CartPage() {
     const { items, removeItemFromCart, updateItemQuantity, cartTotal } = useCart();
+    const { isOpen } = useStoreStatus();
 
     const TAX_RATE = 0.08;
     const taxAmount = cartTotal * TAX_RATE;
@@ -18,9 +20,9 @@ export default function CartPage() {
         return (
             <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
                 <Header />
-                <main className="flex-grow flex flex-col items-center justify-center p-8 text-center">
+                <main className="flex-grow flex flex-col items-center justify-center p-8 pt-36 text-center">
                     <h2 className="text-3xl font-display font-semibold text-white mb-4">Your Cart is Empty</h2>
-                    <p className="text-gray-400 mb-8 text-lg">Looks like you haven’t added any delicious burritos yet.</p>
+                    <p className="text-gray-300 mb-8 text-lg">Looks like you haven’t added any delicious burritos yet.</p>
                     <Link href="/build">
                         <Button variant="primary" className="text-lg px-8 py-3 bg-brand-gold text-brand-black">
                             Start Your Order
@@ -36,7 +38,7 @@ export default function CartPage() {
         <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
             <Header />
 
-            <main className="flex-grow max-w-5xl mx-auto w-full p-8">
+            <main className="flex-grow max-w-5xl mx-auto w-full p-8 pt-36">
                 <h1 className="text-3xl font-display font-semibold text-white mb-8 border-b border-white/10 pb-4">
                     Your Order
                 </h1>
@@ -92,7 +94,7 @@ export default function CartPage() {
                                     <div className="flex items-center gap-2 border border-white/20 rounded-full px-3 py-1">
                                         <button
                                             onClick={() => updateItemQuantity(item.uniqueId, (item.quantity || 1) - 1)}
-                                            className="text-gray-400 hover:text-brand-gold font-bold disabled:opacity-50"
+                                            className="text-gray-300 hover:text-brand-gold font-bold disabled:opacity-50"
                                             disabled={(item.quantity || 1) <= 1}
                                         >
                                             -
@@ -100,7 +102,7 @@ export default function CartPage() {
                                         <span className="text-sm font-semibold text-white w-4 text-center">{item.quantity || 1}</span>
                                         <button
                                             onClick={() => updateItemQuantity(item.uniqueId, (item.quantity || 1) + 1)}
-                                            className="text-gray-400 hover:text-brand-gold font-bold"
+                                            className="text-gray-300 hover:text-brand-gold font-bold"
                                         >
                                             +
                                         </button>
@@ -138,13 +140,22 @@ export default function CartPage() {
                                 <span>${finalTotal.toFixed(2)}</span>
                             </div>
 
-                            <Link href="/checkout">
+                            {isOpen ? (
+                                <Link href="/checkout">
+                                    <button
+                                        className="w-full py-4 rounded-full bg-brand-gold text-brand-black font-display font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:bg-white transition-all duration-300"
+                                    >
+                                        Proceed to Checkout
+                                    </button>
+                                </Link>
+                            ) : (
                                 <button
-                                    className="w-full py-4 rounded-full bg-brand-gold text-brand-black font-display font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:bg-white transition-all duration-300"
+                                    disabled
+                                    className="w-full py-4 rounded-full bg-gray-800 text-gray-400 font-display font-bold uppercase tracking-widest cursor-not-allowed border border-white/10"
                                 >
-                                    Proceed to Checkout
+                                    Store Closed
                                 </button>
-                            </Link>
+                            )}
                         </div>
                     </div>
 
@@ -155,3 +166,4 @@ export default function CartPage() {
         </div>
     );
 }
+
