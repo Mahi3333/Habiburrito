@@ -313,7 +313,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
       <main className="pt-24 md:pt-32 pb-4 container mx-auto px-4 md:px-6 relative z-10">
 
         {/* Navigation */}
-        <div className="sticky top-16 md:top-24 z-30 mb-4 md:mb-8 py-2 md:py-4 bg-brand-black/80 backdrop-blur-xl border-y border-white/5 -mx-4 px-4 md:-mx-6 md:px-6 md:mx-0 md:px-0 md:rounded-full md:border">
+        <div className="sticky top-16 md:top-24 z-30 mb-4 md:mb-8 py-2 md:py-4 bg-brand-black/80 backdrop-blur-xl border-y border-white/5 -mx-4 px-4 md:mx-0 md:px-6 md:rounded-full md:border">
           <div className="flex gap-4 overflow-x-auto no-scrollbar md:justify-center">
             {categories.map(cat => (
               <button
