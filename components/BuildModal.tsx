@@ -180,7 +180,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                     </div>
 
                     {/* Right: Steps */}
-                    <div className="md:w-2/3 bg-brand-black flex flex-col">
+                    <div className="md:w-2/3 bg-brand-black flex flex-col max-h-[95vh] md:max-h-full">
 
                         {/* Progress Bar */}
                         <div className="h-1 bg-white/5 w-full">
@@ -192,9 +192,9 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Step Content */}
-                        <div className="flex-grow p-6 md:p-10 overflow-y-auto">
+                        <div className="flex-1 p-4 md:p-6 lg:p-10 overflow-y-auto overscroll-contain">
                             {currentStep ? (
-                                <div className="space-y-6">
+                                <div className="space-y-3 md:space-y-6">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
                                             <h3 className="text-2xl font-display font-bold text-white">
@@ -247,7 +247,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="p-4 md:p-6 lg:p-8 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 md:gap-4">
+                        <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 md:gap-4">
 
                             {/* Quantity */}
                             <div className="flex items-center gap-3 bg-black rounded-full px-4 py-2 border border-white/10 self-center sm:self-auto">
