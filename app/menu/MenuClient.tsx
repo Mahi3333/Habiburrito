@@ -348,7 +348,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
                 <div className="relative z-10 text-center md:text-left">
-                  <h2 className="text-xl md:text-2xl lg:text-4xl font-display font-bold text-white mb-1 md:mb-2">Build Your Own</h2>
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-bold text-white mb-1 md:mb-2">Build Your Own</h2>
                   <p className="text-gray-300 text-sm md:text-base max-w-xl">Craft your masterpiece from scratch. Choose your base, proteins, and unlimited toppings.</p>
                 </div>
 
