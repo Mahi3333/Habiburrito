@@ -35,6 +35,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
     }, [isOpen, item]);
 
     const currentStep = steps[currentStepIndex];
+    const isDenseStep = currentStep ? currentStep.options.length > 8 : false;
 
     const handleOptionToggle = (optionId: number) => {
         if (!currentStep) return;
@@ -180,7 +181,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                     </div>
 
                     {/* Right: Steps */}
-                    <div className="md:w-2/3 bg-brand-black flex flex-col max-h-[95vh] md:max-h-full">
+                    <div className="md:w-2/3 bg-brand-black flex flex-col flex-1 md:max-h-full">
 
                         {/* Progress Bar */}
                         <div className="h-1 bg-white/5 w-full">
@@ -192,25 +193,25 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Step Content */}
-                        <div className="flex-1 p-4 md:p-6 lg:p-10 overflow-y-auto overscroll-contain">
+                        <div className="flex-1 p-3 md:p-6 lg:p-10 overflow-y-auto md:overscroll-contain">
                             {currentStep ? (
                                 <div className="space-y-3 md:space-y-6">
-                                    <div className="flex items-center justify-between mb-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3 md:mb-4">
                                         <div>
-                                            <h3 className="text-2xl font-display font-bold text-white">
+                                            <h3 className="text-lg sm:text-2xl font-display font-bold text-white">
                                                 {currentStep.name}
                                             </h3>
-                                            <p className="text-gray-400 text-sm mt-1">
+                                            <p className="text-gray-400 text-xs sm:text-sm mt-1">
                                                 {currentStep.required ? `Select at least ${currentStep.min}` : 'Optional'}
                                                 {currentStep.max > 0 ? ` (Max ${currentStep.max})` : ''}
                                             </p>
                                         </div>
-                                        <div className="text-brand-gold font-mono text-xs">
+                                        <div className="text-brand-gold font-mono text-xs sm:text-sm px-2 py-1 rounded-full border border-white/10 bg-white/5 self-start sm:self-auto shrink-0">
                                             {currentStepIndex + 1} / {steps.length}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-2 md:gap-3">
+                                    <div className="grid grid-cols-2 gap-2 md:gap-3">
                                         {currentStep.options.map(option => {
                                             const isSelected = (selections[currentStep.name] || []).includes(option.id);
                                             return (
@@ -218,19 +219,19 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                                     key={option.id}
                                                     onClick={() => handleOptionToggle(option.id)}
                                                     className={`
-                                                        p-3 md:p-4 rounded-xl border text-left flex justify-between items-center transition-all group min-h-[56px]
+                                                        p-2 sm:p-3 md:p-4 rounded-xl border text-left flex justify-between items-center transition-all group min-h-[48px] sm:min-h-[56px]
                                                         ${isSelected
                                                             ? 'bg-brand-gold text-black border-brand-gold shadow-[0_0_15px_rgba(198,168,124,0.3)]'
                                                             : 'bg-white/5 border-white/10 text-gray-300 hover:border-brand-gold/50 hover:bg-white/10'}
                                                     `}
                                                 >
                                                     <div>
-                                                        <span className="font-bold block">{option.name}</span>
+                                                        <span className="font-bold block text-xs sm:text-sm md:text-base">{option.name}</span>
                                                         {option.price > 0 && (
-                                                            <span className={`text-xs ${isSelected ? 'text-black/70' : 'text-brand-gold'}`}>+${option.price.toFixed(2)}</span>
+                                                            <span className={`text-[10px] sm:text-xs ${isSelected ? 'text-black/70' : 'text-brand-gold'}`}>+${option.price.toFixed(2)}</span>
                                                         )}
                                                     </div>
-                                                    {isSelected && <Check size={18} />}
+                                                    {isSelected && <Check className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
                                                 </button>
                                             );
                                         })}

@@ -59,9 +59,9 @@ const Header: React.FC = () => {
                     : 'py-6 bg-transparent'
                     }`}
             >
-                <div className="container mx-auto px-6 flex justify-between items-center">
-                    <Link href="/" className="relative z-50">
-                        <div className="relative h-14 w-44 md:h-16 md:w-56">
+                <div className="container mx-auto px-6 relative flex items-center justify-end md:justify-between">
+                    <Link href="/" className="absolute left-1/2 -translate-x-1/2 md:static md:left-auto md:translate-x-0 z-50 max-w-[70%]">
+                        <div className="relative h-12 w-36 sm:h-14 sm:w-44 md:h-16 md:w-56">
                             <Image
                                 src="/logo.jpg"
                                 alt="Habiburrito"
@@ -172,7 +172,17 @@ const Header: React.FC = () => {
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                             className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-brand-cream border-l border-black/5 z-50 flex flex-col md:hidden shadow-2xl"
                         >
-                            <div className="flex-1 flex flex-col pt-24 px-8 pb-8 overflow-y-auto">
+                            <div className="flex items-center justify-between px-6 pt-6">
+                                <span className="text-xs uppercase tracking-[0.3em] text-brand-black font-bold">Menu</span>
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 rounded-full border border-black/10 text-brand-black hover:border-brand-gold hover:text-brand-gold transition-colors"
+                                    aria-label="Close menu"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            <div className="flex-1 flex flex-col pt-6 px-8 pb-8 overflow-y-auto">
                                 <div className="space-y-8">
                                     {navLinks.map((item, i) => (
                                         <motion.div
