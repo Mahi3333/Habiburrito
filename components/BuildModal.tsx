@@ -193,7 +193,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Step Content */}
-                        <div className="flex-1 p-3 md:p-6 lg:p-10 overflow-visible md:overflow-y-auto md:overscroll-contain">
+                        <div className="flex-1 p-3 md:p-6 lg:p-10 overflow-y-auto md:overscroll-contain">
                             {currentStep ? (
                                 <div className="space-y-3 md:space-y-6">
                                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3 md:mb-4">
