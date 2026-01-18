@@ -64,7 +64,7 @@ const ItemCard = ({ item, isOpen, onAdd, onRemove, onCustomize, quantity }: {
       className="group relative bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-brand-gold/30 transition-all duration-300 flex flex-col h-full shadow-lg hover:shadow-brand-gold/5"
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[16/9] md:aspect-[4/3] overflow-hidden">
         <Image
           src={item.image}
           alt={item.name}
@@ -84,7 +84,7 @@ const ItemCard = ({ item, isOpen, onAdd, onRemove, onCustomize, quantity }: {
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-3 md:p-4 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-1">
           <h3 className="text-lg font-display font-bold text-white leading-tight pr-2">
             {toTitleCase(item.name)}
@@ -310,17 +310,17 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-brand-black via-brand-black/95 to-brand-black" />
       </div>
 
-      <main className="pt-32 pb-4 container mx-auto px-6 relative z-10">
+      <main className="pt-24 md:pt-32 pb-4 container mx-auto px-4 md:px-6 relative z-10">
 
         {/* Navigation */}
-        <div className="sticky top-24 z-30 mb-8 py-4 bg-brand-black/80 backdrop-blur-xl border-y border-white/5 -mx-6 px-6 md:mx-0 md:px-0 md:rounded-full md:border">
+        <div className="sticky top-16 md:top-24 z-30 mb-4 md:mb-8 py-2 md:py-4 bg-brand-black/80 backdrop-blur-xl border-y border-white/5 -mx-4 px-4 md:mx-0 md:px-6 md:rounded-full md:border">
           <div className="flex gap-4 overflow-x-auto no-scrollbar md:justify-center">
             {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`
-                            px-6 py-2 rounded-full font-display font-bold uppercase tracking-widest text-xs transition-all whitespace-nowrap
+                            px-4 md:px-6 py-1.5 md:py-2 rounded-full font-display font-bold uppercase tracking-widest text-xs md:text-xs transition-all whitespace-nowrap
                             ${activeCategory === cat
                     ? 'bg-brand-gold text-black shadow-[0_0_20px_rgba(198,168,124,0.4)]'
                     : 'text-gray-400 hover:text-white'}
@@ -341,18 +341,18 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
 
               {/* 1. Build Your Own Card - Custom Prominent Card */}
               <div
-                className="col-span-1 md:col-span-2 lg:col-span-4 bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[180px]"
+                className="col-span-1 md:col-span-2 lg:col-span-4 bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[140px] md:min-h-[180px]"
               >
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5 bg-[url('/background_create.png')] bg-cover bg-center" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
-                <div className="relative z-10">
-                  <h2 className="text-2xl md:text-4xl font-display font-bold text-white mb-2">Build Your Own</h2>
-                  <p className="text-gray-300 text-base max-w-xl">Craft your masterpiece from scratch. Choose your base, proteins, and unlimited toppings.</p>
+                <div className="relative z-10 text-center md:text-left">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-bold text-white mb-1 md:mb-2">Build Your Own</h2>
+                  <p className="text-gray-300 text-sm md:text-base max-w-xl">Craft your masterpiece from scratch. Choose your base, proteins, and unlimited toppings.</p>
                 </div>
 
-                <div className="relative z-10 flex gap-4 flex-wrap justify-center">
+                <div className="relative z-10 flex gap-2 md:gap-4 flex-wrap justify-center">
                   {['Bowls', 'Burritos', 'Quesadillas'].map(cat => {
                     const buildItem = findBuildItem(cat);
                     if (!buildItem) return null;
@@ -363,7 +363,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                           e.stopPropagation();
                           openBuildModal(buildItem);
                         }}
-                        className="px-5 py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-sm"
+                        className="px-3 md:px-5 py-1.5 md:py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-xs md:text-sm"
                       >
                         Build {cat.slice(0, -1)}
                       </button>
