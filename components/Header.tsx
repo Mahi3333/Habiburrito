@@ -43,7 +43,7 @@ const Header: React.FC = () => {
 
     const navLinks = [
         { label: 'Menu', href: '/menu', description: 'Explore our signatures' },
-        { label: 'Build', href: '/build', description: 'Craft your own bowl' },
+
         { label: 'Our Story', href: '/our-story', description: 'How we started' },
         { label: 'Locations', href: '/locations', description: 'Find us' },
     ];
@@ -128,8 +128,8 @@ const Header: React.FC = () => {
 
                         <Link href="/cart">
                             <div className={`flex items-center gap-2 transition-colors cursor-pointer px-4 py-2 rounded-full border ${isScrolled || !isHome
-                                    ? 'border-black/5 bg-gray-50 text-brand-black hover:border-brand-black'
-                                    : 'border-white/20 bg-black/20 text-white hover:bg-black/40'
+                                ? 'border-black/5 bg-gray-50 text-brand-black hover:border-brand-black'
+                                : 'border-white/20 bg-black/20 text-white hover:bg-black/40'
                                 }`}>
                                 <ShoppingBag size={18} />
                                 <span className="font-mono text-sm">

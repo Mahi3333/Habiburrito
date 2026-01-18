@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-18T05:04:46.305Z",
+  "uniqueCategories": [
+    "Burritos",
+    "Sides",
+    "Bowls"
+  ],
+  "rawCategoriesSample": [
+    "habiburrito wraps",
+    "sides",
+    "habiburrito quesadillas",
+    "habiburrito bowls"
+  ],
+  "totalItems": 34,
+  "quesadillaItemsCount": 0,
+  "buildQuesadillaFound": "NO"
+}

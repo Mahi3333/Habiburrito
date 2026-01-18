@@ -1,0 +1,623 @@
+{
+  "version": "1.0",
+  "restaurant": "Habiburrito",
+  "category": {
+    "key": "category.habiburrito_bowls",
+    "name": "Habiburrito Bowls",
+    "aliases": ["Bowl"],
+    "items": [
+      {
+        "key": "bowls.build_your_own_bowl",
+        "name": "Build your Own Bowl",
+        "price": 10.99,
+        "description": null,
+        "isActive": true,
+        "includedItems": [],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Protein Choice (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veggie Choices (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauce Choices (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "bowls.classic_cali_bowl",
+        "name": "Classic Cali Bowl",
+        "price": 11.99,
+        "description": "Chicken, Avocado, Pico De Gallo Salsa, Ranch, Sour Cream, Spring Mix",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "protein.chicken", "qty": 1 },
+          { "ref": "veg.avocado", "qty": 1 },
+          { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+          { "ref": "sauces.ranch", "qty": 1 },
+          { "ref": "sauces.sour_cream", "qty": 1 },
+          { "ref": "base.spring_mix", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.spring_mix", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.ranch", "qty": 1 },
+              { "ref": "sauces.sour_cream", "qty": 1 }
+            ]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.chicken", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "veg.avocado", "qty": 1 },
+              { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.el_gringo_bowl",
+        "name": "El Gringo Bowl",
+        "price": 12.99,
+        "description": "Shrimp, Cilantro Rice, Garlic Honey Sauce, Pico De Gallo Salsa, Lettuce, Monterey Jack Cheese, Lime, Cilantro",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "protein.shrimp", "qty": 1 },
+          { "ref": "base.cilantro_rice", "qty": 1 },
+          { "ref": "sauces.garlic_honey_sauce", "qty": 1 },
+          { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+          { "ref": "veg.lettuce", "qty": 1 },
+          { "ref": "cheese.monterey_jack_cheese", "qty": 1 },
+          { "ref": "veg.lime", "qty": 1 },
+          { "ref": "veg.cilantro", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.cilantro_rice", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.monterey_jack_cheese", "qty": 1 }]
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.garlic_honey_sauce", "qty": 1 }]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.shrimp", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 5, "allowQuantity": true },
+            "defaults": [
+              { "ref": "veg.lettuce", "qty": 1 },
+              { "ref": "veg.cilantro", "qty": 1 },
+              { "ref": "veg.lime", "qty": 1 },
+              { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.hot_chick_bowl",
+        "name": "Hot Chick Bowl",
+        "price": 10.99,
+        "description": "Cilantro Rice, Chipotle Aioli, Spicy Chicken, Lettuce, Pico De Gallo Salsa",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "base.cilantro_rice", "qty": 1 },
+          { "ref": "sauces.chipotle_aioli", "qty": 1 },
+          { "ref": "protein.spicy_chicken", "qty": 1 },
+          { "ref": "veg.lettuce", "qty": 1 },
+          { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.cilantro_rice", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.chipotle_aioli", "qty": 1 }]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.spicy_chicken", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 3, "allowQuantity": true },
+            "defaults": [
+              { "ref": "veg.lettuce", "qty": 1 },
+              { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.loaded_nacho_bowl",
+        "name": "Loaded Nacho Bowl",
+        "price": 11.99,
+        "description": "Nacho Chips, Queso, Jalapenos, Salsa, Sour Cream, Ground Beef",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "base.nacho_chips", "qty": 1 },
+          { "ref": "cheese.queso", "qty": 1 },
+          { "ref": "veg.jalapenos", "qty": 1 },
+          { "ref": "veg.salsa", "qty": 1 },
+          { "ref": "sauces.sour_cream", "qty": 1 },
+          { "ref": "protein.ground_beef", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.nacho_chips", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.queso", "qty": 1 }]
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.sour_cream", "qty": 1 }]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.ground_beef", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 3, "allowQuantity": true },
+            "defaults": [
+              { "ref": "veg.jalapenos", "qty": 1 },
+              { "ref": "veg.salsa", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.ocean_flame_bowl",
+        "name": "Ocean Flame Bowl",
+        "price": 12.99,
+        "description": "Habiburrito Rice, White Sauce, Green Sauce, Shrimp, Grilled Onions and Peppers, Lime, Cilantro",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "base.habiburrito_rice", "qty": 1 },
+          { "ref": "sauces.white_sauce", "qty": 1 },
+          { "ref": "sauces.green_sauce", "qty": 1 },
+          { "ref": "protein.shrimp", "qty": 1 },
+          { "ref": "veg.grilled_onions_and_peppers", "qty": 1 },
+          { "ref": "veg.lime", "qty": 1 },
+          { "ref": "veg.cilantro", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.habiburrito_rice", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.green_sauce", "qty": 1 },
+              { "ref": "sauces.white_sauce", "qty": 1 }
+            ]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.shrimp", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 4, "allowQuantity": true },
+            "defaults": [
+              { "ref": "veg.grilled_onions_and_peppers", "qty": 1 },
+              { "ref": "veg.lime", "qty": 1 },
+              { "ref": "veg.cilantro", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.proteinator_bowl",
+        "name": "Proteinator Bowl",
+        "price": 13.99,
+        "description": "Barbacoa Meat, Chicken, Guacamole, Queso, Red Onion, Pico De Gallo Salsa, Black Beans, Spring Mix",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "protein.barbacoa_meat", "qty": 1 },
+          { "ref": "protein.chicken", "qty": 1 },
+          { "ref": "veg.guacamole", "qty": 1 },
+          { "ref": "cheese.queso", "qty": 1 },
+          { "ref": "veg.red_onion", "qty": 1 },
+          { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+          { "ref": "beans.black_beans", "qty": 1 },
+          { "ref": "base.spring_mix", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.spring_mix", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "beans.black_beans", "qty": 1 }]
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.queso", "qty": 1 }]
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 0, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "protein.barbacoa_meat", "qty": 1 },
+              { "ref": "protein.chicken", "qty": 1 }
+            ]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 4, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+              { "ref": "veg.red_onion", "qty": 1 },
+              { "ref": "veg.guacamole", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.silk_road_bowl",
+        "name": "Silk Road Bowl",
+        "price": 10.99,
+        "description": "Habiburrito Rice, Falafel, Hummus, Pico De Gallo Salsa, Red Onion, Sumac, Falafel Sauce-Tahini",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "base.habiburrito_rice", "qty": 1 },
+          { "ref": "protein.falafel", "qty": 1 },
+          { "ref": "sauces.hummus", "qty": 1 },
+          { "ref": "sauces.falafel_sauce_tahini", "qty": 1 },
+          { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+          { "ref": "veg.red_onion", "qty": 1 },
+          { "ref": "veg.sumac", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.habiburrito_rice", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.hummus", "qty": 1 },
+              { "ref": "sauces.falafel_sauce_tahini", "qty": 1 }
+            ]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.falafel", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 4, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+              { "ref": "veg.red_onion", "qty": 1 },
+              { "ref": "veg.sumac", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.the_fiesta_bowl",
+        "name": "The Fiesta Bowl",
+        "price": 12.99,
+        "description": "Habiburrito Rice, Green Sauce, White Sauce, Barbacoa Meat, Pico De Gallo Salsa, Sumac",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "base.habiburrito_rice", "qty": 1 },
+          { "ref": "sauces.green_sauce", "qty": 1 },
+          { "ref": "sauces.white_sauce", "qty": 1 },
+          { "ref": "protein.barbacoa_meat", "qty": 1 },
+          { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+          { "ref": "veg.sumac", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.habiburrito_rice", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.green_sauce", "qty": 1 },
+              { "ref": "sauces.white_sauce", "qty": 1 }
+            ]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.barbacoa_meat", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 3, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.pico_de_gallo_salsa", "qty": 1 },
+              { "ref": "veg.sumac", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      },
+
+      {
+        "key": "bowls.the_verde_bowl",
+        "name": "The Verde Bowl",
+        "price": 11.99,
+        "description": "Cilantro Rice, Green Sauce, Chicken, Cucumber, Guacamole, Lettuce, Pinto Beans",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "base.cilantro_rice", "qty": 1 },
+          { "ref": "sauces.green_sauce", "qty": 1 },
+          { "ref": "protein.chicken", "qty": 1 },
+          { "ref": "veg.cucumber", "qty": 1 },
+          { "ref": "veg.guacamole", "qty": 1 },
+          { "ref": "veg.lettuce", "qty": 1 },
+          { "ref": "beans.pinto_beans", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "base.cilantro_rice", "qty": 1 }]
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "beans.pinto_beans", "qty": 1 }]
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": []
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.green_sauce", "qty": 1 }]
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.chicken", "qty": 1 }]
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 3, "allowQuantity": true },
+            "defaults": [
+              { "ref": "veg.cucumber", "qty": 1 },
+              { "ref": "veg.guacamole", "qty": 1 },
+              { "ref": "veg.lettuce", "qty": 1 }
+            ]
+          },
+          { "groupRef": "comments", "titleOverride": "Comments", "rules": { "type": "freeText", "maxLength": 500 } }
+        ]
+      }
+    ]
+  },
+
+  "newEntitiesDiscovered": {
+    "newCategoryPaths": [["Habiburrito Bowls"]],
+    "newGroups": [],
+    "newOptions": []
+  }
+}

@@ -13,42 +13,109 @@ datasource db {
 
 model MenuItem {
   id          Int                @id @default(autoincrement())
+  key         String             @unique
   name        String
   description String?
   price       Float
-  category    String             // 'bowls', 'burritos', 'tacos', 'drinks'
+  category    String             // legacy category slug
+  category_id Int?
+  category_ref MenuCategory?     @relation(fields: [category_id], references: [id])
   image_url   String?
   chef_note   String?
   is_signature Boolean           @default(false)
   is_available Boolean           @default(true)
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt
-  modifiers   ItemModifierLink[]
+
+  modifier_groups MenuItemModifierGroup[]
+  included_items MenuItemIncludedOption[]
+}
+
+enum ModifierGroupType {
+  SELECT
+  FREE_TEXT
+}
+
+model MenuCategory {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique
+  name       String
+  aliases    String[] @default([])
+  is_active  Boolean  @default(true)
+  sort_order Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  items      MenuItem[]
 }
 
 model Modifier {
   id            Int                @id @default(autoincrement())
+  key           String             @unique
   name          String
   max_selection Int
+  type          ModifierGroupType  @default(SELECT)
+  is_active     Boolean            @default(true)
   options       ModifierOption[]
-  items         ItemModifierLink[]
+
+  item_links    MenuItemModifierGroup[]
 }
 
 model ModifierOption {
   id               Int      @id @default(autoincrement())
+  key              String   @unique
   modifier_id      Int
   modifier         Modifier @relation(fields: [modifier_id], references: [id])
   name             String
   price_adjustment Float    @default(0.00)
+  is_active        Boolean  @default(true)
+  included_in      MenuItemIncludedOption[]
+  defaults_in      MenuItemModifierDefault[]
 }
 
-model ItemModifierLink {
-  item_id     Int
-  modifier_id Int
-  item        MenuItem @relation(fields: [item_id], references: [id])
-  modifier    Modifier @relation(fields: [modifier_id], references: [id])
 
-  @@id([item_id, modifier_id])
+
+model MenuItemModifierGroup {
+  id                Int      @id @default(autoincrement())
+  menu_item_id      Int
+  modifier_id       Int
+  title_override    String?
+  required          Boolean  @default(false)
+  min_select        Int      @default(0)
+  max_select        Int      @default(0)
+  allow_quantity    Boolean  @default(false)
+  allow_none_option Boolean  @default(false)
+  notes             String?
+  free_text_max_length Int?
+
+  menu_item MenuItem @relation(fields: [menu_item_id], references: [id])
+  modifier  Modifier @relation(fields: [modifier_id], references: [id])
+  defaults  MenuItemModifierDefault[]
+
+  @@unique([menu_item_id, modifier_id])
+}
+
+model MenuItemModifierDefault {
+  id            Int  @id @default(autoincrement())
+  item_group_id Int
+  option_id     Int
+  quantity      Int  @default(1)
+
+  item_group MenuItemModifierGroup @relation(fields: [item_group_id], references: [id])
+  option     ModifierOption        @relation(fields: [option_id], references: [id])
+
+  @@unique([item_group_id, option_id])
+}
+
+model MenuItemIncludedOption {
+  id          Int  @id @default(autoincrement())
+  menu_item_id Int
+  option_id   Int
+  quantity    Int  @default(1)
+
+  menu_item MenuItem      @relation(fields: [menu_item_id], references: [id])
+  option    ModifierOption @relation(fields: [option_id], references: [id])
+
+  @@unique([menu_item_id, option_id])
 }
 
 model AppSetting {

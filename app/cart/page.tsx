@@ -18,12 +18,12 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
+            <div className="min-h-screen bg-brand-black flex flex-col text-brand-cream">
                 <Header />
                 <main className="flex-grow flex flex-col items-center justify-center p-8 pt-36 text-center">
                     <h2 className="text-3xl font-display font-semibold text-white mb-4">Your Cart is Empty</h2>
                     <p className="text-gray-300 mb-8 text-lg">Looks like you haven’t added any delicious burritos yet.</p>
-                    <Link href="/build">
+                    <Link href="/menu">
                         <Button variant="primary" className="text-lg px-8 py-3 bg-brand-gold text-brand-black">
                             Start Your Order
                         </Button>
@@ -35,7 +35,7 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
+        <div className="min-h-screen bg-brand-black flex flex-col text-brand-cream">
             <Header />
 
             <main className="flex-grow max-w-5xl mx-auto w-full p-8 pt-36">
@@ -63,28 +63,39 @@ export default function CartPage() {
                                     </div>
 
                                     <div className="text-sm text-gray-300 space-y-1">
-                                        {item.rice && (
-                                            <p><span className="font-semibold text-brand-gold/80">Base:</span> {item.rice.name}</p>
-                                        )}
-
-                                        {item.protein && (
-                                            <p><span className="font-semibold text-brand-gold/80">Protein:</span> {item.protein.name}</p>
-                                        )}
-
-                                        {item.toppings.length > 0 && (
-                                            <p><span className="font-semibold text-brand-gold/80">Toppings:</span> {item.toppings.map(t => t.name).join(', ')}</p>
-                                        )}
-
-                                        {item.sauces.length > 0 && (
-                                            <p><span className="font-semibold text-brand-gold/80">Sauces:</span> {item.sauces.map(s => s.name).join(', ')}</p>
-                                        )}
-
-                                        {item.addons.length > 0 && (
-                                            <p><span className="font-semibold text-brand-gold/80">Add-ons:</span> {item.addons.map(a => a.name).join(', ')}</p>
-                                        )}
-
-                                        {item.extras.length > 0 && (
-                                            <p><span className="font-semibold text-brand-gold/80">Extras:</span> {item.extras.map(e => e.name).join(', ')}</p>
+                                        {/* New Generic Customization Display */}
+                                        {item.customization ? (
+                                            Object.entries(item.customization).map(([label, options]) => {
+                                                if (!options || options.length === 0) return null;
+                                                return (
+                                                    <p key={label}>
+                                                        <span className="font-semibold text-brand-gold/80">{label}:</span>{' '}
+                                                        {options.map(o => o.name).join(', ')}
+                                                    </p>
+                                                );
+                                            })
+                                        ) : (
+                                            /* Legacy Fallback */
+                                            <>
+                                                {item.rice && (
+                                                    <p><span className="font-semibold text-brand-gold/80">Base:</span> {item.rice.name}</p>
+                                                )}
+                                                {item.protein && (
+                                                    <p><span className="font-semibold text-brand-gold/80">Protein:</span> {item.protein.name}</p>
+                                                )}
+                                                {item.toppings && item.toppings.length > 0 && (
+                                                    <p><span className="font-semibold text-brand-gold/80">Toppings:</span> {item.toppings.map(t => t.name).join(', ')}</p>
+                                                )}
+                                                {item.sauces && item.sauces.length > 0 && (
+                                                    <p><span className="font-semibold text-brand-gold/80">Sauces:</span> {item.sauces.map(s => s.name).join(', ')}</p>
+                                                )}
+                                                {item.addons && item.addons.length > 0 && (
+                                                    <p><span className="font-semibold text-brand-gold/80">Add-ons:</span> {item.addons.map(a => a.name).join(', ')}</p>
+                                                )}
+                                                {item.extras && item.extras.length > 0 && (
+                                                    <p><span className="font-semibold text-brand-gold/80">Extras:</span> {item.extras.map(e => e.name).join(', ')}</p>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>

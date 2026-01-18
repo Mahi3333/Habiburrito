@@ -1,0 +1,551 @@
+{
+  "version": "1.0",
+  "restaurant": "Habiburrito",
+  "category": {
+    "key": "category.habiburrito_quesadillas",
+    "name": "Habiburrito Quesadillas",
+    "aliases": ["Quesadilla"],
+    "items": [
+      {
+        "key": "quesadillas.build_your_own_quesadilla",
+        "name": "Build your Own Quesadilla",
+        "price": 10.99,
+        "description": null,
+        "isActive": true,
+        "includedItems": [],
+        "modifierGroups": [
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Protein Choice (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauce Choices (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "quesadilla_veg",
+            "titleOverride": "Habiburrito Quesadilla veggie (pick 1)",
+            "rules": { "required": true, "min": 1, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "quesadillas.classic_chicken_quesadilla",
+        "name": "Classic Chicken Quesadilla",
+        "price": 11.99,
+        "description": "Boom Boom Sauce, White Sauce, Chicken, Monterey Jack Cheese",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "sauces.boom_boom_sauce", "qty": 1 },
+          { "ref": "sauces.white_sauce", "qty": 1 },
+          { "ref": "protein.chicken", "qty": 1 },
+          { "ref": "cheese.monterey_jack_cheese", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true,
+            "notes": "Only Spring Mix appears here for quesadillas."
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.monterey_jack_cheese", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.boom_boom_sauce", "qty": 1 },
+              { "ref": "sauces.white_sauce", "qty": 1 }
+            ],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.chicken", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 10, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "quesadillas.barbacoa_quesadilla",
+        "name": "Barbacoa Quesadilla",
+        "price": 12.99,
+        "description": "Green Sauce, Barbacoa Meat, Monterey Jack Cheese",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "sauces.green_sauce", "qty": 1 },
+          { "ref": "protein.barbacoa_meat", "qty": 1 },
+          { "ref": "cheese.monterey_jack_cheese", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.monterey_jack_cheese", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.green_sauce", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.barbacoa_meat", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 10, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "quesadillas.spicy_chick_quesadilla",
+        "name": "Spicy Chick Quesadilla",
+        "price": 11.99,
+        "description": "Chipotle Aioli, Spicy Chicken, Monterey Jack Cheese",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "sauces.chipotle_aioli", "qty": 1 },
+          { "ref": "protein.spicy_chicken", "qty": 1 },
+          { "ref": "cheese.monterey_jack_cheese", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.monterey_jack_cheese", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.chipotle_aioli", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.spicy_chicken", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 10, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "quesadillas.shrimp_lovers_quesadilla",
+        "name": "Shrimp Lovers Quesadilla",
+        "price": 12.99,
+        "description": "Green Sauce, Shrimp, Lime, Monterey Jack Cheese",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "sauces.green_sauce", "qty": 1 },
+          { "ref": "protein.shrimp", "qty": 1 },
+          { "ref": "veg.lime", "qty": 1 },
+          { "ref": "cheese.monterey_jack_cheese", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "cheese.monterey_jack_cheese", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.green_sauce", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.shrimp", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 10, "allowQuantity": false },
+            "defaults": [{ "ref": "veg.lime", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "quesadillas.falafel_quesadilla",
+        "name": "Falafel Quesadilla",
+        "price": 10.99,
+        "description": "Falafel Sauce-Tahini, Hummus, Falafel",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "sauces.falafel_sauce_tahini", "qty": 1 },
+          { "ref": "sauces.hummus", "qty": 1 },
+          { "ref": "protein.falafel", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 2, "allowQuantity": true },
+            "defaults": [
+              { "ref": "sauces.falafel_sauce_tahini", "qty": 1 },
+              { "ref": "sauces.hummus", "qty": 1 }
+            ],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.falafel", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 10, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      },
+
+      {
+        "key": "quesadillas.loaded_beef_quesadilla",
+        "name": "Loaded Beef Quesadilla",
+        "price": 10.99,
+        "description": "Boom Boom Sauce, Ground Beef",
+        "isActive": true,
+        "includedItems": [
+          { "ref": "sauces.boom_boom_sauce", "qty": 1 },
+          { "ref": "protein.ground_beef", "qty": 1 }
+        ],
+        "modifierGroups": [
+          {
+            "groupRef": "base",
+            "titleOverride": "Habiburrito Base",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "beans",
+            "titleOverride": "Habiburrito Beans New",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "cheese",
+            "titleOverride": "Habiburrito Cheese",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "sauces",
+            "titleOverride": "Habiburrito Sauces",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "sauces.boom_boom_sauce", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "protein",
+            "titleOverride": "Habiburrito Proteins",
+            "rules": { "required": false, "min": 0, "max": 1, "allowQuantity": true },
+            "defaults": [{ "ref": "protein.ground_beef", "qty": 1 }],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "veg_toppings",
+            "titleOverride": "Habiburrito Veg & Toppings",
+            "rules": { "required": false, "min": 0, "max": 10, "allowQuantity": false },
+            "defaults": [],
+            "allowNoneOption": true
+          },
+          {
+            "groupRef": "comments",
+            "titleOverride": "Comments",
+            "rules": { "type": "freeText", "maxLength": 500 }
+          }
+        ]
+      }
+    ]
+  },
+
+  "catalog": {
+    "modifierGroups": {
+      "base": {
+        "key": "base",
+        "name": "Habiburrito Base",
+        "options": [{ "key": "base.spring_mix", "name": "Spring Mix" }]
+      },
+      "beans": {
+        "key": "beans",
+        "name": "Habiburrito Beans",
+        "options": [
+          { "key": "beans.black_beans", "name": "Black Beans" },
+          { "key": "beans.pinto_beans", "name": "Pinto Beans" }
+        ]
+      },
+      "protein": {
+        "key": "protein",
+        "name": "Habiburrito Proteins",
+        "options": [
+          { "key": "protein.barbacoa_meat", "name": "Barbacoa Meat" },
+          { "key": "protein.chicken", "name": "Chicken" },
+          { "key": "protein.falafel", "name": "Falafel" },
+          { "key": "protein.shrimp", "name": "Shrimp" },
+          { "key": "protein.spicy_chicken", "name": "Spicy Chicken" },
+          { "key": "protein.ground_beef", "name": "Ground Beef" }
+        ]
+      },
+      "cheese": {
+        "key": "cheese",
+        "name": "Habiburrito Cheese",
+        "options": [
+          { "key": "cheese.shredded_cheese", "name": "Shredded Cheese" },
+          { "key": "cheese.feta_cheese", "name": "Feta Cheese" },
+          { "key": "cheese.monterey_jack_cheese", "name": "Monterey Jack Cheese" },
+          { "key": "cheese.queso", "name": "Queso" }
+        ]
+      },
+      "sauces": {
+        "key": "sauces",
+        "name": "Habiburrito Sauces",
+        "options": [
+          { "key": "sauces.flame_sauce", "name": "Flame Sauce" },
+          { "key": "sauces.mango_habanero_sauce", "name": "Mango Habanero Sauce" },
+          { "key": "sauces.thousand_island", "name": "Thousand Island" },
+          { "key": "sauces.bleu_cheese", "name": "Bleu Cheese" },
+          { "key": "sauces.caesar", "name": "Caesar" },
+          { "key": "sauces.falafel_sauce_tahini", "name": "Falafel Sauce-Tahini" },
+          { "key": "sauces.garlic_sauce", "name": "Garlic Sauce" },
+          { "key": "sauces.greek", "name": "Greek" },
+          { "key": "sauces.hummus", "name": "Hummus" },
+          { "key": "sauces.nashville_sauce", "name": "Nashville Sauce" },
+          { "key": "sauces.green_sauce", "name": "Green Sauce" },
+          { "key": "sauces.sweet_and_sour", "name": "Sweet and Sour" },
+          { "key": "sauces.honey_mustard", "name": "Honey Mustard" },
+          { "key": "sauces.sriracha", "name": "Sriracha" },
+          { "key": "sauces.balsamic_vinaigrette", "name": "Balsamic Vinaigrette" },
+          { "key": "sauces.boom_boom_sauce", "name": "Boom Boom Sauce" },
+          { "key": "sauces.chipotle_aioli", "name": "Chipotle Aioli" },
+          { "key": "sauces.french", "name": "French" },
+          { "key": "sauces.garlic_honey_sauce", "name": "Garlic Honey Sauce" },
+          { "key": "sauces.mayo", "name": "Mayo" },
+          { "key": "sauces.ranch", "name": "Ranch" },
+          { "key": "sauces.sour_cream", "name": "Sour Cream" },
+          { "key": "sauces.white_sauce", "name": "White Sauce" },
+          { "key": "sauces.red_sauce", "name": "Red Sauce" }
+        ]
+      },
+      "veg_toppings": {
+        "key": "veg_toppings",
+        "name": "Habiburrito Veg & Toppings",
+        "options": [
+          { "key": "veg.cilantro", "name": "Cilantro" },
+          { "key": "veg.black_olives", "name": "Black Olives" },
+          { "key": "veg.grilled_onions_and_peppers", "name": "Grilled Onions and Peppers" },
+          { "key": "veg.lime", "name": "Lime" },
+          { "key": "veg.red_onion", "name": "Red Onion" },
+          { "key": "veg.tomato", "name": "Tomato" },
+          { "key": "veg.banana_peppers", "name": "Banana Peppers" },
+          { "key": "veg.corn", "name": "Corn" },
+          { "key": "veg.jalapenos", "name": "Jalapenos" },
+          { "key": "sauces.pico_de_gallo_salsa", "name": "Pico De Gallo Salsa" }
+        ]
+      },
+      "quesadilla_veg": {
+        "key": "quesadilla_veg",
+        "name": "Habiburrito Quesadilla veggie",
+        "options": [
+          { "key": "veg.cilantro", "name": "Cilantro" },
+          { "key": "veg.black_olives", "name": "Black Olives" },
+          { "key": "veg.grilled_onions_and_peppers", "name": "Grilled Onions and Peppers" },
+          { "key": "veg.lettuce", "name": "Lettuce" },
+          { "key": "veg.pineapple", "name": "Pineapple" },
+          { "key": "veg.sumac", "name": "Sumac" },
+          { "key": "veg.guacamole", "name": "Guacamole" },
+          { "key": "veg.banana_peppers", "name": "Banana Peppers" },
+          { "key": "veg.corn", "name": "Corn" },
+          { "key": "veg.jalapenos", "name": "Jalapenos" },
+          { "key": "veg.lime", "name": "Lime" },
+          { "key": "veg.red_onion", "name": "Red Onion" },
+          { "key": "veg.tomato", "name": "Tomato" }
+        ]
+      },
+      "comments": {
+        "key": "comments",
+        "name": "Comments",
+        "options": []
+      }
+    }
+  }
+}

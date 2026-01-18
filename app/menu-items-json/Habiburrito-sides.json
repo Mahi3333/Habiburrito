@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "restaurant": "Habiburrito",
+  "category": {
+    "key": "category.habiburrito_sides",
+    "name": "Sides",
+    "aliases": ["Add-ons", "Extras"],
+    "items": [
+      {
+        "key": "sides.side_of_jalapeno",
+        "name": "Side of Jalapeno",
+        "price": 0.99,
+        "isActive": true,
+        "description": null,
+        "includedItems": [
+          { "ref": "veg.jalapenos", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.side_of_banana_peppers",
+        "name": "Side of Banana Peppers",
+        "price": 0.99,
+        "isActive": true,
+        "description": null,
+        "includedItems": [
+          { "ref": "veg.banana_peppers", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.side_of_queso",
+        "name": "Side of Queso",
+        "price": 1.99,
+        "isActive": true,
+        "description": null,
+        "includedItems": [
+          { "ref": "cheese.queso", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.side_of_guacamole",
+        "name": "Side of Guacamole",
+        "price": 2.85,
+        "isActive": true,
+        "description": null,
+        "includedItems": [
+          { "ref": "veg.guacamole", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.tortilla",
+        "name": "Tortilla",
+        "price": 0.50,
+        "isActive": true,
+        "description": "Single flour tortilla",
+        "includedItems": [
+          { "ref": "base.tortilla", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.side_of_nachos",
+        "name": "Side of Nachos",
+        "price": 1.90,
+        "isActive": true,
+        "description": null,
+        "includedItems": [
+          { "ref": "base.nacho_chips", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.side_of_nachos_with_queso",
+        "name": "Side of Nachos w/ Queso",
+        "price": 5.99,
+        "isActive": true,
+        "description": "Nacho chips served with queso",
+        "includedItems": [
+          { "ref": "base.nacho_chips", "qty": 1 },
+          { "ref": "cheese.queso", "qty": 1 }
+        ],
+        "modifierGroups": []
+      },
+      {
+        "key": "sides.side_of_nachos_with_guac",
+        "name": "Side of Nachos w/ Guac",
+        "price": 5.99,
+        "isActive": true,
+        "description": "Nacho chips served with guacamole",
+        "includedItems": [
+          { "ref": "base.nacho_chips", "qty": 1 },
+          { "ref": "veg.guacamole", "qty": 1 }
+        ],
+        "modifierGroups": []
+      }
+    ]
+  }
+}

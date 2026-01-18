@@ -18,6 +18,31 @@ interface MenuItem {
     chef_note?: string;
 }
 
+interface ModifierOption {
+    id: number;
+    name: string;
+    price_adjustment: number;
+    is_active: boolean;
+}
+
+interface Modifier {
+    id: number;
+    name: string;
+    type: 'SELECT' | 'FREE_TEXT';
+    options: ModifierOption[];
+}
+
+interface ItemModifierGroup {
+    id: number;
+    menu_item_id: number;
+    modifier_id: number;
+    title_override: string | null;
+    required: boolean;
+    min_select: number;
+    max_select: number;
+    modifier: Modifier;
+}
+
 interface Order {
     id: number;
     user_id: number | null;
@@ -65,6 +90,12 @@ export default function AdminDashboard() {
         chef_note: ''
     });
 
+    // Modifier State
+    const [allModifiers, setAllModifiers] = useState<Modifier[]>([]);
+    const [itemModifiers, setItemModifiers] = useState<ItemModifierGroup[]>([]);
+    const [showModifierSelector, setShowModifierSelector] = useState(false);
+
+
     // Operations State
     const [storeSettings, setStoreSettings] = useState({
         online_ordering_enabled: true,
@@ -93,7 +124,74 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         fetchData();
+        fetchGlobalModifiers(); // Fetch global modifiers on load
     }, []);
+
+    const fetchGlobalModifiers = async () => {
+        try {
+            const res = await fetch('/api/admin/modifiers');
+            if (res.ok) {
+                const data = await res.json();
+                setAllModifiers(data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchItemModifiers = async (itemId: number) => {
+        try {
+            const res = await fetch(`/api/menu/${itemId}/modifiers`);
+            if (res.ok) {
+                const data = await res.json();
+                setItemModifiers(data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // Handle Adding a Modifier Group
+    const handleAddModifierGroup = async (modifierId: number) => {
+        if (!currentItem.id) {
+            alert("Please save the item first before adding modifiers.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/menu/${currentItem.id}/modifiers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    modifier_id: modifierId,
+                    required: false, // default
+                    max_select: 1,
+                    title_override: null
+                })
+            });
+
+            if (res.ok) {
+                await fetchItemModifiers(currentItem.id);
+                setShowModifierSelector(false);
+            }
+        } catch (err) {
+            console.error('Failed to add modifier', err);
+        }
+    };
+
+    const handleRemoveModifierGroup = async (linkId: number) => {
+        if (!confirm('Remove this modifier group from the item?')) return;
+        try {
+            const res = await fetch(`/api/menu/${currentItem.id}/modifiers?linkId=${linkId}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                await fetchItemModifiers(currentItem.id!);
+            }
+        } catch (err) {
+            console.error('Failed to remove modifier', err);
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -183,10 +281,13 @@ export default function AdminDashboard() {
         setImageFile(null);
         setIsEditing(true);
         setShowForm(true);
+        setItemModifiers([]);
+        if (item.id) fetchItemModifiers(item.id);
     };
 
     const openAdd = () => {
         resetForm();
+        setItemModifiers([]);
         setShowForm(true);
     };
 
@@ -245,7 +346,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-brand-night text-brand-cream font-sans flex flex-col">
+        <div className="min-h-screen bg-brand-black text-brand-cream font-sans flex flex-col">
             <Header />
 
             <main className="pt-36 pb-20 container mx-auto px-6">
@@ -366,120 +467,283 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
 
-                                {/* Form */}
+                                {/* Side Drawer Form (Replaces Modal) */}
                                 {showForm && (
-                                    <div className="bg-gray-900 border border-white/10 p-8 rounded-2xl mb-8 relative">
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-gold to-transparent opacity-50" />
-                                        <h3 className="text-xl font-bold text-white mb-6">
-                                            {isEditing ? 'Edit Existing Item' : 'Create New Item'}
-                                        </h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                            <div>
-                                                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-2">Item Name</label>
-                                                <input
-                                                    type="text"
-                                                    name="name"
-                                                    value={currentItem.name}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold"
-                                                />
+                                    <>
+                                        {/* Backdrop */}
+                                        <div
+                                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity animate-fade-in"
+                                            onClick={() => { setShowForm(false); setImageFile(null); }}
+                                        />
+
+                                        {/* Drawer */}
+                                        <div className="fixed inset-y-0 right-0 z-50 w-full max-w-2xl bg-brand-black border-l border-white/10 shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col animate-slide-in-right">
+                                            {/* Header */}
+                                            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-brand-black z-10">
+                                                <div>
+                                                    <h3 className="text-xl font-display font-bold text-white">
+                                                        {isEditing ? `Edit: ${currentItem.name}` : 'Create New Item'}
+                                                    </h3>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="text-xs text-brand-gold uppercase tracking-wider font-bold">
+                                                            {currentItem.id ? `ID: #${currentItem.id}` : 'New Draft'}
+                                                        </span>
+                                                        {isEditing && (
+                                                            <span className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-gray-400">
+                                                                Last updated today
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        onClick={() => { setShowForm(false); setImageFile(null); }}
+                                                        className="px-4 py-2 text-gray-400 hover:text-white transition-colors hover:bg-white/5 rounded-lg text-sm font-medium"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        onClick={handleSaveItem}
+                                                        className="px-6 py-2 bg-brand-gold text-black rounded-lg hover:bg-white transition-colors font-bold uppercase tracking-wide text-xs shadow-lg shadow-brand-gold/10 flex items-center gap-2"
+                                                    >
+                                                        <span>Save Changes</span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-2">Category</label>
-                                                <select
-                                                    name="category"
-                                                    value={currentItem.category}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold"
-                                                >
-                                                    {categories.map(cat => (
-                                                        <option key={cat} value={cat} className="bg-gray-800">{cat}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-2">Price ($)</label>
-                                                <input
-                                                    type="number"
-                                                    name="price"
-                                                    step="0.01"
-                                                    value={currentItem.price}
-                                                    onChange={handleInputChange}
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-2">Image</label>
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={handleFileChange}
-                                                    className="w-full px-4 py-2 bg-black/40 border border-white/10 rounded-lg text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-gold file:text-black hover:file:bg-white"
-                                                />
-                                                <p className="text-xs text-gray-300 mt-1">
-                                                    Current URL: {currentItem.image_url || 'None'}
-                                                </p>
-                                            </div>
-                                            <div className="md:col-span-2">
-                                                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-2">Description</label>
-                                                <textarea
-                                                    name="description"
-                                                    value={currentItem.description || ''}
-                                                    onChange={handleInputChange}
-                                                    rows={3}
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold resize-none"
-                                                />
-                                            </div>
-                                            <div className="md:col-span-2">
-                                                <label className="block text-xs uppercase tracking-wider text-gray-300 mb-2">Chef Note (Tag)</label>
-                                                <input
-                                                    type="text"
-                                                    name="chef_note"
-                                                    value={currentItem.chef_note || ''}
-                                                    onChange={handleInputChange}
-                                                    placeholder="e.g. 'Spicy', 'Best Seller'"
-                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold"
-                                                />
+
+                                            {/* Scrollable Content */}
+                                            <div className="flex-grow overflow-y-auto custom-scrollbar bg-brand-black">
+                                                <div className="p-8 space-y-8">
+
+                                                    {/* Section: Basic Info */}
+                                                    <section className="space-y-6">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <div className="w-1 h-4 bg-brand-gold rounded-full" />
+                                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Basic Information</h4>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 bg-white/5 rounded-xl border border-white/5">
+                                                            <div className="md:col-span-8">
+                                                                <label className="block text-[10px] uppercase tracking-wider text-brand-gold mb-2 font-bold">Item Name</label>
+                                                                <input
+                                                                    type="text"
+                                                                    name="name"
+                                                                    value={currentItem.name}
+                                                                    onChange={handleInputChange}
+                                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold transition-colors font-medium"
+                                                                    placeholder="e.g. Signature Bowl"
+                                                                />
+                                                            </div>
+
+                                                            <div className="md:col-span-4">
+                                                                <label className="block text-[10px] uppercase tracking-wider text-brand-gold mb-2 font-bold">Price ($)</label>
+                                                                <input
+                                                                    type="number"
+                                                                    name="price"
+                                                                    step="0.01"
+                                                                    value={currentItem.price}
+                                                                    onChange={handleInputChange}
+                                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold transition-colors font-mono"
+                                                                />
+                                                            </div>
+
+                                                            <div className="md:col-span-12">
+                                                                <label className="block text-[10px] uppercase tracking-wider text-brand-gold mb-2 font-bold">Category</label>
+                                                                <div className="flex flex-wrap gap-2">
+                                                                    {categories.map(cat => (
+                                                                        <button
+                                                                            key={cat}
+                                                                            onClick={() => setCurrentItem(prev => ({ ...prev, category: cat }))}
+                                                                            className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide border transition-all ${currentItem.category === cat
+                                                                                ? 'bg-brand-gold text-black border-brand-gold'
+                                                                                : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30'
+                                                                                }`}
+                                                                        >
+                                                                            {cat}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="md:col-span-12">
+                                                                <label className="block text-[10px] uppercase tracking-wider text-brand-gold mb-2 font-bold">Description</label>
+                                                                <textarea
+                                                                    name="description"
+                                                                    value={currentItem.description || ''}
+                                                                    onChange={handleInputChange}
+                                                                    rows={3}
+                                                                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold resize-none transition-colors"
+                                                                    placeholder="Describe the ingredients and flavors..."
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </section>
+
+                                                    {/* Section: Configuration */}
+                                                    <section className="space-y-6">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <div className="w-1 h-4 bg-purple-500 rounded-full" />
+                                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Configuration</h4>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                            {/* Image Upload Compact */}
+                                                            <div className="p-4 bg-white/5 rounded-xl border border-white/5">
+                                                                <label className="block text-[10px] uppercase tracking-wider text-brand-gold mb-3 font-bold">Display Image</label>
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="relative w-20 h-20 bg-black/50 rounded-lg border border-white/10 overflow-hidden flex-shrink-0 group">
+                                                                        {currentItem.image_url ? (
+                                                                            <Image src={currentItem.image_url} alt="Preview" fill className="object-cover" />
+                                                                        ) : (
+                                                                            <div className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-600 font-bold uppercase">No Img</div>
+                                                                        )}
+                                                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex-grow">
+                                                                        <input type="file" id="drawer-file-upload" className="hidden" accept="image/*" onChange={handleFileChange} />
+                                                                        <label htmlFor="drawer-file-upload" className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold uppercase tracking-wide transition-colors">
+                                                                            Upload New
+                                                                        </label>
+                                                                        <p className="text-[10px] text-gray-500 mt-2">Max 2MB. JPG/PNG.</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Status Toggles */}
+                                                            <div className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col justify-center gap-4">
+                                                                <label className="flex items-center justify-between cursor-pointer group">
+                                                                    <span className="text-xs font-bold text-gray-300 group-hover:text-white">Available Online</span>
+                                                                    <div className="relative">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            name="is_available"
+                                                                            checked={currentItem.is_available}
+                                                                            onChange={handleInputChange}
+                                                                            className="sr-only peer"
+                                                                        />
+                                                                        <div className="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-gold"></div>
+                                                                    </div>
+                                                                </label>
+
+                                                                <div className="h-px bg-white/5" />
+
+                                                                <label className="flex items-center justify-between cursor-pointer group">
+                                                                    <span className="text-xs font-bold text-gray-300 group-hover:text-white">Signature Badge</span>
+                                                                    <div className="relative">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            name="is_signature"
+                                                                            checked={currentItem.is_signature}
+                                                                            onChange={handleInputChange}
+                                                                            className="sr-only peer"
+                                                                        />
+                                                                        <div className="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+
+                                                            <div className="md:col-span-2">
+                                                                <label className="block text-[10px] uppercase tracking-wider text-brand-gold mb-2 font-bold">Marketing Tag</label>
+                                                                <input
+                                                                    type="text"
+                                                                    name="chef_note"
+                                                                    value={currentItem.chef_note || ''}
+                                                                    onChange={handleInputChange}
+                                                                    placeholder="e.g. 'Spicy', 'Chef's Choice'"
+                                                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-brand-gold transition-colors text-sm"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </section>
+
+                                                    {/* Section: Recipe & Modifiers */}
+                                                    <section className="space-y-6">
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-1 h-4 bg-brand-gold rounded-full" />
+                                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Recipe & Modifiers</h4>
+                                                            </div>
+                                                            {currentItem.id && (
+                                                                <button
+                                                                    onClick={() => setShowModifierSelector(!showModifierSelector)}
+                                                                    className="text-[10px] font-bold uppercase tracking-wider text-brand-gold hover:text-white transition-colors flex items-center gap-1"
+                                                                >
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                                                    Add Group
+                                                                </button>
+                                                            )}
+                                                        </div>
+
+                                                        {currentItem.id ? (
+                                                            <div className="space-y-4">
+                                                                {/* Modifier Selector Dropdown */}
+                                                                {showModifierSelector && (
+                                                                    <div className="p-4 bg-gray-800 rounded-xl border border-white/10 animate-fade-in mb-4">
+                                                                        <h5 className="text-xs font-bold text-white mb-3">Select Modifier Group to Add</h5>
+                                                                        <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                                                                            {allModifiers.map(mod => (
+                                                                                <button
+                                                                                    key={mod.id}
+                                                                                    onClick={() => handleAddModifierGroup(mod.id)}
+                                                                                    className="text-left px-3 py-2 rounded bg-black/40 hover:bg-brand-gold/20 hover:text-brand-gold text-xs text-gray-300 transition-colors truncate"
+                                                                                >
+                                                                                    {mod.name}
+                                                                                </button>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Attached Modifiers List */}
+                                                                {itemModifiers.length > 0 ? (
+                                                                    itemModifiers.map((group) => (
+                                                                        <div key={group.id} className="p-4 bg-white/5 rounded-xl border border-white/5 group hover:border-brand-gold/20 transition-colors">
+                                                                            <div className="flex items-center justify-between mb-3">
+                                                                                <div>
+                                                                                    <h5 className="font-bold text-white text-sm">
+                                                                                        {group.title_override || group.modifier.name}
+                                                                                    </h5>
+                                                                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                                                                                        {group.required ? 'Required' : 'Optional'} • Select {group.min_select} - {group.max_select}
+                                                                                    </p>
+                                                                                </div>
+                                                                                <button
+                                                                                    onClick={() => handleRemoveModifierGroup(group.id)}
+                                                                                    className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-black/40 rounded transition-colors"
+                                                                                >
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                                                                </button>
+                                                                            </div>
+
+                                                                            {/* Options Preview */}
+                                                                            <div className="flex flex-wrap gap-2">
+                                                                                {group.modifier.options?.map(opt => (
+                                                                                    <span key={opt.id} className="px-2 py-1 rounded bg-black/40 text-[10px] text-gray-400 border border-white/5">
+                                                                                        {opt.name} {opt.price_adjustment > 0 && `(+$${opt.price_adjustment})`}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <div className="p-6 bg-brand-gold/5 border border-brand-gold/10 rounded-xl text-center border-dashed">
+                                                                        <p className="text-gray-500 text-xs">No modifiers attached to this item yet.</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="p-4 bg-brand-gold/10 border border-brand-gold/20 rounded-xl text-center">
+                                                                <p className="description text-brand-gold text-xs font-bold">Save this item as a draft first to attach modifiers.</p>
+                                                            </div>
+                                                        )}
+                                                    </section>
+
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="flex gap-4 mb-8 p-4 bg-white/5 rounded-lg">
-                                            <label className="flex items-center gap-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    name="is_available"
-                                                    checked={currentItem.is_available}
-                                                    onChange={handleInputChange}
-                                                    className="w-5 h-5 rounded border-gray-500 text-brand-gold focus:ring-brand-gold bg-transparent"
-                                                />
-                                                <span className="text-white">Available in Store</span>
-                                            </label>
-                                            <div className="w-px h-6 bg-white/10" />
-                                            <label className="flex items-center gap-3 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    name="is_signature"
-                                                    checked={currentItem.is_signature}
-                                                    onChange={handleInputChange}
-                                                    className="w-5 h-5 rounded border-gray-500 text-brand-gold focus:ring-brand-gold bg-transparent"
-                                                />
-                                                <span className="text-white">Signature Item (Featured)</span>
-                                            </label>
-                                        </div>
-                                        <div className="flex gap-4">
-                                            <button
-                                                onClick={handleSaveItem}
-                                                className="bg-brand-gold text-black px-8 py-3 rounded-lg hover:bg-white transition-colors font-bold uppercase tracking-wide text-sm"
-                                            >
-                                                {isEditing ? 'Save Changes' : 'Create Item'}
-                                            </button>
-                                            <button
-                                                onClick={() => { setShowForm(false); setImageFile(null); }}
-                                                className="border border-white/20 text-white px-8 py-3 rounded-lg hover:bg-white/5 transition-colors text-sm uppercase tracking-wide"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
+                                    </>
                                 )}
 
                                 {/* List */}
@@ -496,16 +760,16 @@ export default function AdminDashboard() {
                                                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                         />
                                                     ) : (
-                                                        <div className="absolute inset-0 flex items-center justify-center text-gray-600 text-xs">No img</div>
+                                                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-xs uppercase tracking-wider font-bold">No Image</div>
                                                     )}
                                                 </div>
                                                 <div className="flex-grow flex flex-col justify-between">
                                                     <div>
                                                         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                                                             <div className="flex items-center gap-3">
-                                                                <h4 className="font-bold text-xl text-white">{item.name}</h4>
+                                                                <h4 className="font-bold text-xl text-white group-hover:text-brand-gold transition-colors">{item.name}</h4>
                                                                 {item.is_signature && (
-                                                                    <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-brand-gold text-black rounded-full tracking-wider">Signature</span>
+                                                                    <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full tracking-wider">Signature</span>
                                                                 )}
                                                                 {!item.is_available && (
                                                                     <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-red-500/20 text-red-400 border border-red-500/30 rounded-full tracking-wider">Sold Out</span>
@@ -513,22 +777,35 @@ export default function AdminDashboard() {
                                                             </div>
                                                             <span className="text-brand-gold font-mono text-xl">${Number(item.price).toFixed(2)}</span>
                                                         </div>
-                                                        <p className="text-gray-300 text-sm mb-3 line-clamp-2 md:line-clamp-none">{item.description}</p>
-                                                        <div className="flex items-center gap-4 text-xs text-gray-300 uppercase tracking-wider">
+                                                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">{item.description}</p>
+                                                        <div className="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wider font-medium">
                                                             <span className="px-2 py-1 bg-white/5 rounded">{item.category}</span>
                                                             {item.chef_note && <span className="text-brand-gold/70">• {item.chef_note}</span>}
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center justify-end gap-3 mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
                                                         <button
+                                                            onClick={() => {
+                                                                // DUPLICATE LOGIC
+                                                                const newItem = { ...item, name: `${item.name} (Copy)`, id: undefined };
+                                                                setCurrentItem(newItem);
+                                                                setIsEditing(false);
+                                                                setShowForm(true);
+                                                            }}
+                                                            className="text-gray-400 hover:text-brand-gold font-medium text-xs px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                            Duplicate
+                                                        </button>
+                                                        <button
                                                             onClick={() => openEdit(item)}
-                                                            className="text-gray-300 hover:text-white hover:bg-white/10 font-medium text-xs px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                                                            className="text-white hover:bg-white/10 font-medium text-xs px-4 py-2 rounded-lg transition-colors border border-white/10"
                                                         >
                                                             Edit
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteItem(item.id)}
-                                                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 font-medium text-xs px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                                                            className="text-red-400 hover:bg-red-500/10 font-medium text-xs px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
                                                         >
                                                             Delete
                                                         </button>
@@ -538,8 +815,8 @@ export default function AdminDashboard() {
                                         ))
                                     ) : (
                                         <div className="text-center py-20 bg-white/5 rounded-2xl border border-dashed border-white/10">
-                                            <p className="text-gray-300">No menu items match your search.</p>
-                                            <button onClick={() => { setSearch(''); setCategoryFilter('all'); }} className="text-brand-gold hover:underline mt-2 text-sm">Clear filters</button>
+                                            <p className="text-gray-400 mb-4">No menu items match your search.</p>
+                                            <button onClick={() => { setSearch(''); setCategoryFilter('all'); }} className="text-brand-gold hover:text-white transition-colors text-sm font-bold uppercase tracking-wide">Clear filters</button>
                                         </div>
                                     )}
                                 </div>

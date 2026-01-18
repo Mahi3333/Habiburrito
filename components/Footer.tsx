@@ -75,7 +75,7 @@ const Footer: React.FC = () => {
                     <p className="text-base tracking-[0.3em] uppercase text-brand-gold font-bold">Ordering</p>
                     <div className="space-y-3 text-lg text-gray-200">
                         <Link href="/order" className="hover:text-brand-gold transition-colors block">Order Online</Link>
-                        <Link href="/build" className="hover:text-brand-gold transition-colors block">Build Your Own</Link>
+
                         <Link href="/faq" className="hover:text-brand-gold transition-colors block">FAQs</Link>
                     </div>
                 </div>
