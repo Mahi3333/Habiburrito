@@ -320,7 +320,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`
-                            px-4 md:px-6 py-1.5 md:py-2 rounded-full font-display font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all whitespace-nowrap
+                            px-4 md:px-6 py-1.5 md:py-2 rounded-full font-display font-bold uppercase tracking-widest text-xs md:text-xs transition-all whitespace-nowrap
                             ${activeCategory === cat
                     ? 'bg-brand-gold text-black shadow-[0_0_20px_rgba(198,168,124,0.4)]'
                     : 'text-gray-400 hover:text-white'}
