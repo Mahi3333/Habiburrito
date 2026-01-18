@@ -60,8 +60,8 @@ const Header: React.FC = () => {
                     }`}
             >
                 <div className="container mx-auto px-6 relative flex items-center justify-end md:justify-between">
-                    <Link href="/" className="absolute left-1/2 -translate-x-1/2 md:static md:left-auto md:translate-x-0 z-50">
-                        <div className="relative h-14 w-44 md:h-16 md:w-56">
+                    <Link href="/" className="absolute left-1/2 -translate-x-1/2 md:static md:left-auto md:translate-x-0 z-50 max-w-[70%]">
+                        <div className="relative h-12 w-36 sm:h-14 sm:w-44 md:h-16 md:w-56">
                             <Image
                                 src="/logo.jpg"
                                 alt="Habiburrito"
