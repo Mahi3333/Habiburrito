@@ -82,7 +82,7 @@ export default async function Home() {
     });
 
     // Filter out nulls safely
-    validFanFavorites = mappedItems.filter((item): item is DisplayItem => item !== null);
+    validFanFavorites = mappedItems.filter(item => item !== null) as DisplayItem[];
   }
 
   // Fallback: If no orders or not enough data, use Signature items
