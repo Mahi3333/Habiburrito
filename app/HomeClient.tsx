@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { AnimatePresence, motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useStoreStatus } from '../app/hooks/useStoreStatus';

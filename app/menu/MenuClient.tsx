@@ -236,7 +236,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
   const handleSimpleAdd = (item: MenuItem) => {
     const qty = quantities[item.id] || 1;
     const price = parseFloat(item.price.replace("$", ""));
-    const uniqueId = `${item.id}-${Date.now()}`;
+    const uniqueId = `${item.id}-${crypto.randomUUID()}`;
 
     addItemToCart({
       uniqueId,
@@ -264,7 +264,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
 
   // Add from Modal
   const handleModalAddToCart = (finalItem: any) => {
-    const uniqueId = `${finalItem.id}-${Date.now()}`;
+    const uniqueId = `${finalItem.id}-${crypto.randomUUID()}`;
 
     // Transform Modal's rich structure to Cart Context structure
     // CartContext expects: rice, protein, toppings, etc. 
