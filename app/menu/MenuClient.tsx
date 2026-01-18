@@ -363,7 +363,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                           e.stopPropagation();
                           openBuildModal(buildItem);
                         }}
-                        className="px-3 md:px-5 py-1.5 md:py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-[10px] md:text-sm"
+                        className="px-3 md:px-5 py-1.5 md:py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-xs md:text-sm"
                       >
                         Build {cat.slice(0, -1)}
                       </button>
