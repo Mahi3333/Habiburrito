@@ -427,7 +427,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
                 {/* Insert "Build Your Own" for this category as first item if it exists */}
                 {(() => {
                   const buildItem = findBuildItem(activeCategory);
