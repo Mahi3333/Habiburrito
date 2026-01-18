@@ -133,7 +133,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    className="bg-brand-black w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] rounded-2xl md:rounded-3xl overflow-x-hidden overflow-y-auto md:overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10 relative z-10"
+                    className="bg-brand-black w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] rounded-2xl md:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10 relative z-10"
                 >
                     {/* Close Button */}
                     <button
