@@ -337,11 +337,11 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
 
           {/* ALL VIEW */}
           {activeCategory === "All" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
 
               {/* 1. Build Your Own Card - Custom Prominent Card */}
               <div
-                className="col-span-1 md:col-span-2 lg:col-span-4 bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[140px] md:min-h-[180px]"
+                className="col-span-2 lg:col-span-4 bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[140px] md:min-h-[180px]"
               >
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5 bg-[url('/background_create.png')] bg-cover bg-center" />
@@ -427,7 +427,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
                 {/* Insert "Build Your Own" for this category as first item if it exists */}
                 {(() => {
                   const buildItem = findBuildItem(activeCategory);

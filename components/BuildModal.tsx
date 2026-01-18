@@ -132,7 +132,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                 <motion.div
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    className="bg-brand-black w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10 relative z-10"
+                    className="bg-brand-black w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] rounded-2xl md:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl border border-white/10 relative z-10"
                 >
                     {/* Close Button */}
                     <button
@@ -143,8 +143,8 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                     </button>
 
                     {/* Left: Image & Info */}
-                    <div className="md:w-1/3 bg-brand-charcoal relative flex flex-col">
-                        <div className="relative h-48 md:h-64 w-full">
+                    <div className="md:w-1/3 bg-brand-charcoal relative flex flex-col shrink-0">
+                        <div className="relative h-32 md:h-48 lg:h-64 w-full">
                             <Image
                                 src={item.image}
                                 alt={item.name}
@@ -180,7 +180,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                     </div>
 
                     {/* Right: Steps */}
-                    <div className="md:w-2/3 bg-brand-black flex flex-col">
+                    <div className="md:w-2/3 bg-brand-black flex flex-col max-h-[95vh] md:max-h-full">
 
                         {/* Progress Bar */}
                         <div className="h-1 bg-white/5 w-full">
@@ -192,9 +192,9 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Step Content */}
-                        <div className="flex-grow p-6 md:p-10 overflow-y-auto">
+                        <div className="flex-1 p-4 md:p-6 lg:p-10 overflow-y-auto overscroll-contain">
                             {currentStep ? (
-                                <div className="space-y-6">
+                                <div className="space-y-3 md:space-y-6">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
                                             <h3 className="text-2xl font-display font-bold text-white">
@@ -210,7 +210,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="grid grid-cols-1 gap-2 md:gap-3">
                                         {currentStep.options.map(option => {
                                             const isSelected = (selections[currentStep.name] || []).includes(option.id);
                                             return (
@@ -218,7 +218,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                                     key={option.id}
                                                     onClick={() => handleOptionToggle(option.id)}
                                                     className={`
-                                                        p-4 rounded-xl border text-left flex justify-between items-center transition-all group
+                                                        p-3 md:p-4 rounded-xl border text-left flex justify-between items-center transition-all group min-h-[56px]
                                                         ${isSelected
                                                             ? 'bg-brand-gold text-black border-brand-gold shadow-[0_0_15px_rgba(198,168,124,0.3)]'
                                                             : 'bg-white/5 border-white/10 text-gray-300 hover:border-brand-gold/50 hover:bg-white/10'}
@@ -247,20 +247,20 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="p-6 md:p-8 border-t border-white/10 bg-white/5 flex items-center justify-between gap-4">
+                        <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 md:gap-4">
 
                             {/* Quantity */}
-                            <div className="flex items-center gap-3 bg-black rounded-full px-4 py-2 border border-white/10">
-                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-white hover:text-brand-gold w-6 h-6 flex items-center justify-center">-</button>
-                                <span className="font-mono text-white w-4 text-center">{quantity}</span>
-                                <button onClick={() => setQuantity(quantity + 1)} className="text-white hover:text-brand-gold w-6 h-6 flex items-center justify-center">+</button>
+                            <div className="flex items-center gap-3 bg-black rounded-full px-4 py-2 border border-white/10 self-center sm:self-auto">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-white hover:text-brand-gold w-8 h-8 flex items-center justify-center text-lg">-</button>
+                                <span className="font-mono text-white w-6 text-center">{quantity}</span>
+                                <button onClick={() => setQuantity(quantity + 1)} className="text-white hover:text-brand-gold w-8 h-8 flex items-center justify-center text-lg">+</button>
                             </div>
 
-                            <div className="flex gap-3">
+                            <div className="flex gap-2 md:gap-3">
                                 {currentStepIndex > 0 && (
                                     <button
                                         onClick={() => setCurrentStepIndex(prev => prev - 1)}
-                                        className="px-6 py-3 rounded-full border border-white/20 text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors"
+                                        className="px-4 md:px-6 py-3 rounded-full border border-white/20 text-white font-bold uppercase tracking-wider text-xs md:text-sm hover:bg-white hover:text-black transition-colors"
                                     >
                                         Back
                                     </button>
@@ -269,7 +269,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                     onClick={handleNext}
                                     disabled={!isStepValid()}
                                     className={`
-                                        px-8 py-3 rounded-full font-bold uppercase tracking-wider flex items-center gap-2 transition-all
+                                        flex-1 sm:flex-none px-6 md:px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs md:text-sm flex items-center justify-center gap-2 transition-all
                                         ${isStepValid()
                                             ? 'bg-brand-gold text-black hover:bg-white hover:scale-105 shadow-lg'
                                             : 'bg-gray-700 text-gray-400 cursor-not-allowed'}
