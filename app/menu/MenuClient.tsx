@@ -301,7 +301,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-brand-black text-brand-cream selection:bg-brand-gold selection:text-black">
+    <div className="min-h-screen bg-brand-black text-brand-cream selection:bg-brand-gold selection:text-black overflow-x-hidden">
       <Header />
 
       {/* Background */}
