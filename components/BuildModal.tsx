@@ -211,7 +211,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                         </div>
                                     </div>
 
-                                    <div className={`grid ${isDenseStep ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'} gap-2 md:gap-3`}>
+                                    <div className="grid grid-cols-2 gap-2 md:gap-3">
                                         {currentStep.options.map(option => {
                                             const isSelected = (selections[currentStep.name] || []).includes(option.id);
                                             return (
