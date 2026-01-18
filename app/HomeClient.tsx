@@ -445,7 +445,7 @@ export default function HomeClient({ trendingItems, showcaseItems, chefItems, fa
                                                 />
                                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
                                                 {item.tag && (
-                                                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md border border-black/5 px-3 py-1 rounded-full shadow-md">
+                                                    <div className="absolute top-4 left-4 bg-white border border-black/10 px-3 py-1 rounded-full shadow-md">
                                                         <span className="text-xs font-bold text-brand-black uppercase tracking-wider">{item.tag}</span>
                                                     </div>
                                                 )}
