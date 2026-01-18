@@ -337,7 +337,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
 
           {/* ALL VIEW */}
           {activeCategory === "All" && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
 
               {/* 1. Build Your Own Card - Custom Prominent Card */}
               <div
