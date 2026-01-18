@@ -231,7 +231,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                                             <span className={`text-[10px] sm:text-xs ${isSelected ? 'text-black/70' : 'text-brand-gold'}`}>+${option.price.toFixed(2)}</span>
                                                         )}
                                                     </div>
-                                                    {isSelected && <Check size={18} />}
+                                                    {isSelected && <Check className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
                                                 </button>
                                             );
                                         })}
