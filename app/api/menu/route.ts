@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
     try {
@@ -22,6 +22,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const item = await prisma.menuItem.create({
             data: {
+                key: body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
                 name: body.name,
                 description: body.description,
                 price: parseFloat(body.price),

@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "../../context/CartContext";
-import { Plus } from "lucide-react";
+import { Plus, Minus, Edit2, ChefHat } from "lucide-react";
 import { useStoreStatus } from "../../app/hooks/useStoreStatus";
+import BuildModal from "../../components/BuildModal";
 
-interface MenuItem {
+// Interface must match transformation in page.tsx
+export interface MenuItem {
   id: number;
   name: string;
   description: string;
@@ -19,395 +20,467 @@ interface MenuItem {
   image: string;
   chefNote: string;
   isSignature: boolean;
+  includedItems?: string[];
+  modifierGroups?: {
+    id: number;
+    name: string;
+    min: number;
+    max: number;
+    required: boolean;
+    options: {
+      id: number;
+      name: string;
+      price: number;
+    }[];
+  }[];
 }
 
 interface MenuClientProps {
   initialMenuItems: MenuItem[];
 }
 
-export default function MenuClient({ initialMenuItems }: MenuClientProps) {
-  const [menuItems] = useState<MenuItem[]>(initialMenuItems);
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [visibleCount, setVisibleCount] = useState(8);
+// Utility to Title Case
+const toTitleCase = (str: string) => {
+  return str.replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+};
 
-  const idCounter = useRef(0);
+// --- Sub-Components ---
+
+const ItemCard = ({ item, isOpen, onAdd, onRemove, onCustomize, quantity }: {
+  item: MenuItem;
+  isOpen: boolean;
+  onAdd: () => void;
+  onRemove: () => void;
+  onCustomize: () => void;
+  quantity: number;
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group relative bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-brand-gold/30 transition-all duration-300 flex flex-col h-full shadow-lg hover:shadow-brand-gold/5"
+    >
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <Image
+          src={item.image}
+          alt={item.name}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/90 via-transparent to-transparent opacity-60" />
+
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2">
+          {item.isSignature && (
+            <span className="bg-brand-gold text-black text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+              <ChefHat size={12} /> Signature
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-grow">
+        <div className="flex justify-between items-start mb-1">
+          <h3 className="text-lg font-display font-bold text-white leading-tight pr-2">
+            {toTitleCase(item.name)}
+          </h3>
+          <span className="font-mono text-brand-gold font-bold text-base whitespace-nowrap">
+            {item.price}
+          </span>
+        </div>
+
+        <p className="text-gray-400 text-xs leading-relaxed mb-3 line-clamp-2">
+          {item.description}
+        </p>
+
+        {/* Included Items List (if any) */}
+        {item.includedItems && item.includedItems.length > 0 && (
+          <div className="mb-6 flex flex-wrap gap-1">
+            {item.includedItems.slice(0, 5).map((inc, i) => (
+              <span key={i} className="text-[10px] uppercase font-bold text-gray-500 bg-white/5 px-2 py-1 rounded-full border border-white/5">
+                {inc}
+              </span>
+            ))}
+            {item.includedItems.length > 5 && (
+              <span className="text-[10px] text-gray-500 py-1 pl-1">+{item.includedItems.length - 5} more</span>
+            )}
+          </div>
+        )}
+
+        {/* Spacer to push actions down */}
+        <div className="flex-grow" />
+
+        {/* Actions */}
+        <div className="pt-4 border-t border-white/5 flex flex-col gap-3">
+
+          {item.category !== 'Sides' && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onCustomize(); }}
+              className="w-full py-1.5 rounded-lg border border-white/10 text-white hover:border-brand-gold hover:text-brand-gold text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+            >
+              <Edit2 size={12} /> Customize
+            </button>
+          )}
+
+          <div className="flex items-center justify-between gap-3">
+            {/* Quantity Stepper */}
+            {isOpen ? (
+              <div className="flex items-center bg-black/40 rounded-full border border-white/10 p-0.5">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onRemove(); }}
+                  className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 text-white transition-colors disabled:opacity-30"
+                  disabled={quantity === 0}
+                >
+                  <Minus size={12} />
+                </button>
+                <span className="w-6 text-center font-mono text-white text-xs">
+                  {quantity}
+                </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onAdd(); }}
+                  className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 text-brand-gold transition-colors"
+                >
+                  <Plus size={12} />
+                </button>
+              </div>
+            ) : (
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold py-1">Closed</span>
+            )}
+
+            {/* Direct Add Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(); // Simple add 1
+              }}
+              disabled={!isOpen}
+              className={`
+                                flex-1 py-1.5 rounded-full font-display font-bold uppercase tracking-widest text-[10px] transition-all
+                                ${quantity > 0
+                  ? 'bg-brand-gold text-black hover:bg-white'
+                  : 'bg-brand-gold/10 text-brand-gold border border-brand-gold/20 hover:bg-brand-gold hover:text-black'}
+                            `}
+            >
+              {quantity > 0 ? 'Update' : 'Add'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// --- Main Client Component ---
+
+export default function MenuClient({ initialMenuItems }: MenuClientProps) {
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItemForModal, setSelectedItemForModal] = useState<MenuItem | null>(null);
+
   const { addItemToCart } = useCart();
   const { isOpen } = useStoreStatus();
 
-  const categories = ["all", "bowls", "burritos", "tacos"];
-  const categoryLabels: Record<string, string> = {
-    all: "All",
-    bowls: "Bowls",
-    burritos: "Burritos",
-    tacos: "Tacos",
-  };
+  // Extract Categories
+  const categories = useMemo(() => {
+    const uniqueCats = Array.from(new Set(initialMenuItems.map(i => i.category)));
+    // Sort: Standard then Sides last
+    const standard = uniqueCats.filter(c => c !== "Sides").sort();
+    const sides = uniqueCats.filter(c => c === "Sides");
+    return ["All", ...standard, ...sides];
+  }, [initialMenuItems]);
 
-  // Reset visible count when category changes
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setVisibleCount(8);
-  }, [activeCategory]);
+  // Filter Logic
+  const displayedItems = useMemo(() => {
+    if (activeCategory === "All") return [];
+    return initialMenuItems.filter(i => i.category === activeCategory);
+  }, [activeCategory, initialMenuItems]);
 
-  const allFilteredItems =
-    activeCategory === "all"
-      ? menuItems
-      : menuItems.filter((i) => i.category === activeCategory);
-  const displayedItems = allFilteredItems.slice(0, visibleCount);
-  const hasMore = visibleCount < allFilteredItems.length;
+  // Counts for Category Cards
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    initialMenuItems.forEach(i => {
+      counts[i.category] = (counts[i.category] || 0) + 1;
+    });
+    return counts;
+  }, [initialMenuItems]);
 
-  const loadMore = () => {
-    setVisibleCount((prev) => prev + 4);
-  };
+  // Handlers
+  const updateQuantity = (id: number, delta: number) => {
+    setQuantities(prev => {
+      const current = prev[id] || 0;
+      const next = Math.max(0, current + delta);
 
-  const handleAddToCart = (item: MenuItem) => {
-    if (!item.price || typeof item.price !== "string") {
-      console.error("Invalid item price:", item);
-      return;
-    }
-    const price = parseFloat(item.price.replace("$", ""));
-    idCounter.current += 1;
-    const uniqueId = `${item.id}-${idCounter.current}`;
-    addItemToCart({
-      uniqueId,
-      base: { id: item.id, name: item.name, base_price: price },
-      rice: null,
-      protein: null,
-      toppings: [],
-      sauces: [],
-      addons: [],
-      extras: [],
-      totalPrice: price,
-      quantity: 1,
+      // Should we auto-add when user hits +? 
+      // Current logic: Stepper only updates LOCAL state. 
+      // Button commits it. 
+      // Re-aligning with "Add" button logic in ItemCard.
+
+      if (delta > 0 && current === 0) {
+        // First click adds to cart immediately for simpler UX? 
+        // Or keep as staging. Let's keep as staging for bulk changes, 
+        // but standard user flow is + then Add.
+      }
+
+      return { ...prev, [id]: next };
     });
   };
 
-  const getBackgroundImage = () => {
-    switch (activeCategory) {
-      case "burritos":
-        return "/background_burritos_blur.png";
-      case "tacos":
-        return "/background_tacos_blur.png";
-      case "bowls":
-        return "/background_bowls_blur.png";
-      default:
-        return "/background_bowls_blur.png";
-    }
+  const handleSimpleAdd = (item: MenuItem) => {
+    const qty = quantities[item.id] || 1;
+    const price = parseFloat(item.price.replace("$", ""));
+    const uniqueId = `${item.id}-${Date.now()}`;
+
+    addItemToCart({
+      uniqueId,
+      base: { id: item.id, name: item.name, base_price: price },
+      rice: null, protein: null, toppings: [], sauces: [], addons: [], extras: [],
+      totalPrice: price * qty,
+      quantity: qty
+    });
+    setQuantities(prev => ({ ...prev, [item.id]: 0 })); // Reset local
+  };
+
+  // Open Modal
+  const openBuildModal = (item: MenuItem) => {
+    setSelectedItemForModal(item);
+    setIsModalOpen(true);
+  };
+
+  // Find "Build Your Own" item for a category
+  const findBuildItem = (category: string) => {
+    // Look for item with "Build" in name
+    return initialMenuItems.find(i =>
+      i.category === category && i.name.toLowerCase().includes('build')
+    );
+  };
+
+  // Add from Modal
+  const handleModalAddToCart = (finalItem: any) => {
+    const uniqueId = `${finalItem.id}-${Date.now()}`;
+
+    // Transform Modal's rich structure to Cart Context structure
+    // CartContext expects: rice, protein, toppings, etc. 
+    // We need to map `customization` (which is group-based) to these keys.
+
+    const customization = finalItem.customization || {};
+
+    // Mapping helper
+    const getFirst = (group: string) => customization[group]?.[0] || null;
+    const getAll = (group: string) => customization[group] || [];
+
+    // Try to map specific groups if they exist in customization
+    // This dependency on exact group names from DB is why naming consistency matters.
+    // DB Groups: 'base', 'protein', 'sauces', 'veg_toppings' (or 'veg'), 'cheese', 'beans'
+
+    addItemToCart({
+      uniqueId,
+      base: { id: finalItem.id, name: finalItem.name, base_price: parseFloat(finalItem.price.replace('$', '')) },
+
+      // Pass the full customization object for the updated CartPage to use
+      customization: finalItem.customization,
+
+      // Legacy mapping (best effort, can be ignored by new CartPage logic)
+      rice: getFirst('Habiburrito Base') || getFirst('Base'),
+      protein: getFirst('Habiburrito Protein Choice') || getFirst('Proteins'),
+      toppings: [...getAll('Habiburrito Veggie Choices'), ...getAll('Veg & Toppings')],
+      sauces: getAll('Habiburrito Sauce Choices') || getAll('Sauces'),
+      addons: [],
+      extras: [],
+
+      totalPrice: finalItem.totalPrice,
+      quantity: finalItem.quantity
+    });
   };
 
   return (
-    <div className="min-h-screen bg-brand-cream text-brand-black selection:bg-brand-black selection:text-brand-gold relative">
-      {/* Dynamic Background */}
+    <div className="min-h-screen bg-brand-black text-brand-cream selection:bg-brand-gold selection:text-black">
+      <Header />
+
+      {/* Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-brand-cream/90 z-10" />
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 0.15, scale: 1 }}
-          transition={{ duration: 1.5 }}
-          className="absolute inset-0"
-        >
-          <Image
-            src={getBackgroundImage()}
-            alt="Background texture"
-            fill
-            className="object-cover saturate-0"
-            priority
-          />
-        </motion.div>
+        <Image src="/background_bowls_blur.png" alt="bg" fill className="object-cover opacity-20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-black via-brand-black/95 to-brand-black" />
       </div>
 
-      <div className="relative z-10">
-        <Header />
+      <main className="pt-32 pb-4 container mx-auto px-6 relative z-10">
 
-        <main className="pt-32 pb-20 container mx-auto px-6">
-          {/* Hero */}
-          <div className="relative overflow-hidden rounded-3xl border border-black/5 bg-brand-black text-white p-8 md:p-12 mb-14 md:mb-16 shadow-2xl">
-            <div className="absolute inset-0 opacity-40">
-              <Image
-                src="/menu-items/WhatsApp Image 2025-11-10 at 8.56.31 PM (2).jpeg"
-                alt="Signature burrito"
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-              <div className="space-y-4 max-w-2xl">
-                <span className="text-brand-gold font-mono text-xs tracking-[0.3em] uppercase">
-                  Curated for the obsessed
-                </span>
-                <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">
-                  Crafted bowls, burritos, and street classics.
-                </h1>
-                <p className="text-gray-200 text-lg">
-                  Halal, charcoal-fired, chef notes on every plate. Build your
-                  own or choose a signature.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <span className="pill bg-white/10 border-white/20 text-white">
-                    Halal
-                  </span>
-                  <span className="pill bg-white/10 border-white/20 text-white">
-                    Charcoal Fired
-                  </span>
-                  <span className="pill bg-white/10 border-white/20 text-white">
-                    Haverhill / Bradford
-                  </span>
+        {/* Navigation */}
+        <div className="sticky top-24 z-30 mb-8 py-4 bg-brand-black/80 backdrop-blur-xl border-y border-white/5 -mx-6 px-6 md:mx-0 md:px-0 md:rounded-full md:border">
+          <div className="flex gap-4 overflow-x-auto no-scrollbar md:justify-center">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`
+                            px-6 py-2 rounded-full font-display font-bold uppercase tracking-widest text-xs transition-all whitespace-nowrap
+                            ${activeCategory === cat
+                    ? 'bg-brand-gold text-black shadow-[0_0_20px_rgba(198,168,124,0.4)]'
+                    : 'text-gray-400 hover:text-white'}
+                        `}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="min-h-[60vh]">
+
+          {/* ALL VIEW */}
+          {activeCategory === "All" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+              {/* 1. Build Your Own Card - Custom Prominent Card */}
+              <div
+                className="col-span-1 md:col-span-2 lg:col-span-4 bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[180px]"
+              >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5 bg-[url('/background_create.png')] bg-cover bg-center" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+
+                <div className="relative z-10">
+                  <h2 className="text-2xl md:text-4xl font-display font-bold text-white mb-2">Build Your Own</h2>
+                  <p className="text-gray-300 text-base max-w-xl">Craft your masterpiece from scratch. Choose your base, proteins, and unlimited toppings.</p>
+                </div>
+
+                <div className="relative z-10 flex gap-4 flex-wrap justify-center">
+                  {['Bowls', 'Burritos', 'Quesadillas'].map(cat => {
+                    const buildItem = findBuildItem(cat);
+                    if (!buildItem) return null;
+                    return (
+                      <button
+                        key={cat}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openBuildModal(buildItem);
+                        }}
+                        className="px-5 py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-sm"
+                      >
+                        Build {cat.slice(0, -1)}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                {isOpen ? (
-                  <Link href="/order">
-                    <button className="px-6 py-3 rounded-full bg-brand-gold text-brand-black font-display font-bold uppercase tracking-[0.2em] text-xs hover:bg-white transition-colors shadow-lg">
-                      Order Now
-                    </button>
-                  </Link>
-                ) : (
-                  <button
-                    disabled
-                    className="px-6 py-3 rounded-full bg-gray-800 text-gray-500 font-display font-bold uppercase tracking-[0.2em] text-xs cursor-not-allowed border border-white/10"
-                  >
-                    Store Closed
-                  </button>
-                )}
-                <Link href="/build">
-                  <button className="px-6 py-3 rounded-full border border-white/20 text-white font-display font-bold uppercase tracking-[0.2em] text-xs hover:border-brand-gold hover:text-brand-gold transition-colors">
-                    Build Your Own
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Filters */}
-          <div className="flex justify-start md:justify-center gap-3 mb-10 border-b border-black/5 pb-6 overflow-x-auto no-scrollbar px-4 -mx-6 md:mx-0 md:px-0">
-            {categories.map((cat) => {
-              const count = menuItems.filter(
-                (i) => cat === "all" || i.category === cat
-              ).length;
-              const active = activeCategory === cat;
-              return (
-                <button
+              {/* 2. Category Cards (Reduced Size) */}
+              {categories.filter(c => c !== "All").map(cat => (
+                <div
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-6 py-3 rounded-full border transition-all duration-200 flex items-center gap-2 ${
-                    active
-                      ? "bg-brand-gold text-brand-black border-brand-gold shadow-[0_10px_30px_rgba(198,168,124,0.35)] z-10"
-                      : "bg-brand-black text-white border-black/20 hover:border-black/40"
-                  }`}
+                  className="group cursor-pointer relative h-48 rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/50 transition-all duration-500"
                 >
-                  <span className="uppercase tracking-[0.3em] text-[11px] font-bold">
-                    {categoryLabels[cat]}
-                  </span>
-                  <span
-                    className={`
-                text-xs font-mono px-1.5 py-0.5 rounded border
-                ${
-                  active
-                    ? "border-brand-black/20 bg-brand-black/10 text-brand-black"
-                    : "border-white/20 bg-white/10 text-white"
-                }
-            `}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                  <div className="absolute inset-0 bg-brand-charcoal hover:scale-105 transition-transform duration-700">
+                    <Image
+                      src={
+                        cat === 'Bowls' ? '/background_bowls_blur.png' :
+                          cat === 'Burritos' ? '/background_burritos_blur.png' :
+                            cat === 'Quesadillas' ? '/background_tacos_blur.png' :
+                              '/background_tacos_blur.png' // Fallback
+                      }
+                      alt={cat}
+                      fill
+                      className="object-cover opacity-40 group-hover:opacity-60 transition-opacity"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                  </div>
 
-          {/* Signature Strip */}
-          {displayedItems.some((item) => item.isSignature) && (
-            <div className="mb-14 md:mb-16">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="h-[1px] w-12 bg-brand-gold/50" />
-                  <span className="text-brand-black font-mono text-xs tracking-[0.3em] uppercase">
-                    Chef&apos;s Table
-                  </span>
-                </div>
-                <Link
-                  href="/build"
-                  className="text-xs uppercase tracking-[0.3em] text-brand-black hover:text-brand-gold transition-colors"
-                >
-                  Build Your Own
-                </Link>
-              </div>
-              <div className="grid grid-flow-col auto-cols-[260px] md:auto-cols-[320px] gap-4 overflow-x-auto no-scrollbar pb-4">
-                {displayedItems
-                  .filter((item) => item.isSignature)
-                  .map((item) => (
-                    <div
-                      key={item.id}
-                      className="bg-white border border-black/5 rounded-2xl p-4 relative overflow-hidden card-hover shadow-sm"
-                    >
-                      <div className="relative aspect-[4/5] rounded-xl overflow-hidden mb-4 bg-gray-100">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                        <div className="absolute top-3 left-3 bg-brand-gold text-black text-[10px] font-bold uppercase tracking-[0.3em] px-3 py-1 rounded-full shadow-sm">
-                          Signature
-                        </div>
-                        <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-mono text-brand-black font-bold shadow-sm">
-                          {item.price}
-                        </div>
+                  <div className="absolute bottom-0 left-0 p-4 w-full">
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <h2 className="text-2xl font-display font-bold text-white mb-0.5 group-hover:text-brand-gold transition-colors">
+                          {cat}
+                        </h2>
+                        <span className="text-gray-400 font-mono text-[10px] tracking-widest uppercase">
+                          {categoryCounts[cat] || 0} Items
+                        </span>
                       </div>
-                      <h3 className="text-lg font-display text-brand-black mb-1">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-brand-black line-clamp-2 mb-4 h-10">
-                        {item.description}
-                      </p>
-                      <button
-                        onClick={() => handleAddToCart(item)}
-                        disabled={!isOpen}
-                        className={`w-full font-display font-bold uppercase tracking-[0.3em] text-[10px] md:text-xs py-3 rounded-full transition-all ${
-                          isOpen
-                            ? "bg-brand-black text-white hover:bg-brand-gold hover:text-black shadow-md"
-                            : "bg-gray-100 text-brand-black cursor-not-allowed"
-                        }`}
-                      >
-                        {isOpen ? "Add to Order" : "Closed"}
-                      </button>
+                      <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-brand-gold group-hover:text-black transition-colors">
+                        <Plus size={16} />
+                      </div>
                     </div>
-                  ))}
-              </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-8 gap-y-10 md:gap-y-16">
-            {displayedItems.map((item) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative aspect-[4/5] mb-4 md:mb-6 overflow-hidden bg-white/50 group-hover:shadow-xl transition-all rounded-2xl border border-black/10">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+          {/* CATEGORY VIEW */}
+          {activeCategory !== "All" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex items-end justify-between border-b border-white/5 pb-4 mb-8">
+                <div>
+                  <h2 className="text-4xl font-display font-bold text-white mb-2">{activeCategory}</h2>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                {/* Insert "Build Your Own" for this category as first item if it exists */}
+                {(() => {
+                  const buildItem = findBuildItem(activeCategory);
+                  if (buildItem) {
+                    return (
+                      <div
+                        onClick={() => openBuildModal(buildItem)}
+                        className="cursor-pointer border border-dashed border-brand-gold/30 rounded-3xl p-6 flex flex-col items-center justify-center text-center hover:bg-brand-gold/5 transition-colors min-h-[400px]"
+                      >
+                        <div className="w-16 h-16 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold mb-4">
+                          <Edit2 size={32} />
+                        </div>
+                        <h3 className="text-2xl font-display font-bold text-white mb-2">Build Your Own {activeCategory.slice(0, -1)}</h3>
+                        <p className="text-gray-400 text-sm mb-6">Fully custom. You are the chef.</p>
+                        <button className="px-6 py-2 bg-brand-gold text-black uppercase font-bold tracking-widest text-xs rounded-full">
+                          Start Building
+                        </button>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
+                {displayedItems.filter(i => !i.name.toLowerCase().includes('build')).map(item => (
+                  <ItemCard
+                    key={item.id}
+                    item={item}
+                    isOpen={isOpen}
+                    quantity={quantities[item.id] || 0}
+                    onAdd={() => handleSimpleAdd(item)} // Or updateQuantity logic? 
+                    onRemove={() => updateQuantity(item.id, -1)}
+                    onCustomize={() => openBuildModal(item)}
                   />
-                  <div className="absolute inset-x-0 top-0 flex justify-between p-3">
-                    {item.isSignature && (
-                      <span className="bg-brand-gold text-black text-[10px] font-bold uppercase tracking-[0.3em] px-3 py-1 rounded-full shadow-sm">
-                        Signature
-                      </span>
-                    )}
-                    <span className="bg-white/80 backdrop-blur-md text-brand-black text-[10px] px-3 py-1 rounded-full border border-black/5 font-semibold shadow-sm ml-auto">
-                      {item.category}
-                    </span>
-                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
-                  {/* Add to Cart Overlay */}
-                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[1px]">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (isOpen) handleAddToCart(item);
-                      }}
-                      disabled={!isOpen}
-                      className={`${
-                        isOpen
-                          ? "bg-brand-black text-white hover:bg-brand-gold hover:text-black hover:scale-105 shadow-xl"
-                          : "bg-gray-200 text-brand-black cursor-not-allowed"
-                      } px-5 py-3 rounded-full font-display font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0`}
-                    >
-                      {isOpen && <Plus size={14} />}
-                      {isOpen ? "Add" : "Closed"}
-                    </button>
-                  </div>
-                </div>
+        </div>
+      </main>
 
-                <div className="flex flex-col md:flex-row md:justify-between md:items-baseline mb-2 gap-1 md:gap-0">
-                  <h3 className="text-lg md:text-xl font-display font-bold text-brand-black leading-tight group-hover:text-brand-gold transition-colors">
-                    {item.name}
-                  </h3>
-                  <span className="font-mono text-brand-black text-sm md:text-base font-bold bg-white/50 px-2 rounded-md">
-                    {item.price}
-                  </span>
-                </div>
-                <p className="text-xs md:text-sm text-brand-black font-medium leading-relaxed mb-3 md:mb-4 max-w-md line-clamp-3 md:line-clamp-none">
-                  {item.description}
-                </p>
+      <Footer />
 
-                <div className="flex items-center gap-2 text-[10px] md:text-xs text-brand-black uppercase tracking-wider font-bold opacity-80">
-                  <span className="w-1.5 h-1.5 bg-brand-gold rounded-full" />
-                  {item.chefNote || "Chef curated"}
-                </div>
-              </motion.div>
-            ))}
+      {/* Build Modal */}
+      {selectedItemForModal && (
+        <BuildModal
+          item={selectedItemForModal}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAddToCart={handleModalAddToCart}
+        />
+      )}
 
-            {/* Sentinel for Infinite Scroll */}
-            {hasMore && (
-              <motion.div
-                onViewportEnter={loadMore}
-                className="col-span-full h-20 flex justify-center items-center"
-              >
-                <div
-                  className="w-2 h-2 bg-brand-gold rounded-full animate-bounce"
-                  style={{ animationDelay: "0s" }}
-                />
-                <div
-                  className="w-2 h-2 bg-brand-gold rounded-full animate-bounce mx-1"
-                  style={{ animationDelay: "0.1s" }}
-                />
-                <div
-                  className="w-2 h-2 bg-brand-gold rounded-full animate-bounce"
-                  style={{ animationDelay: "0.2s" }}
-                />
-              </motion.div>
-            )}
-          </div>
-
-          <div className="mt-16 text-center">
-            <Link href="/build">
-              <button className="px-10 py-5 border border-brand-black/10 hover:border-brand-black text-brand-black hover:text-brand-black font-display font-bold tracking-widest uppercase transition-all">
-                Build Your Own
-              </button>
-            </Link>
-          </div>
-        </main>
-
-        <Footer />
-
-        {/* Sticky Build Your Own Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-8 z-40 w-1/2 md:w-auto px-0 md:px-0"
-        >
-          <Link href="/build">
-            <button className="w-full md:w-auto bg-brand-black text-brand-gold px-4 py-3 md:px-8 md:py-4 rounded-full font-display font-bold tracking-widest uppercase text-sm md:text-base shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.3)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 border border-white/10">
-              <span>Build Your Own</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="md:w-5 md:h-5"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </button>
-          </Link>
-        </motion.div>
-      </div>
     </div>
   );
 }

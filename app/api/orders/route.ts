@@ -96,7 +96,7 @@ export async function POST(request: Request) {
                     })),
                     mode: 'payment',
                     success_url: `${request.headers.get('origin')}/order?success=true&orderId=${order.id}`,
-                    cancel_url: `${request.headers.get('origin')}/build`,
+                    cancel_url: `${request.headers.get('origin')}/cart`,
                     metadata: {
                         orderId: order.id.toString(),
                         userId: dbUser.id.toString()

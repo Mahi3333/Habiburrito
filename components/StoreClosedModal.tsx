@@ -13,7 +13,7 @@ export default function StoreClosedModal() {
     const [hasSeenModal, setHasSeenModal] = useState(false);
 
     // List of pages where the modal should aggressively appear
-    const restrictedPages = ['/menu', '/build', '/cart', '/checkout', '/order'];
+    const restrictedPages = ['/menu', '/cart', '/checkout', '/order'];
 
     useEffect(() => {
         // If store is open, never show modal

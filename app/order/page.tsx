@@ -52,57 +52,30 @@ function OrderContent() {
         <div className="h-screen bg-brand-black flex flex-col overflow-hidden">
             <Header />
 
-            <main className="flex-grow flex flex-col md:flex-row">
-                {/* Left: Signature */}
-                <Link href="/menu" className="flex-1 relative group overflow-hidden border-r border-white/10">
-                    <div className="absolute inset-0 bg-[url('/menu-items/bowl-signature.png')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" />
-                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500" />
+            <main className="flex-grow flex items-center justify-center">
+                {/* Single Central CTA since Build is gone */}
+                <Link href="/menu" className="w-full h-full relative group overflow-hidden bg-brand-charcoal flex items-center justify-center">
+                    <div className="absolute inset-0 bg-[url('/menu-items/bowl-signature.png')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-500" />
 
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10">
+                    <div className="relative z-10 text-center p-8">
                         <motion.span
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            className="text-brand-gold tracking-[0.3em] uppercase text-xs mb-4"
+                            className="text-brand-gold tracking-[0.3em] uppercase text-sm font-bold block mb-4"
                         >
-                            Curated
+                            Order Now
                         </motion.span>
                         <motion.h2
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.1 }}
-                            className="text-5xl md:text-7xl font-display font-bold text-white mb-6"
+                            className="text-6xl md:text-9xl font-display font-bold text-white mb-8"
                         >
-                            SIGNATURE
+                            THE MENU
                         </motion.h2>
-                        <span className="px-6 py-3 border border-white/30 text-white text-xs font-bold tracking-widest uppercase group-hover:bg-white group-hover:text-black transition-all">
-                            View Menu
-                        </span>
-                    </div>
-                </Link>
-
-                {/* Right: Build Your Own */}
-                <Link href="/build" className="flex-1 relative group overflow-hidden bg-brand-charcoal">
-                    <div className="absolute inset-0 bg-[url('/background_create.png')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" />
-                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-10">
-                        <motion.span
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-brand-gold tracking-[0.3em] uppercase text-xs mb-4"
-                        >
-                            Custom
-                        </motion.span>
-                        <motion.h2
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-5xl md:text-7xl font-display font-bold text-white mb-6"
-                        >
-                            CREATE
-                        </motion.h2>
-                        <span className="px-6 py-3 border border-white/30 text-white text-xs font-bold tracking-widest uppercase group-hover:bg-brand-gold group-hover:border-brand-gold group-hover:text-black transition-all">
-                            Start Building
+                        <span className="inline-block px-8 py-4 bg-white/10 backdrop-blur-md border border-white/30 text-white text-sm font-bold tracking-widest uppercase group-hover:bg-brand-gold group-hover:text-black group-hover:border-brand-gold transition-all rounded-full">
+                            Explore &amp; Order
                         </span>
                     </div>
                 </Link>

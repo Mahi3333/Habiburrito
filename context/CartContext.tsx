@@ -17,14 +17,19 @@ export interface BaseItem {
 }
 
 export interface CartItem {
-    uniqueId: string; // To distinguish identical builds
+    uniqueId: string;
     base: BaseItem;
-    rice: ModifierOption | null;
-    protein: ModifierOption | null;
-    toppings: ModifierOption[];
-    sauces: ModifierOption[];
-    addons: ModifierOption[];
-    extras: ModifierOption[];
+    // Legacy fields (optional compatibility)
+    rice?: ModifierOption | null;
+    protein?: ModifierOption | null;
+    toppings?: ModifierOption[];
+    sauces?: ModifierOption[];
+    addons?: ModifierOption[];
+    extras?: ModifierOption[];
+
+    // New Generic Customization Structure
+    customization?: Record<string, ModifierOption[]>;
+
     totalPrice: number;
     quantity: number;
 }
@@ -45,23 +50,31 @@ import { useToast } from './ToastContext';
 // ... (imports remain the same, just adding useToast)
 
 export function CartProvider({ children }: { children: ReactNode }) {
-    const [items, setItems] = useState<CartItem[]>(() => {
-        if (typeof window === 'undefined') return [];
-        const savedCart = localStorage.getItem('habiburrito-cart');
-        if (!savedCart) return [];
-        try {
-            return JSON.parse(savedCart) as CartItem[];
-        } catch (e) {
-            console.error('Failed to parse cart from localStorage', e);
-            return [];
-        }
-    });
+    const [items, setItems] = useState<CartItem[]>([]);
+    const [isInitialized, setIsInitialized] = useState(false);
     const { showToast } = useToast();
+
+    // Load from localStorage on mount
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const savedCart = localStorage.getItem('habiburrito-cart');
+            if (savedCart) {
+                try {
+                    setItems(JSON.parse(savedCart));
+                } catch (e) {
+                    console.error('Failed to parse cart from localStorage', e);
+                }
+            }
+            setIsInitialized(true);
+        }
+    }, []);
 
     // Save to localStorage whenever items change
     useEffect(() => {
-        localStorage.setItem('habiburrito-cart', JSON.stringify(items));
-    }, [items]);
+        if (isInitialized) {
+            localStorage.setItem('habiburrito-cart', JSON.stringify(items));
+        }
+    }, [items, isInitialized]);
 
     const addItemToCart = (item: CartItem) => {
         setItems((prev) => [...prev, { ...item, quantity: item.quantity || 1 }]);

@@ -1,78 +1,68 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Mapping JS day index (0=Sunday) to our DB string
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
-    // 1. Check Manual Override (AppSetting)
-    const settings = await prisma.appSetting.findUnique({
-      where: { id: 1 },
-    });
+    // 1. Check Global Override
+    const settings = await prisma.appSetting.findFirst();
 
-    if (settings && !settings.online_ordering_enabled) {
+    if (settings?.online_ordering_enabled === false) {
       return NextResponse.json({
         isOpen: false,
         reason: 'MANUAL_OVERRIDE',
-        message: settings.override_message || 'Due to high order volume, online ordering is temporarily paused.',
-        nextOpenTime: 'Check back soon'
+        message: settings.override_message || 'Online ordering is currently paused.'
       });
     }
 
-    // 2. Check Schedule (StoreHour)
-    const now = new Date();
-    // Convert to EST/Store Time (Assuming store is in EST based on previous context, but for now using system time 
-    // to match server/client sync. Ideally use a library like date-fns-tz)
-    const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
+    // 2. Check Schedule
+    // Since we are server-side, we need to be careful with Timezones. 
+    // Ideally DB stores UTC or we assume Store Local Time.
+    // For simplicity, let's assume server is in store's timezone or we handle it manually.
+    // Or store simple strings "11:00" and compare with current time in specific TZ.
 
-    const schedule = await prisma.storeHour.findUnique({
-      where: { day: dayName },
+    // Use a fixed Timezone for the store, e.g. America/New_York
+    const storeTimeZone = 'America/New_York'; // Adjust as needed
+    const now = new Date();
+    const localTimeStr = now.toLocaleTimeString('en-US', { hour12: false, timeZone: storeTimeZone }); // "14:30:00"
+
+    // Fix: 'numeric' is not valid for weekday. Use 'long' to get name, or getDay() if using local time.
+    // Since we want Store TZ day, we format to name.
+    const formatter = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: storeTimeZone });
+    const currentDayName = formatter.format(now);
+    const localDayIndex = days.indexOf(currentDayName);
+
+    const todayHours = await prisma.storeHour.findUnique({
+      where: { day: currentDayName }
     });
 
-    if (!schedule || schedule.closed) {
+    if (!todayHours || todayHours.closed) {
       return NextResponse.json({
         isOpen: false,
-        reason: 'SCHEDULE_CLOSED',
-        message: 'We are currently closed.',
-        nextOpenTime: 'Tomorrow' // simplified for now
+        reason: 'SCHEDULED_CLOSE',
+        message: 'We are currently closed.'
       });
     }
 
-    const toMinutes = (t: string) => {
-      const [h, m] = t.split(':').map(Number);
-      return h * 60 + m;
-    };
+    // Parse times "11:00" -> compare with current "HH:mm"
+    const currentHM = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: storeTimeZone });
 
-    const to12h = (t: string) => {
-      const [h, m] = t.split(':').map(Number);
-      const period = h >= 12 && h !== 24 ? 'PM' : 'AM';
-      let hour = h % 12;
-      if (hour === 0) hour = 12;
-      return `${hour}:${m.toString().padStart(2, '0')} ${period}`;
-    };
-
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const openMinutes = toMinutes(schedule.open_time);
-    const closeMinutes = toMinutes(schedule.close_time);
-
-    if (currentMinutes < openMinutes || currentMinutes >= closeMinutes) {
-      return NextResponse.json({
-        isOpen: false,
-        reason: 'SCHEDULE_CLOSED',
-        message: `We open at ${to12h(schedule.open_time)}`,
-        nextOpenTime: to12h(schedule.open_time)
-      });
-    }
+    const isOpen = currentHM >= todayHours.open_time && currentHM < todayHours.close_time;
 
     return NextResponse.json({
-      isOpen: true,
-      reason: 'OPEN',
-      message: 'Ordering is Open',
-      nextOpenTime: ''
+      isOpen,
+      reason: isOpen ? 'OPEN' : 'SCHEDULED_CLOSE',
+      openTime: todayHours.open_time,
+      closeTime: todayHours.close_time,
+      message: isOpen ? 'We are open!' : `We open at ${todayHours.open_time}`
     });
 
   } catch (error) {
     console.error('Store status error:', error);
-    // Fail open or closed? Safe to fail "Open" but warn, or "Closed" to prevent issues?
-    // Let's return closed to be safe if DB fails.
-    return NextResponse.json({ isOpen: false, reason: 'ERROR', message: 'System maintenance' }, { status: 500 });
+    return NextResponse.json({ isOpen: false, reason: 'ERROR' }, { status: 500 });
   }
 }
