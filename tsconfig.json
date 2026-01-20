@@ -39,6 +39,9 @@
   "exclude": [
     "node_modules",
     "prisma",
-    "verify-seed.ts"
+    "verify-seed.ts",
+    "vitest.config.ts",
+    "tests",
+    "lib/__tests__"
   ]
 }
