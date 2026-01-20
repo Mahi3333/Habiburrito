@@ -1,0 +1,62 @@
+name: HabiBurrito CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    env:
+      # Use the fallback dev secret for testing if not provided
+      JWT_SECRET: ${{ secrets.JWT_SECRET || 'dev-secret-key-change-this-in-prod-12345' }}
+      # Mock Stripe keys for build (tests should mock calls)
+      STRIPE_SECRET_KEY: "sk_test_mock"
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_mock"
+      DATABASE_URL: "postgresql://mock:5432/db" 
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Run Linting
+      run: npm run lint
+      continue-on-error: true # Don't block for linting just yet, but report it
+
+    - name: Run Unit Tests (Vitest)
+      run: npm test
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run E2E Tests (Playwright)
+      run: npx playwright test
+      env:
+        # Playwright needs the app running. 
+        # Since we are using the webServer config in playwright.config.ts, 
+        # it will start 'npm run dev'. 
+        # NOTE: 'npm run dev' needs a DB connection usually. 
+        # For CI, we might need to skip DB-heavy E2E tests or spin up a service container.
+        # For now, we will assume tests that require DB are mocked or skipped if DB is missing.
+        CI: true
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
