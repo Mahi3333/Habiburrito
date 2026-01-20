@@ -137,6 +137,16 @@ model StoreHour {
   @@unique([day])
 }
 
+model StoreHoliday {
+  id         Int      @id @default(autoincrement())
+  date       String   @unique // YYYY-MM-DD in store local time
+  name       String?
+  message    String?
+  closed     Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
 model Order {
   id                       Int         @id @default(autoincrement())
   user_id                  Int?        // Optional FK to User

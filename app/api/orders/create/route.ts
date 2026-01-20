@@ -1,22 +1,24 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-
-type OrderItemPayload = {
-    base: { name: string };
-    quantity?: number;
-    [key: string]: unknown;
-};
+import { createOrderSchema } from '@/lib/schemas';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { items, user, paymentIntentId, totalAmount, taxAmount } = body;
 
-        if (!items || !user || !paymentIntentId) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        // 1. Zod Validation
+        const result = createOrderSchema.safeParse(body);
+
+        if (!result.success) {
+            return NextResponse.json(
+                { error: 'Validation Failed', details: result.error.issues },
+                { status: 400 }
+            );
         }
 
-        // 1. Find or Create User
+        const { items, user, paymentIntentId, totalAmount, taxAmount } = result.data;
+
+        // 2. Find or Create User
         // We use phone as the unique identifier based on schema
         let dbUser = await prisma.user.findUnique({
             where: { phone: user.phone },
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
             });
         }
 
-        // 2. Create Order
+        // 3. Create Order
         const order = await prisma.order.create({
             data: {
                 user_id: dbUser.id,
@@ -51,9 +53,9 @@ export async function POST(request: Request) {
                 status: 'PENDING_PAYMENT',
                 stripe_payment_intent_id: paymentIntentId,
                 items: {
-                    create: (items as OrderItemPayload[]).map((item) => ({
+                    create: items.map((item) => ({
                         item_name: item.base.name,
-                        quantity: item.quantity || 1,
+                        quantity: item.quantity,
                         json_details: JSON.stringify(item), // Store full customization details
                     })),
                 },

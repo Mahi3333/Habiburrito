@@ -1,35 +1,50 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
-import { SignJWT } from 'jose';
-
-const prisma = new PrismaClient();
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_me');
+import { createSession } from '@/lib/auth';
+import { loginSchema } from '@/lib/schemas';
+import { rateLimit } from '@/lib/ratelimit';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { username, password } = body;
+        // 0. Rate Limiting Protection
+        const ip = request.headers.get('x-forwarded-for') || 'unknown';
+        const limiter = rateLimit(ip, 5, 60 * 1000); // 5 attempts per minute
 
-        if (!username || !password) {
+        if (!limiter.success) {
             return NextResponse.json(
-                { error: 'Username and password are required' },
+                { error: 'Too many login attempts. Please try again in a minute.' },
+                { status: 429 }
+            );
+        }
+
+        const body = await request.json();
+
+        // 1. Validate Input
+        const result = loginSchema.safeParse(body);
+        if (!result.success) {
+            return NextResponse.json(
+                { error: 'Invalid input', details: result.error.issues },
                 { status: 400 }
             );
         }
 
+        const { email, password } = result.data;
+
+        // 2. Find User (Allow login by Email)
         const user = await prisma.user.findFirst({
-            where: { username },
+            where: { email }, // Login schema enforces email, so we look up by email
         });
 
-        if (!user) {
+        if (!user || !user.password_hash) {
             return NextResponse.json(
                 { error: 'Invalid credentials' },
                 { status: 401 }
             );
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash || '');
+        // 3. Verify Password
+        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
         if (!isPasswordValid) {
             return NextResponse.json(
@@ -38,23 +53,11 @@ export async function POST(request: Request) {
             );
         }
 
-        // Create JWT
-        const token = await new SignJWT({ userId: user.id, username: user.username })
-            .setProtectedHeader({ alg: 'HS256' })
-            .setExpirationTime('24h')
-            .sign(JWT_SECRET);
+        // 4. Create Secure Session
+        await createSession(user.id.toString(), user.role);
 
-        // Set Cookie
-        const response = NextResponse.json({ success: true }, { status: 200 });
-        response.cookies.set('admin_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24, // 24 hours
-            path: '/',
-        });
+        return NextResponse.json({ success: true, role: user.role });
 
-        return response;
     } catch (error) {
         console.error('Login error:', error);
         return NextResponse.json(
