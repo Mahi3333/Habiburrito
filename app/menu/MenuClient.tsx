@@ -188,13 +188,17 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
   const { addItemToCart } = useCart();
   const { isOpen } = useStoreStatus();
 
-  // Extract Categories
+  // Extract Categories with enforced order
   const categories = useMemo(() => {
-    const uniqueCats = Array.from(new Set(initialMenuItems.map(i => i.category)));
-    // Sort: Standard then Sides last
-    const standard = uniqueCats.filter(c => c !== "Sides").sort();
-    const sides = uniqueCats.filter(c => c === "Sides");
-    return ["All", ...standard, ...sides];
+    const dynamicCats = Array.from(new Set(initialMenuItems.map(i => i.category)));
+    const fixedOrder = ['Bowls', 'Wraps & Burritos', 'Quesadillas', 'Sides'];
+
+    // Merge: Filter dynamic cats to remove ones firmly in fixedOrder
+    // Then append any leftovers (like 'Drinks' if it exists dynamically)
+    const otherCats = dynamicCats.filter(c => !fixedOrder.includes(c));
+
+    // Final explicit order as requested
+    return ["All", ...fixedOrder, ...otherCats];
   }, [initialMenuItems]);
 
   // Filter Logic
@@ -217,18 +221,6 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
     setQuantities(prev => {
       const current = prev[id] || 0;
       const next = Math.max(0, current + delta);
-
-      // Should we auto-add when user hits +? 
-      // Current logic: Stepper only updates LOCAL state. 
-      // Button commits it. 
-      // Re-aligning with "Add" button logic in ItemCard.
-
-      if (delta > 0 && current === 0) {
-        // First click adds to cart immediately for simpler UX? 
-        // Or keep as staging. Let's keep as staging for bulk changes, 
-        // but standard user flow is + then Add.
-      }
-
       return { ...prev, [id]: next };
     });
   };
@@ -236,7 +228,8 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
   const handleSimpleAdd = (item: MenuItem) => {
     const qty = quantities[item.id] || 1;
     const price = parseFloat(item.price.replace("$", ""));
-    const uniqueId = `${item.id}-${crypto.randomUUID()}`;
+    // Safe ID generation for non-secure contexts (e.g. mobile testing on HTTP)
+    const uniqueId = `${item.id}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     addItemToCart({
       uniqueId,
@@ -245,7 +238,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
       totalPrice: price * qty,
       quantity: qty
     });
-    setQuantities(prev => ({ ...prev, [item.id]: 0 })); // Reset local
+    setQuantities(prev => ({ ...prev, [item.id]: 0 }));
   };
 
   // Open Modal
@@ -254,47 +247,43 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
     setIsModalOpen(true);
   };
 
+  const buildCategories = ['Bowls', 'Wraps & Burritos', 'Quesadillas'];
+  const buildKeywords = ['build', 'create', 'custom'];
+  const isBuildItem = (menuItem: MenuItem) => {
+    const name = menuItem.name.toLowerCase();
+    return buildKeywords.some(keyword => name.includes(keyword));
+  };
+
   // Find "Build Your Own" item for a category
+  // Helper to match "Build Your Own Wrap" item to "Wraps/Burritos" category
   const findBuildItem = (category: string) => {
-    // Look for item with "Build" in name
-    return initialMenuItems.find(i =>
-      i.category === category && i.name.toLowerCase().includes('build')
-    );
+    return initialMenuItems.find(i => {
+      // Strict match for category
+      if (i.category !== category) return false;
+
+      // Check if it's a build item
+      return isBuildItem(i);
+    });
   };
 
   // Add from Modal
   const handleModalAddToCart = (finalItem: any) => {
-    const uniqueId = `${finalItem.id}-${crypto.randomUUID()}`;
-
-    // Transform Modal's rich structure to Cart Context structure
-    // CartContext expects: rice, protein, toppings, etc. 
-    // We need to map `customization` (which is group-based) to these keys.
-
+    // Safe ID generation
+    const uniqueId = `${finalItem.id}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const customization = finalItem.customization || {};
-
-    // Mapping helper
     const getFirst = (group: string) => customization[group]?.[0] || null;
     const getAll = (group: string) => customization[group] || [];
-
-    // Try to map specific groups if they exist in customization
-    // This dependency on exact group names from DB is why naming consistency matters.
-    // DB Groups: 'base', 'protein', 'sauces', 'veg_toppings' (or 'veg'), 'cheese', 'beans'
 
     addItemToCart({
       uniqueId,
       base: { id: finalItem.id, name: finalItem.name, base_price: parseFloat(finalItem.price.replace('$', '')) },
-
-      // Pass the full customization object for the updated CartPage to use
       customization: finalItem.customization,
-
-      // Legacy mapping (best effort, can be ignored by new CartPage logic)
       rice: getFirst('Habiburrito Base') || getFirst('Base'),
       protein: getFirst('Habiburrito Protein Choice') || getFirst('Proteins'),
       toppings: [...getAll('Habiburrito Veggie Choices'), ...getAll('Veg & Toppings')],
       sauces: getAll('Habiburrito Sauce Choices') || getAll('Sauces'),
       addons: [],
       extras: [],
-
       totalPrice: finalItem.totalPrice,
       quantity: finalItem.quantity
     });
@@ -310,20 +299,20 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-brand-black via-brand-black/95 to-brand-black" />
       </div>
 
-      <main className="pt-24 md:pt-32 pb-4 container mx-auto px-4 md:px-6 relative z-10">
+      <main className="pt-32 md:pt-40 pb-4 container mx-auto px-4 md:px-6 relative z-10">
 
-        {/* Navigation */}
-        <div className="sticky top-16 md:top-24 z-30 mb-4 md:mb-8 py-2 md:py-4 bg-brand-black/80 backdrop-blur-xl border-y border-white/5 -mx-4 px-4 md:mx-0 md:px-6 md:rounded-full md:border">
-          <div className="flex gap-4 overflow-x-auto no-scrollbar md:justify-center">
+        {/* Navigation - Improved Sticky & Scroll */}
+        <div className="sticky top-[72px] md:top-24 z-40 mb-4 md:mb-8 py-2 bg-brand-black/90 backdrop-blur-xl border-y border-white/5 -mx-4 px-4 md:mx-0 md:px-6 md:rounded-full md:border overflow-x-auto overflow-y-hidden touch-pan-x snap-x scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-brand-gold/50 scrollbar-track-transparent">
+          <div className="flex gap-2 md:gap-4 min-w-max md:min-w-0 md:w-full">
             {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`
-                            px-4 md:px-6 py-1.5 md:py-2 rounded-full font-display font-bold uppercase tracking-widest text-xs md:text-xs transition-all whitespace-nowrap
+                            px-4 py-1.5 rounded-full font-display font-bold uppercase tracking-widest text-sm md:text-base transition-all whitespace-nowrap snap-start
                             ${activeCategory === cat
                     ? 'bg-brand-gold text-black shadow-[0_0_20px_rgba(198,168,124,0.4)]'
-                    : 'text-gray-400 hover:text-white'}
+                    : 'text-gray-400 hover:text-white bg-white/5 border border-transparent hover:border-white/10'}
                         `}
               >
                 {cat}
@@ -337,11 +326,11 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
 
           {/* ALL VIEW */}
           {activeCategory === "All" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="flex flex-col gap-6">
 
               {/* 1. Build Your Own Card - Custom Prominent Card */}
               <div
-                className="col-span-2 lg:col-span-4 bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[140px] md:min-h-[180px]"
+                className="bg-brand-gold/10 border border-brand-gold/30 rounded-3xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 hover:bg-brand-gold/20 transition-all cursor-pointer group relative overflow-hidden min-h-[140px] md:min-h-[180px]"
               >
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5 bg-[url('/background_create.png')] bg-cover bg-center" />
@@ -353,64 +342,68 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                 </div>
 
                 <div className="relative z-10 flex gap-2 md:gap-4 flex-wrap justify-center">
-                  {['Bowls', 'Burritos', 'Quesadillas'].map(cat => {
+                  {['Bowls', 'Wraps & Burritos', 'Quesadillas'].map(cat => {
                     const buildItem = findBuildItem(cat);
-                    if (!buildItem) return null;
                     return (
                       <button
                         key={cat}
                         onClick={(e) => {
                           e.stopPropagation();
-                          openBuildModal(buildItem);
+                          if (buildItem) openBuildModal(buildItem);
                         }}
-                        className="px-3 md:px-5 py-1.5 md:py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-xs md:text-sm"
+                        disabled={!buildItem}
+                        className={`px-3 md:px-5 py-1.5 md:py-2 bg-brand-gold text-black font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform shadow-lg text-xs md:text-sm ${!buildItem ? 'opacity-50 cursor-not-allowed grayscale' : ''
+                          }`}
                       >
-                        Build {cat.slice(0, -1)}
+                        Build {cat.replace('Wraps & Burritos', 'Burrito')}
                       </button>
                     )
                   })}
                 </div>
               </div>
 
-              {/* 2. Category Cards (Reduced Size) */}
-              {categories.filter(c => c !== "All").map(cat => (
-                <div
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className="group cursor-pointer relative h-48 rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/50 transition-all duration-500"
-                >
-                  <div className="absolute inset-0 bg-brand-charcoal hover:scale-105 transition-transform duration-700">
-                    <Image
-                      src={
-                        cat === 'Bowls' ? '/background_bowls_blur.png' :
-                          cat === 'Burritos' ? '/background_burritos_blur.png' :
-                            cat === 'Quesadillas' ? '/background_tacos_blur.png' :
-                              '/background_tacos_blur.png' // Fallback
-                      }
-                      alt={cat}
-                      fill
-                      className="object-cover opacity-40 group-hover:opacity-60 transition-opacity"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                  </div>
+              {/* 2. Category Cards Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                {['Bowls', 'Wraps & Burritos', 'Quesadillas', 'Sides'].map((cat, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => setActiveCategory(cat)}
+                    className="group cursor-pointer relative h-48 rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/50 transition-all duration-500"
+                  >
+                    <div className="absolute inset-0 bg-brand-charcoal hover:scale-105 transition-transform duration-700">
+                      <Image
+                        src={
+                          cat === 'Bowls' ? '/background_bowls_blur.png' :
+                            (cat === 'Wraps/Burritos' || cat === 'Wraps & Burritos') ? '/background_burritos_blur.png' :
+                              cat === 'Quesadillas' ? '/background_tacos_blur.png' :
+                                cat === 'Sides' ? '/background_bowls_blur.png' :
+                                  '/background_tacos_blur.png' // Fallback
+                        }
+                        alt={cat}
+                        fill
+                        className="object-cover opacity-40 group-hover:opacity-60 transition-opacity"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                    </div>
 
-                  <div className="absolute bottom-0 left-0 p-4 w-full">
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <h2 className="text-2xl font-display font-bold text-white mb-0.5 group-hover:text-brand-gold transition-colors">
-                          {cat}
-                        </h2>
-                        <span className="text-gray-400 font-mono text-[10px] tracking-widest uppercase">
-                          {categoryCounts[cat] || 0} Items
-                        </span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-brand-gold group-hover:text-black transition-colors">
-                        <Plus size={16} />
+                    <div className="absolute bottom-0 left-0 p-4 w-full">
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <h2 className="text-2xl font-display font-bold text-white mb-0.5 group-hover:text-brand-gold transition-colors">
+                            {cat}
+                          </h2>
+                          <span className="text-gray-400 font-mono text-[10px] tracking-widest uppercase">
+                            {categoryCounts[cat] || 0} Items
+                          </span>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-brand-gold group-hover:text-black transition-colors">
+                          <Plus size={16} />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
@@ -451,7 +444,7 @@ export default function MenuClient({ initialMenuItems }: MenuClientProps) {
                   return null;
                 })()}
 
-                {displayedItems.filter(i => !i.name.toLowerCase().includes('build')).map(item => (
+                {displayedItems.filter(i => !isBuildItem(i)).map(item => (
                   <ItemCard
                     key={item.id}
                     item={item}

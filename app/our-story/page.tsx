@@ -30,8 +30,8 @@ export default function OurStoryPage() {
                 <div className="grain-layer"></div>
                 <div className="container mx-auto px-6">
                     {/* Hero */}
-                    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-black via-brand-charcoal/70 to-brand-black p-8 md:p-12 mb-12 md:mb-16 vignette">
-                        <div className="absolute inset-0 opacity-60">
+                    <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-black via-brand-charcoal/70 to-brand-black p-6 md:p-10 mb-10 md:mb-14 vignette">
+                        <div className="absolute inset-0 opacity-40">
                             <Image
                                 src="/menu-items/WhatsApp Image 2025-11-10 at 8.56.31 PM (2).jpeg"
                                 alt="Charcoal-fired halal spread"
@@ -40,19 +40,22 @@ export default function OurStoryPage() {
                                 priority
                             />
                         </div>
+                        {/* Darker Gradient for Text Visibility */}
+                        <div className="absolute inset-0 bg-black/60 z-0" />
+
                         <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
                             <div className="space-y-4 md:max-w-2xl">
                                 <span className="text-brand-gold font-heading tracking-[0.35em] text-xs font-bold uppercase">The Journey</span>
-                                <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white tracking-tight leading-tight">
+                                <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight leading-tight">
                                     Crafting <span className="text-gradient-gold italic">Authenticity</span>
                                 </h1>
-                                <p className="text-lg text-gray-200 max-w-2xl">
+                                <p className="text-base md:text-lg text-gray-100 max-w-2xl drop-shadow-md font-medium">
                                     Smoke, spice, and a steadfast Halal promise. Habiburrito blends Mexican street food soul with precise Halal standards.
                                 </p>
                                 <div className="flex flex-wrap gap-3">
-                                    <span className="pill flex items-center gap-2"><IconCheck /> Halal</span>
-                                    <span className="pill flex items-center gap-2"><IconPin /> Haverhill / Bradford</span>
-                                    <span className="pill flex items-center gap-2"><IconClock /> Daily 11a–11p</span>
+                                    <span className="pill flex items-center gap-2 bg-black/40 border-white/20 text-white"><IconCheck /> Halal</span>
+                                    <span className="pill flex items-center gap-2 bg-black/40 border-white/20 text-white"><IconPin /> Haverhill / Bradford</span>
+                                    <span className="pill flex items-center gap-2 bg-black/40 border-white/20 text-white"><IconClock /> Daily 11a–11p</span>
                                 </div>
                             </div>
                             <Link href="/menu" className="self-start md:self-end">

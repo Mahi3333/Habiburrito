@@ -43,6 +43,7 @@
     .vignette {
         position: relative;
     }
+
     .vignette::after {
         content: '';
         position: absolute;
@@ -73,15 +74,17 @@
     }
 
     .card-hover {
-        @apply transition-transform transition-colors duration-300 hover:-translate-y-1 hover:border-brand-gold/50 hover:shadow-[0_10px_40px_rgba(0,0,0,0.35)];
+        @apply transition-transform transition-colors duration-300 hover:-translate-y-1 hover:border-brand-gold/50 hover:shadow-[0_10px_40px_#00000059];
     }
 
     .timeline {
         @apply grid gap-4 md:grid-cols-3;
     }
+
     .timeline-step {
         @apply bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden;
     }
+
     .timeline-step::before {
         content: attr(data-step);
         @apply absolute top-3 right-4 text-xs font-mono tracking-[0.3em] text-brand-gold;
@@ -108,5 +111,24 @@ html {
 }
 
 ::-webkit-scrollbar-thumb:hover {
+    background: #C6A87C;
+}
+
+/* Custom Scrollbar Utilities */
+.scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+}
+
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
     background: #C6A87C;
 }
