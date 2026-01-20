@@ -7,7 +7,6 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { useCart } from '../../context/CartContext';
 import { useStoreStatus } from '../../app/hooks/useStoreStatus';
 import Header from '../../components/Header';
-import Footer from '../../components/Footer';
 import Button from '../../components/Button';
 
 // Initialize Stripe
@@ -31,38 +30,46 @@ function CheckoutForm({ name, email, phone, clientSecret, validateContactInfo }:
     const elements = useElements();
     const [message, setMessage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isReviewOpen, setIsReviewOpen] = useState(false);
     const { items, cartTotal } = useCart();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const TAX_RATE = 0.08;
+    const finalTotal = cartTotal * (1 + TAX_RATE);
+
+    // Step 1: Validate and Open Review
+    const handleReview = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate Contact Details using parent function
         if (!validateContactInfo()) {
-            // Scroll to top to show the empty fields
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
-        if (!stripe || !elements) {
+        if (!stripe || !elements) return;
+
+        setIsLoading(true);
+        // Trigger generic form validation (Card details etc)
+        const { error: submitError } = await elements.submit();
+        if (submitError) {
+            setMessage(submitError.message || "Please check your details.");
+            setIsLoading(false);
             return;
         }
 
+        setIsLoading(false);
+        setIsReviewOpen(true);
+    };
+
+    // Step 2: Final Submission
+    const handleFinalPayment = async () => {
+        if (!stripe || !elements) return;
         setIsLoading(true);
 
         try {
-            // 1. Validate Form
-            const { error: submitError } = await elements.submit();
-            if (submitError) {
-                setMessage(submitError.message || "Please check your details.");
-                setIsLoading(false);
-                return;
-            }
-
-            // 2. Extract PaymentIntent ID
-            // clientSecret format: pi_3Q..._secret_...
+            // Extract PaymentIntent ID
             const paymentIntentId = clientSecret.split('_secret_')[0];
 
-            // 3. Save Order to Database
+            // Save Order to Database
             const saveOrderResponse = await fetch('/api/orders/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -70,8 +77,8 @@ function CheckoutForm({ name, email, phone, clientSecret, validateContactInfo }:
                     items,
                     user: { name, email, phone },
                     paymentIntentId,
-                    totalAmount: cartTotal * 1.08, // Approx total with tax
-                    taxAmount: cartTotal * 0.08
+                    totalAmount: finalTotal,
+                    taxAmount: cartTotal * TAX_RATE
                 }),
             });
 
@@ -79,7 +86,7 @@ function CheckoutForm({ name, email, phone, clientSecret, validateContactInfo }:
                 throw new Error('Failed to save order details. Please try again.');
             }
 
-            // 4. Confirm Payment
+            // Confirm Payment
             const { error } = await stripe.confirmPayment({
                 elements,
                 clientSecret,
@@ -109,34 +116,87 @@ function CheckoutForm({ name, email, phone, clientSecret, validateContactInfo }:
         }
 
         setIsLoading(false);
+        setIsReviewOpen(false); // Close modal on error/completion
     };
 
     return (
-        <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
-            <div className="border-t border-white/10 pt-6">
-                <h3 className="text-xl font-display font-bold text-white mb-4">Payment Details</h3>
-                <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
-            </div>
+        <>
+            <form id="payment-form" onSubmit={handleReview} className="space-y-4">
+                <div className="border-t border-black/10 pt-5">
+                    <h3 className="text-xl font-display font-bold text-brand-black mb-3">Payment Details</h3>
+                    <PaymentElement id="payment-element" options={{ layout: "tabs" }} />
+                </div>
 
-            {message && (
-                <div id="payment-message" className="text-red-500 text-sm font-medium">
-                    {message}
+                {message && (
+                    <div id="payment-message" className="text-red-600 text-sm font-medium">
+                        {message}
+                    </div>
+                )}
+
+                <Button
+                    variant="primary"
+                    className="w-full py-3 text-base mt-4 bg-brand-gold text-brand-black font-display font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-300"
+                    disabled={isLoading || !stripe || !elements}
+                >
+                    {isLoading ? "Validating..." : "Review Order"}
+                </Button>
+            </form>
+
+            {/* Review Modal */}
+            {isReviewOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl border border-black/10 max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-2xl font-display font-bold text-brand-black mb-4 border-b border-black/10 pb-2">
+                            Confirm Order
+                        </h3>
+
+                        <div className="space-y-4 mb-6 text-sm">
+                            <div className="bg-brand-cream/50 p-4 rounded-xl space-y-2">
+                                <p><span className="font-bold">Name:</span> {name}</p>
+                                <p><span className="font-bold">Email:</span> {email}</p>
+                                <p><span className="font-bold">Phone:</span> {phone}</p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <p className="font-bold text-base border-b border-black/5 pb-1">Order Summary</p>
+                                {items.map(i => (
+                                    <div key={i.uniqueId} className="flex justify-between text-black/70">
+                                        <span>{i.quantity || 1}x {i.base.name}</span>
+                                        <span>${(i.totalPrice * (i.quantity || 1)).toFixed(2)}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex justify-between items-center text-xl font-bold border-t border-black/10 pt-3 mt-2">
+                                <span>Total to Pay:</span>
+                                <span>${finalTotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setIsReviewOpen(false)}
+                                className="flex-1 py-3 rounded-full border border-black/10 font-bold uppercase tracking-widest hover:bg-gray-100 transition-colors"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleFinalPayment}
+                                disabled={isLoading}
+                                className="flex-1 py-3 rounded-full bg-brand-gold text-brand-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+                            >
+                                {isLoading ? "Processing..." : "Confirm & Pay"}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
-
-            <Button
-                variant="primary"
-                className="w-full py-4 text-lg mt-6 bg-brand-gold text-brand-black font-display font-bold uppercase tracking-widest hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,215,0,0.3)]"
-                disabled={isLoading || !stripe || !elements}
-            >
-                {isLoading ? "Processing..." : "Pay Now"}
-            </Button>
-        </form>
+        </>
     );
 }
 
 export default function CheckoutPage() {
-    const { cartTotal, items } = useCart();
+    const { cartTotal, items, removeItemFromCart, updateItemQuantity } = useCart();
     const { isOpen, reason, message } = useStoreStatus();
     const [clientSecret, setClientSecret] = useState("");
 
@@ -222,12 +282,12 @@ export default function CheckoutPage() {
     }, [finalTotal]);
 
     const appearance = {
-        theme: 'night' as const,
+        theme: 'stripe' as const,
         variables: {
-            colorPrimary: '#FFD700',
-            colorBackground: '#1a1a1a',
-            colorText: '#ffffff',
-            colorDanger: '#df1b41',
+            colorPrimary: '#000000',
+            colorBackground: '#FFFFFF',
+            colorText: '#000000',
+            colorDanger: '#B91C1C',
             fontFamily: 'var(--font-outfit)',
             spacingUnit: '4px',
             borderRadius: '8px',
@@ -241,123 +301,190 @@ export default function CheckoutPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
+            <div className="min-h-screen bg-white flex flex-col text-brand-black overflow-y-auto md:overflow-hidden">
                 <Header />
-                <main className="flex-grow flex items-center justify-center p-8 pt-36">
-                    <p className="text-xl text-gray-300">Your cart is empty.</p>
+                <main className="flex-grow flex items-center justify-center p-8 pt-28 md:pt-32">
+                    <p className="text-xl text-brand-black/70">Your cart is empty.</p>
                 </main>
-                <Footer />
             </div>
         );
     }
 
     if (!isOpen && reason !== 'LOADING') {
         return (
-            <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
+            <div className="min-h-screen bg-white flex flex-col text-brand-black overflow-y-auto md:overflow-hidden">
                 <Header />
-                <main className="flex-grow flex flex-col items-center justify-center p-8 text-center pt-36">
-                    <div className="mb-6 p-6 bg-red-900/10 border border-red-500/30 rounded-full">
+                <main className="flex-grow flex flex-col items-center justify-center p-8 text-center pt-28 md:pt-32">
+                    <div className="mb-6 p-6 bg-red-100 border border-red-300 rounded-full">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
                     </div>
-                    <h1 className="text-3xl font-bold font-display text-white mb-4">Checkout is Closed</h1>
-                    <p className="text-gray-300 max-w-md mb-8">{message || 'We are currently not accepting orders. Please check back later.'}</p>
-                    <a href="/menu" className="bg-brand-gold text-brand-black px-8 py-3 rounded-full font-bold uppercase tracking-wider hover:bg-white transition-colors">
+                    <h1 className="text-3xl font-bold font-display text-brand-black mb-4">Checkout is Closed</h1>
+                    <p className="text-brand-black/70 max-w-md mb-8">{message || 'We are currently not accepting orders. Please check back later.'}</p>
+                    <a href="/menu" className="bg-brand-gold text-brand-black px-8 py-3 rounded-full font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors">
                         Back to Menu
                     </a>
                 </main>
-                <Footer />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-brand-night flex flex-col text-brand-cream">
+        <div className="min-h-screen bg-white flex flex-col text-brand-black overflow-y-auto md:overflow-hidden">
             <Header />
-            <main className="flex-grow max-w-3xl mx-auto w-full p-8 pt-36">
-                <div className="bg-white/5 p-8 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md">
-                    <h1 className="text-3xl font-display font-bold text-white mb-8 tracking-wide">Secure Checkout</h1>
+            <main className="flex-1 w-full px-6 pt-28 pb-6 md:pt-32 md:overflow-hidden md:h-screen">
+                <div className="mx-auto h-full max-w-6xl">
+                    <div className="grid h-full grid-cols-1 md:grid-cols-2 gap-6">
+                        <section className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm flex flex-col md:h-full">
+                            <h1 className="text-3xl font-display font-bold text-brand-black mb-6 tracking-wide">Secure Checkout</h1>
+                            <div className="mb-6 p-5 bg-brand-cream/40 rounded-xl border border-black/10">
+                                <div className="flex justify-between mb-3">
+                                    <span className="text-brand-black/70">Subtotal</span>
+                                    <span className="font-mono text-brand-black">${cartTotal.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between mb-3">
+                                    <span className="text-brand-black/70">Tax</span>
+                                    <span className="font-mono text-brand-black">${taxAmount.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-xl font-display font-bold text-brand-black mt-5 pt-5 border-t border-black/10">
+                                    <span>Total to Pay</span>
+                                    <span>${finalTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
 
-                    <div className="mb-8 p-6 bg-white/5 rounded-xl border border-white/10">
-                        <div className="flex justify-between mb-3">
-                            <span className="text-gray-300">Subtotal</span>
-                            <span className="font-mono text-white">${cartTotal.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between mb-3">
-                            <span className="text-gray-300">Tax</span>
-                            <span className="font-mono text-white">${taxAmount.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-xl font-display font-bold text-brand-gold mt-6 pt-6 border-t border-white/10">
-                            <span>Total to Pay</span>
-                            <span>${finalTotal.toFixed(2)}</span>
-                        </div>
+                            <div className="border-t border-black/10 pt-4 md:flex-1 md:min-h-0">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-display font-bold text-brand-black">Your Items</h3>
+                                    <span className="text-xs uppercase tracking-widest text-brand-black/50">{items.length} items</span>
+                                </div>
+                                <div className="mt-3 space-y-3 md:h-full md:overflow-y-auto pr-2">
+                                    {items.map((item) => (
+                                        <div
+                                            key={item.uniqueId}
+                                            className="border border-black/10 rounded-xl p-3 bg-brand-cream/40"
+                                        >
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <p className="font-semibold text-brand-black">{item.base.name}</p>
+                                                    {item.customization ? (
+                                                        <div className="text-xs text-brand-black/70 space-y-1 mt-1">
+                                                            {Object.entries(item.customization).map(([label, options]) => {
+                                                                if (!options || options.length === 0) return null;
+                                                                return (
+                                                                    <p key={label}>
+                                                                        <span className="font-semibold text-brand-black/60">{label}:</span>{' '}
+                                                                        {options.map(o => o.name).join(', ')}
+                                                                    </p>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                                <span className="font-mono text-brand-black">
+                                                    ${(item.totalPrice * (item.quantity || 1)).toFixed(2)}
+                                                </span>
+                                            </div>
+                                            <div className="mt-3 flex items-center justify-between">
+                                                <div className="flex items-center gap-2 border border-black/10 rounded-full px-2 py-1">
+                                                    <button
+                                                        onClick={() => updateItemQuantity(item.uniqueId, (item.quantity || 1) - 1)}
+                                                        className="text-brand-black/70 hover:text-brand-black font-bold disabled:opacity-50"
+                                                        disabled={(item.quantity || 1) <= 1}
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="text-sm font-semibold text-brand-black w-4 text-center">
+                                                        {item.quantity || 1}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => updateItemQuantity(item.uniqueId, (item.quantity || 1) + 1)}
+                                                        className="text-brand-black/70 hover:text-brand-black font-bold"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                                <button
+                                                    onClick={() => removeItemFromCart(item.uniqueId)}
+                                                    className="text-xs uppercase tracking-widest text-red-600 hover:text-red-700 font-semibold"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm flex flex-col md:h-full">
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-display font-bold text-brand-black">Contact Information</h3>
+
+                                <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-brand-black/70 mb-1">Full Name</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        value={name}
+                                        onChange={(e) => handleInputChange('name', e.target.value)}
+                                        required
+                                        className={`w-full bg-white border rounded-lg px-4 py-3 text-brand-black placeholder-black/40 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors ${errors.name ? 'border-red-500' : 'border-black/10'}`}
+                                        placeholder="John Doe"
+                                    />
+                                    {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium text-brand-black/70 mb-1">Email Address</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        value={email}
+                                        onChange={(e) => handleInputChange('email', e.target.value)}
+                                        required
+                                        className={`w-full bg-white border rounded-lg px-4 py-3 text-brand-black placeholder-black/40 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors ${errors.email ? 'border-red-500' : 'border-black/10'}`}
+                                        placeholder="john@example.com"
+                                    />
+                                    {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="phone" className="block text-sm font-medium text-brand-black/70 mb-1">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        value={phone}
+                                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                                        required
+                                        className={`w-full bg-white border rounded-lg px-4 py-3 text-brand-black placeholder-black/40 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors ${errors.phone ? 'border-red-500' : 'border-black/10'}`}
+                                        placeholder="(555) 123-4567"
+                                    />
+                                    {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
+                                </div>
+                            </div>
+
+                            <div className="mt-5">
+                                {clientSecret && stripePromise ? (
+                                    <Elements options={options} stripe={stripePromise}>
+                                        <CheckoutForm
+                                            name={name}
+                                            email={email}
+                                            phone={phone}
+                                            clientSecret={clientSecret}
+                                            validateContactInfo={validateContactInfo}
+                                        />
+                                    </Elements>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center py-8 gap-3">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-gold"></div>
+                                        {!stripePromise && <p className="text-red-600 text-sm">Payment system unavailable (Missing Key)</p>}
+                                    </div>
+                                )}
+                            </div>
+
+                        </section>
                     </div>
-
-                    {/* Contact Information - Visible even if Stripe is loading/missing */}
-                    <div className="space-y-4 mb-8">
-                        <h3 className="text-xl font-display font-bold text-white mb-4">Contact Information</h3>
-
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                value={name}
-                                onChange={(e) => handleInputChange('name', e.target.value)}
-                                required
-                                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors ${errors.name ? 'border-red-500' : 'border-white/10'}`}
-                                placeholder="John Doe"
-                            />
-                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={(e) => handleInputChange('email', e.target.value)}
-                                required
-                                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors ${errors.email ? 'border-red-500' : 'border-white/10'}`}
-                                placeholder="john@example.com"
-                            />
-                            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
-                            <input
-                                type="tel"
-                                id="phone"
-                                value={phone}
-                                onChange={(e) => handleInputChange('phone', e.target.value)}
-                                required
-                                className={`w-full bg-white/5 border rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-colors ${errors.phone ? 'border-red-500' : 'border-white/10'}`}
-                                placeholder="(555) 123-4567"
-                            />
-                            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-                        </div>
-                    </div>
-
-                    {clientSecret && stripePromise ? (
-                        <Elements options={options} stripe={stripePromise}>
-                            <CheckoutForm
-                                name={name}
-                                email={email}
-                                phone={phone}
-                                clientSecret={clientSecret}
-                                validateContactInfo={validateContactInfo}
-                            />
-                        </Elements>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-12 gap-4">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-gold"></div>
-                            {!stripePromise && <p className="text-red-500">Payment system unavailable (Missing Key)</p>}
-                        </div>
-                    )}
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }

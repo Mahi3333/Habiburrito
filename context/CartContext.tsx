@@ -41,6 +41,7 @@ interface CartContextType {
     updateItemQuantity: (uniqueId: string, quantity: number) => void;
     clearCart: () => void;
     cartTotal: number;
+    lastAddedTime: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -53,6 +54,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const { showToast } = useToast();
+
+    const [lastAddedTime, setLastAddedTime] = useState(0);
 
     // Load from localStorage on mount
     useEffect(() => {
@@ -78,6 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const addItemToCart = (item: CartItem) => {
         setItems((prev) => [...prev, { ...item, quantity: item.quantity || 1 }]);
+        setLastAddedTime(Date.now());
         showToast(`Added ${item.base.name} to order`, 'success');
     };
 
@@ -99,7 +103,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const cartTotal = items.reduce((sum, item) => sum + (item.totalPrice * (item.quantity || 1)), 0);
 
     return (
-        <CartContext.Provider value={{ items, addItemToCart, removeItemFromCart, updateItemQuantity, clearCart, cartTotal }}>
+        <CartContext.Provider value={{ items, addItemToCart, removeItemFromCart, updateItemQuantity, clearCart, cartTotal, lastAddedTime }}>
             {children}
         </CartContext.Provider>
     );

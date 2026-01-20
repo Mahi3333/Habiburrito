@@ -7,15 +7,17 @@ import { useStoreStatus } from '../app/hooks/useStoreStatus';
 import Link from 'next/link';
 
 export default function StoreClosedModal() {
-    const { isOpen, openTime: nextOpenTime, message } = useStoreStatus();
+    const { isOpen, openTime: nextOpenTime, message, reason } = useStoreStatus();
     const pathname = usePathname();
     const [showModal, setShowModal] = useState(false);
     const [hasSeenModal, setHasSeenModal] = useState(false);
 
     // List of pages where the modal should aggressively appear
     const restrictedPages = ['/menu', '/cart', '/checkout', '/order'];
+    const statusKey = `${reason}-${isOpen ? 'OPEN' : 'CLOSED'}`;
 
     useEffect(() => {
+        if (reason === 'LOADING') return;
         // If store is open, never show modal
         if (isOpen) {
             setShowModal(false);
@@ -38,7 +40,7 @@ export default function StoreClosedModal() {
 
             setShowModal(true);
         }
-    }, [pathname, isOpen]); // Re-run when path changes or status changes
+    }, [pathname, statusKey]); // Re-run when path changes or status changes
 
     const handleDismiss = () => {
         setShowModal(false);

@@ -63,22 +63,21 @@ export default async function MenuPage() {
 
         return <MenuClient initialMenuItems={menuItems} />;
     } catch (error) {
-        console.error('Failed to fetch menu items:', error);
         return <MenuClient initialMenuItems={[]} />;
     }
 }
 
 function normalizeCategory(cat: string): string {
-    // DB has "Habiburrito Bowls" -> "Bowls"
     const lower = cat.toLowerCase();
+
+    // Exact or partial matches based on known DB values
     if (lower.includes('quesadilla')) return 'Quesadillas';
     if (lower.includes('bowl')) return 'Bowls';
-    // 'habiburrito' contains 'burrito', so check this last or be specific
-    if (lower.includes('burrito') && !lower.includes('habiburrito')) return 'Burritos';
-    // Fallback for wraps or others if we want them as Burritos? 
-    // Actually, let's just leave the simple check but last.
-    if (lower.includes('burrito')) return 'Burritos';
+
+    // Explicitly handle Wraps and Burritos as a single simplified category
+    if (lower.includes('wrap') || lower.includes('burrito')) return 'Wraps & Burritos';
 
     if (lower.includes('sides')) return 'Sides';
+
     return cat; // Fallback
 }

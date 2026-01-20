@@ -34,6 +34,16 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
         }
     }, [isOpen, item]);
 
+    // Lock body scroll while modal is open
+    useEffect(() => {
+        if (!isOpen) return;
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = previousOverflow || 'unset';
+        };
+    }, [isOpen]);
+
     const currentStep = steps[currentStepIndex];
     const isDenseStep = currentStep ? currentStep.options.length > 8 : false;
 
@@ -67,9 +77,11 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
 
     const isStepValid = () => {
         if (!currentStep) return true;
+        if (currentStep.options.length === 0) return true;
         const currentSelected = selections[currentStep.name] || [];
+        const minRequired = currentStep.min ?? (currentStep.required ? 1 : 0);
         // If min > 0, need at least that many
-        if (currentStep.required && currentSelected.length < (currentStep.min || 1)) {
+        if (currentStep.required && currentSelected.length < minRequired) {
             return false;
         }
         return true;
@@ -138,9 +150,9 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                     {/* Close Button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 z-20 p-2 bg-black/50 hover:bg-white text-white hover:text-black rounded-full transition-colors"
+                        className="absolute top-4 right-4 z-50 p-2 bg-white text-black rounded-full shadow-lg hover:bg-gray-200 transition-colors"
                     >
-                        <X size={20} />
+                        <X size={24} strokeWidth={3} />
                     </button>
 
                     {/* Left: Image & Info */}
@@ -181,10 +193,10 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                     </div>
 
                     {/* Right: Steps */}
-                    <div className="md:w-2/3 bg-brand-black flex flex-col flex-1 md:max-h-full">
+                    <div className="md:w-2/3 bg-brand-black flex flex-col h-full min-h-0">
 
                         {/* Progress Bar */}
-                        <div className="h-1 bg-white/5 w-full">
+                        <div className="h-1 bg-white/5 w-full shrink-0">
                             <motion.div
                                 className="h-full bg-brand-gold"
                                 initial={{ width: 0 }}
@@ -193,7 +205,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Step Content */}
-                        <div className="flex-1 p-3 md:p-6 lg:p-10 overflow-y-auto md:overscroll-contain">
+                        <div className="flex-1 p-3 md:p-6 lg:p-10 overflow-y-auto overflow-x-hidden md:overscroll-contain min-h-0">
                             {currentStep ? (
                                 <div className="space-y-3 md:space-y-6">
                                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3 md:mb-4">
@@ -236,6 +248,9 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                                             );
                                         })}
                                     </div>
+
+                                    {/* Spacer to ensure last item isn't behind floating elements */}
+                                    <div className="h-4"></div>
                                 </div>
                             ) : (
                                 <div className="flex items-center justify-center h-full text-center p-8">
@@ -248,7 +263,7 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 md:gap-4">
+                        <div className="shrink-0 p-4 md:p-6 lg:p-8 border-t border-white/10 bg-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 md:gap-4 safe-area-bottom">
 
                             {/* Quantity */}
                             <div className="flex items-center gap-3 bg-black rounded-full px-4 py-2 border border-white/10 self-center sm:self-auto">
@@ -258,6 +273,12 @@ export default function BuildModal({ item, isOpen, onClose, onAddToCart }: Build
                             </div>
 
                             <div className="flex gap-2 md:gap-3">
+                                <button
+                                    onClick={onClose}
+                                    className="px-4 md:px-6 py-3 rounded-full border border-brand-gold/60 text-brand-gold font-bold uppercase tracking-wider text-xs md:text-sm hover:bg-brand-gold hover:text-black transition-colors"
+                                >
+                                    Cancel
+                                </button>
                                 {currentStepIndex > 0 && (
                                     <button
                                         onClick={() => setCurrentStepIndex(prev => prev - 1)}

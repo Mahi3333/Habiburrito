@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '../context/CartContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Menu, X, ShoppingBag, ChevronRight } from 'lucide-react';
 import { useStoreStatus } from '../app/hooks/useStoreStatus';
 
@@ -13,9 +13,19 @@ const Header: React.FC = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [showClosedTooltip, setShowClosedTooltip] = useState(false);
-    const { cartTotal } = useCart();
+    const { cartTotal, lastAddedTime } = useCart();
     const [isHydrated, setIsHydrated] = useState(false);
     const { isOpen, statusText, color: statusColor } = useStoreStatus();
+    const cartControls = useAnimation();
+
+    useEffect(() => {
+        if (lastAddedTime > 0) {
+            cartControls.start({
+                x: [0, -5, 5, -5, 5, 0],
+                transition: { duration: 0.5 }
+            });
+        }
+    }, [lastAddedTime, cartControls]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -55,99 +65,129 @@ const Header: React.FC = () => {
         <>
             <header
                 className={`fixed w-full top-0 z-50 transition-all duration-400 ${isScrolled || !isHome || mobileMenuOpen
-                    ? 'py-4 bg-white/90 backdrop-blur-xl border-b border-black/5 shadow-sm'
-                    : 'py-6 bg-transparent'
+                    ? 'py-3 md:py-4 bg-white/90 backdrop-blur-xl border-b border-black/5 shadow-sm'
+                    : 'py-4 md:py-6 bg-transparent'
                     }`}
             >
-                <div className="container mx-auto px-6 relative flex items-center justify-end md:justify-between">
-                    <Link href="/" className="absolute left-1/2 -translate-x-1/2 md:static md:left-auto md:translate-x-0 z-50 max-w-[70%]">
-                        <div className="relative h-12 w-36 sm:h-14 sm:w-44 md:h-16 md:w-56">
-                            <Image
-                                src="/logo.jpg"
-                                alt="Habiburrito"
-                                fill
-                                className="object-contain object-left mix-blend-multiply"
-                                priority
-                            />
-                        </div>
-                    </Link>
+                <div className="container mx-auto px-6 relative flex items-center justify-between h-20 md:h-24">
+                    <div className="container mx-auto px-6 relative flex items-center justify-between h-20 md:h-24">
 
-                    {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center gap-9">
-                        {navLinks.map((item) => (
-                            <Link
-                                key={item.label}
-                                href={item.href}
-                                className={`group relative text-sm font-display font-bold uppercase tracking-[0.15em] transition-colors ${isScrolled || !isHome ? 'text-brand-black hover:text-brand-gold' : 'text-brand-black lg:text-white lg:hover:text-brand-gold'
-                                    }`}
+                        {/* Left Section: Mobile Toggle OR Desktop Nav */}
+                        <div className="flex items-center gap-4 z-40">
+                            {/* Mobile Toggle (Hamburger) */}
+                            <button
+                                className={`p-1 transition-colors md:hidden ${isScrolled || !isHome || mobileMenuOpen ? 'text-brand-black' : 'text-white'}`}
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                aria-label="Toggle menu"
                             >
-                                {item.label}
-                                <span className={`absolute left-0 -bottom-1 h-[2px] w-full scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ${isScrolled || !isHome ? 'bg-brand-black' : 'bg-brand-gold'
-                                    }`} />
-                            </Link>
-                        ))}
-                    </nav>
+                                {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                            </button>
 
-                    <div className="hidden md:flex items-center gap-5">
-                        <div className={`hidden lg:flex items-center gap-2 font-mono text-xs tracking-widest uppercase ${isScrolled || !isHome ? 'text-brand-black' : 'text-white/80'
-                            }`}>
-                            <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-                            {statusText}
-                        </div>
-                        <div className="relative">
-                            {isOpen ? (
-                                <Link href="/order">
-                                    <button className="group relative overflow-hidden px-6 py-3 rounded-full font-display font-bold tracking-[0.25em] uppercase text-xs bg-brand-black text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-colors shadow-lg">
-                                        <span className="relative z-10">Order</span>
-                                    </button>
-                                </Link>
-                            ) : (
-                                <button
-                                    onClick={() => setShowClosedTooltip(!showClosedTooltip)}
-                                    className="cursor-not-allowed opacity-50 px-6 py-3 rounded-full font-display font-bold tracking-[0.25em] uppercase text-xs bg-gray-200 text-brand-black border border-black/5"
-                                >
-                                    Closed
-                                </button>
-                            )}
-
-                            <AnimatePresence>
-                                {showClosedTooltip && !isOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="absolute top-full mt-4 right-0 bg-white border border-black/5 p-4 rounded-xl w-64 text-center z-50 shadow-xl"
+                            {/* Desktop Nav */}
+                            <nav className="hidden md:flex items-center gap-6 xl:gap-9">
+                                {navLinks.map((item) => (
+                                    <Link
+                                        key={item.label}
+                                        href={item.href}
+                                        className={`group relative text-sm font-display font-bold uppercase tracking-[0.15em] transition-colors ${isScrolled || !isHome ? 'text-brand-black hover:text-brand-gold' : 'text-brand-black lg:text-white lg:hover:text-brand-gold'
+                                            }`}
                                     >
-                                        <div className="absolute -top-2 right-8 w-4 h-4 bg-white border-t border-l border-black/5 transform rotate-45" />
-                                        <p className="text-brand-black font-bold mb-1">We are currently closed</p>
-                                        <p className="text-xs text-brand-black">{statusText}</p>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                                        {item.label}
+                                        <span className={`absolute left-0 -bottom-1 h-[2px] w-full scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ${isScrolled || !isHome ? 'bg-brand-black' : 'bg-brand-gold'
+                                            }`} />
+                                    </Link>
+                                ))}
+                            </nav>
                         </div>
 
-                        <Link href="/cart">
-                            <div className={`flex items-center gap-2 transition-colors cursor-pointer px-4 py-2 rounded-full border ${isScrolled || !isHome
-                                ? 'border-black/5 bg-gray-50 text-brand-black hover:border-brand-black'
-                                : 'border-white/20 bg-black/20 text-white hover:bg-black/40'
-                                }`}>
-                                <ShoppingBag size={18} />
-                                <span className="font-mono text-sm">
-                                    {isHydrated ? `$${cartTotal.toFixed(2)}` : '--'}
-                                </span>
+                        {/* Center Section: Logo (Absolute) */}
+                        <Link href="/" className="absolute left-1/2 -translate-x-1/2 z-50">
+                            <div className="relative h-16 w-48 sm:h-20 sm:w-60 md:h-24 md:w-72">
+                                <Image
+                                    src="/logo.jpg"
+                                    alt="Habiburrito"
+                                    fill
+                                    className="object-contain"
+                                    priority
+                                    sizes="(max-width: 768px) 192px, 288px"
+                                />
                             </div>
                         </Link>
-                    </div>
 
-                    {/* Mobile Toggle */}
-                    <button
-                        className={`md:hidden z-50 p-2 transition-colors ${(isScrolled || !isHome || mobileMenuOpen) ? 'text-brand-black' : 'text-white'
-                            }`}
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        aria-label="Toggle menu"
-                    >
-                        {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-                    </button>
+                        {/* Right Section: Desktop Actions OR Mobile Cart */}
+                        <div className="flex items-center gap-5 z-40">
+
+                            {/* Desktop Actions */}
+                            <div className="hidden md:flex items-center gap-5">
+                                <div className={`hidden lg:flex items-center gap-2 font-mono text-xs tracking-widest uppercase ${isScrolled || !isHome ? 'text-brand-black' : 'text-white/80'
+                                    }`}>
+                                    <div className={`w-2 h-2 rounded-full ${isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                                    {statusText}
+                                </div>
+                                <div className="relative">
+                                    {isOpen ? (
+                                        <Link href="/order">
+                                            <button className="group relative overflow-hidden px-6 py-3 rounded-full font-display font-bold tracking-[0.25em] uppercase text-xs bg-brand-black text-brand-gold hover:bg-brand-gold hover:text-brand-black transition-colors shadow-lg">
+                                                <span className="relative z-10">Order</span>
+                                            </button>
+                                        </Link>
+                                    ) : (
+                                        <button
+                                            onClick={() => setShowClosedTooltip(!showClosedTooltip)}
+                                            className="cursor-not-allowed opacity-50 px-6 py-3 rounded-full font-display font-bold tracking-[0.25em] uppercase text-xs bg-gray-200 text-brand-black border border-black/5"
+                                        >
+                                            Closed
+                                        </button>
+                                    )}
+
+                                    <AnimatePresence>
+                                        {showClosedTooltip && !isOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                className="absolute top-full mt-4 right-0 bg-white border border-black/5 p-4 rounded-xl w-64 text-center z-50 shadow-xl"
+                                            >
+                                                <div className="absolute -top-2 right-8 w-4 h-4 bg-white border-t border-l border-black/5 transform rotate-45" />
+                                                <p className="text-brand-black font-bold mb-1">We are currently closed</p>
+                                                <p className="text-xs text-brand-black">{statusText}</p>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                <Link href="/cart">
+                                    <motion.div
+                                        animate={cartControls}
+                                        className={`flex items-center gap-2 transition-colors cursor-pointer px-4 py-2 rounded-full border ${isScrolled || !isHome
+                                            ? 'border-black/5 bg-gray-50 text-brand-black hover:border-brand-black'
+                                            : 'border-white/20 bg-black/20 text-white hover:bg-black/40'
+                                            }`}
+                                    >
+                                        <ShoppingBag size={18} />
+                                        <span className="font-mono text-sm">
+                                            {isHydrated ? `$${cartTotal.toFixed(2)}` : '--'}
+                                        </span>
+                                    </motion.div>
+                                </Link>
+                            </div>
+
+                            {/* Mobile Cart Icon (Right) */}
+                            <Link href="/cart" className="md:hidden">
+                                <motion.div
+                                    animate={cartControls}
+                                    className={`relative p-2 transition-colors ${isScrolled || !isHome || mobileMenuOpen ? 'text-brand-black' : 'text-white'}`}
+                                >
+                                    <ShoppingBag size={24} />
+                                    {isHydrated && cartTotal > 0 && (
+                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-gold text-brand-black text-[10px] font-bold flex items-center justify-center rounded-full">
+                                            !
+                                        </span>
+                                    )}
+                                </motion.div>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -209,15 +249,17 @@ const Header: React.FC = () => {
                                 </div>
 
                                 <div className="mt-auto pt-12 space-y-6">
-                                    <div className="p-4 rounded-xl bg-white border border-black/5 shadow-sm">
-                                        <div className="flex items-center justify-between text-brand-black mb-2">
-                                            <span className="text-sm uppercase tracking-widest">Cart Total</span>
-                                            <ShoppingBag size={18} />
+                                    <Link href="/cart" onClick={() => setMobileMenuOpen(false)}>
+                                        <div className="p-4 rounded-xl bg-white border border-black/5 shadow-sm hover:border-brand-gold hover:shadow-md transition-all cursor-pointer group">
+                                            <div className="flex items-center justify-between text-brand-black mb-2">
+                                                <span className="text-sm uppercase tracking-widest group-hover:text-brand-gold transition-colors">Cart Total</span>
+                                                <ShoppingBag size={18} className="group-hover:text-brand-gold transition-colors" />
+                                            </div>
+                                            <p className="text-2xl font-mono text-brand-black">
+                                                {isHydrated ? `$${cartTotal.toFixed(2)}` : '--'}
+                                            </p>
                                         </div>
-                                        <p className="text-2xl font-mono text-brand-black">
-                                            {isHydrated ? `$${cartTotal.toFixed(2)}` : '--'}
-                                        </p>
-                                    </div>
+                                    </Link>
 
                                     {isOpen ? (
                                         <Link
